@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html ng-app>
+<head>
+<title><{t}>商城消费<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/angular.min.js"></script>
+<script language="javascript" src="../../public/js/lwjsback.js.php"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+function Ctrl($scope,$http) {
+	$scope.tab2_data = [];
+	$scope.tab3_data = [];
+	$scope.tab4_data = [];
+	$scope.tab2 = function(){
+	var tab2_postdata = {
+		start:$('#tab2 [name="start"]').val(),
+		end:$('#tab2 [name="end"]').val(),
+		item:$('#tab2 [name="item_id"]').val(),
+		money:$('#tab2 [name="money"]').val()
+	};
+	$http.post('?action=mall_total',tab2_postdata).success(function(res){
+		if(res.status=='ok'){
+			$scope.tab2_data = res.data;
+		}else{
+			alert(res.info);
+		} 
+	});
+}
+
+$scope.tab3 = function(){
+	$http.post('?action=cost_sort',{}).success(function(res){
+		if(res.status=='ok'){
+			$scope.tab3_data = res.data;
+		}else{
+			alert(res.info);
+		} 
+	});
+}
+
+$scope.tab4 = function(){
+	$http.post('?action=cost_sort&first=1',{}).success(function(res){
+		if(res.status=='ok'){
+			$scope.tab4_data = res.data;
+		}else{
+			alert(res.info);
+		} 
+	});
+}
+$scope.order = '-f3';
+}
+
+var tab1_callback = function(res){
+	var html = '';
+	for(var i in res.data.data){
+		html += '<tr>'+
+			'<td><a href="../gm/player.php?id='+res.data.data[i]['char_id']+'">'+res.data.data[i]['char_name']+'</a></td>'+
+			'<td>'+res.data.data[i]['item_id']+'</td>'+
+			'<td>'+res.data.data[i]['item_num']+'</td>'+
+			'<td>'+res.data.data[i]['money_num']+'</td>'+
+			'<td>'+res.data.data[i]['money_num']*res.data.data[i]['item_num']+'</td>'+
+			'<td>'+res.data.data[i]['money_type']+'</td>'+
+			'<td>'+res.data.data[i]['time']+'</td>'+
+			'</tr>';
+	}
+	$('#tab1_tbody').html(html);
+	$('#tab1_page').html(res.data.page);
+	
+	$('#total').empty();
+	$(res.data.total).each(function(i,obj){
+		$('#total').append('<{t}>总购买道具<{/t}>：'+res.data.total.item_num);
+		if(typeof(res.data.total.money_type_3)!='undefined'){
+			$('#total').append(' <{t}>花费元宝<{/t}>：'+res.data.total.money_type_3);
+		}else if(typeof(res.data.total.money_type_4)!='undefined'){
+			$('#total').append(' <{t}>花费礼券<{/t}>：'+res.data.total.money_type_4);
+		}
+	});
+};
+
+$(document).ready(function(){
+	$('#tab1_btn').click(function(){
+		var start = $('#tab1 [name="start"]').val(),
+		end = $('#tab1 [name="end"]').val(),
+		charinfo =$('#tab1 [name="charinfo"]').val(),
+		item_id = $('#tab1 [name="item_id"]').val(),
+		money = $('#tab1 [name="money"]').val();
+		$.ajax({
+				url:'?',
+				type:'post',
+				data:{action:'mall_log',callback:'tab1_callback',start:start,end:end,charinfo:charinfo,money:money,item_id:item_id},
+				dataType:'json',
+				success:tab1_callback
+		})
+	});
+	
+	$('input[name="item_name"]').typeahead({
+		items:200,
+		minLength:1,
+		source: function(value, process) {
+			var client = new PHPRPC_Client('http://<{$smarty.const.CENTER_DOMAIN}>/center/app/interface/item_info.php', ['search']);
+			client.search(value,'<{$smarty.session.__single_LANG}>', function (result, args, output, warning) {
+				result=jQuery.parseJSON(result);
+				var data=new Array();
+				var length=result.length;
+				length==0 ? $("input[name='item_id']").val('') : '';
+				$(result).each(function(i,obj){
+					data.push(obj[1]+"-"+obj[0]);
+					length==1 ? $("input[name='item_id']").val(obj[0]) : '';
+				});
+				var reg=new RegExp("^[0-9]*$");
+				reg.test(value) ? $("input[name='item_id']").val(value) : '';
+				process(data);
+			});
+		},
+		updater:function(data){
+			var arr=data.split('-');
+			$("input[name='item_id']").val(arr[1]);
+			return arr[0];
+		},
+	});
+	
+	$('input[name="item_name"]').blur(function(){
+		this.value=='' ? $("input[name='item_id']").val('') : '';
+	}).next().click(function(){
+		$(this).prevAll(':input').keyup();
+	});
+	
+	$('a[href="#tab3"]').click();
+	
+	//数据导出
+	$('#btn_export').click(function(){
+		window.location.href="?action=mall_log&type=export&"+$('#form_tab1').serialize();
+	});
+})
+</script>
+</head>
+<body ng-controller="Ctrl">
+<div class="container-fluid" style="padding:0;">
+<div class="tabbable">
+	<ul class="nav nav-tabs" id="mytab">
+		<li><a href="#tab1" data-toggle="tab"><{t}>购买记录<{/t}></a></li>
+		<li><a href="#tab2" data-toggle="tab" ng-click="tab2()"><{t}>购买统计<{/t}></a></li>
+		<li class="active"><a href="#tab3" data-toggle="tab" ng-click="tab3()"><{t}>购买排行<{/t}></a></li>
+		<li><a href="#tab4" data-toggle="tab" ng-click="tab4()"><{t}>首日购买排行<{/t}></a></li>
+	</ul>
+</div>
+<div class="tab-content">
+	<div class="tab-pane" id="tab1">
+		<form class="well form-search" id="form_tab1">
+			<{t}>时间<{/t}>：
+			<input type="text" placeholder="<{t}>开始日期<{/t}>" class="span1" style="width:80px;" onclick="WdatePicker({maxDate:'%y-%M-%d'})" name="start">
+			<i class="icon-minus"></i> 
+			<input type="text" placeholder="<{t}>结束日期<{/t}>" class="span2" style="width:80px;" onclick="WdatePicker({maxDate:'%y-%M-%d'})" name="end">
+			<{t}>角色名<{/t}>：
+			<input type="text" placeholder="<{t}>玩家<{/t}>" class="span2" name="charinfo">
+			<label><{t}>道具名<{/t}>：
+			<div class="input-append">
+				<input name="item_name" class="input-medium" placeholder="<{t}>请输入道具名称<{/t}>..." data-provide="typeahead" type="text" maxlength="16"><span class="add-on"><i class="icon-search"></i></span>
+				<input type="hidden" name="item_id">
+			</div>
+			</label>
+			<select class="span1" name="money">
+			<option value=""><{t}>全部<{/t}></option>
+			<{html_options options=$mall_money_conf}>
+		</select>
+		<button class="btn btn-primary" type="button" id="tab1_btn"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+		<button class="btn btn-inverse" type="button" id="btn_export"><i class="icon-download-alt icon-white"></i><{t}>导出<{/t}></button>
+		<div id="total"></div>
+		</form>
+		<table class="table table-bordered table-condensed table-striped table-hover">
+		<thead>
+			<tr>
+				<th><{t}>角色<{/t}></th>
+				<th><{t}>道具<{/t}></th>
+				<th><{t}>数量<{/t}></th>
+				<th><{t}>单价<{/t}></th>
+				<th><{t}>总额<{/t}></th>
+				<th><{t}>货币<{/t}></th>
+				<th><{t}>时间<{/t}></th>
+			</tr>
+		</thead>
+		<tbody id="tab1_tbody"></tbody>
+		</table>
+		<div class="pagination pagination-centered" id="tab1_page"></div>
+	</div>
+	
+	<div class="tab-pane" id="tab2">
+		<form class="well form-inline">
+			<{t}>时间<{/t}>：
+			<input type="text" placeholder="<{t}>开始日期<{/t}>" class="span2" name="start" style="width:80px;" onclick="WdatePicker({maxDate:'%y-%M-%d'})">
+			<i class="icon-minus"></i>
+			<input type="text" placeholder="<{t}>结束日期<{/t}>" class="span2" name="end" style="width:80px;" onclick="WdatePicker({maxDate:'%y-%M-%d'})">
+			<label><{t}>道具名<{/t}>：
+			<div class="input-append">
+				<input name="item_name" class="input-medium" placeholder="<{t}>请输入道具名称<{/t}>..." data-provide="typeahead" type="text" maxlength="16"><span class="add-on"><i class="icon-search"></i></span>
+				<input type="hidden" name="item_id">
+			</div>
+			</label>
+			<select class="span1" name="money">
+			<option value=""><{t}>全部<{/t}></option>
+			<{html_options options=$mall_money_conf}>
+		</select>
+		<button class="btn btn-primary" type="button" ng-click="tab2()" id="tab2_btn"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+		</form>
+		<table class="table table-bordered table-condensed table-striped table-hover">
+		<thead>
+			<tr>
+				<th><{t}>道具<{/t}></th>
+				<th><a href="" ng-click="order = 's_item';reverse=!reverse"><{t}>数量<{/t}></a></th>
+				<th><a href="" ng-click="order = 's_money';reverse=!reverse"><{t}>总额<{/t}></a></th>
+				<th><{t}>货币<{/t}></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="data in tab2_data | orderBy:order:reverse">
+				<td>{{data.item_id}}</td>
+				<td>{{data.s_item}}</td>
+				<td>{{data.s_money}}</td>
+				<td>{{data.money_type}}</td>
+			</tr>
+		</tbody>
+		</table>
+	</div>
+	
+	<div class="tab-pane active" id="tab3">
+		<table class="table table-bordered table-condensed table-striped table-hover">
+		<thead>
+			<tr>
+				<th><{t}>道具<{/t}></th>
+				<th><a href="" ng-click="order = 'num';reverse=!reverse"><{t}>数量<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f1';reverse=!reverse"><{t}>铜币<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f2';reverse=!reverse"><{t}>铜券<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f3';reverse=!reverse" id="sort_f3"><{t}>元宝<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f4';reverse=!reverse"><{t}>礼券<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f5';reverse=!reverse"><{t}>优先礼券其次元宝<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f6';reverse=!reverse"><{t}>优先铜券其次铜币<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f7';reverse=!reverse"><{t}>真气<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f8';reverse=!reverse"><{t}>功勋<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f9';reverse=!reverse"><{t}>帮贡<{/t}></a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="data in tab3_data | orderBy:order:reverse">
+				<td>{{data.name}}</td>
+				<td>{{data.num}}</td>
+				<td>{{data.f1}}</td>
+				<td>{{data.f2}}</td>
+				<td>{{data.f3}}</td>
+				<td>{{data.f4}}</td>
+				<td>{{data.f5}}</td>
+				<td>{{data.f6}}</td>
+				<td>{{data.f7}}</td>
+				<td>{{data.f8}}</td>
+				<td>{{data.f9}}</td>
+			</tr>
+		</tbody>
+		</table>
+	</div>
+	
+	<div class="tab-pane" id="tab4">
+		<table class="table table-bordered table-condensed table-striped table-hover">
+		<thead>
+			<tr>
+				<th><{t}>道具<{/t}></th>
+				<th><a href="" ng-click="order = 'num';reverse=!reverse"><{t}>数量<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f1';reverse=!reverse"><{t}>铜币<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f2';reverse=!reverse"><{t}>铜券<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f3';reverse=!reverse"><{t}>元宝<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f4';reverse=!reverse"><{t}>礼券<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f5';reverse=!reverse"><{t}>优先礼券其次元宝<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f6';reverse=!reverse"><{t}>优先铜券其次铜币<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f7';reverse=!reverse"><{t}>真气<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f8';reverse=!reverse"><{t}>功勋<{/t}></a></th>
+				<th><a href="" ng-click="order = 'f9';reverse=!reverse"><{t}>帮贡<{/t}></a></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="data in tab4_data | orderBy:order:reverse">
+				<td>{{data.name}}</td>
+				<td>{{data.num}}</td>
+				<td>{{data.f1}}</td>
+				<td>{{data.f2}}</td>
+				<td>{{data.f3}}</td>
+				<td>{{data.f4}}</td>
+				<td>{{data.f5}}</td>
+				<td>{{data.f6}}</td>
+				<td>{{data.f7}}</td>
+				<td>{{data.f8}}</td>
+				<td>{{data.f9}}</td>
+			</tr>
+		</tbody>
+		</table>
+	</div>
+</div>
+</div>
+</body>
+</html>

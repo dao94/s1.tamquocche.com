@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>活动参与度<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="accordion-group" style="margin-bottom:10px; padding-bottom:10px;">
+	<div class="accordion-heading">
+	 	<span class="accordion-toggle" data-toggle="collapse" href="#collapse">
+				<a href="javascript:;"><{t}>定义说明<{/t}></a>
+		</span>
+	</div>
+	<div id="collapse" class="accordion-body in collapse">
+		<div class="accordion-inner">
+			<ol>
+				<li><{t}>当日满足人数：当天登录的玩家，注册时间早于Thời gian，大于等于开启等级的人数<{/t}></li>
+				<li><{t}>开启时在线：在活动开启时的当时在线，全天活动取当天最高在线<{/t}></li>
+				<li><{t}>时段热度：参与人数 / 当日满足人数<{/t}></li>
+			</ol>
+		</div>
+	</div>
+	<div class="form-search">
+		<label style="margin-left:20px"><{t}>时间<{/t}>：</label>
+		<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+		<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+	</div>
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button type="button" onClick="javascript:window.location='?start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>名称<{/t}></th>
+		<th><{t}>开启等级<{/t}></th>
+		<th><{t}>开启时间<{/t}></th>
+		<th><{t}>参与次数<{/t}></th>
+		<th><{t}>参与人数<{/t}></th>
+        <th><{t}>人均参与<{/t}></th>
+		<th><{t}>满足人数<{/t}></th>
+        <th><{t}>参与度<{/t}></th>
+        <th><{t}>最高在线<{/t}></th>
+        <th><{t}>平均在线<{/t}></th>
+		<th><{t}>开启时在线<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $key=>$items}>
+	<tr>
+		<td  rowspan="<{$items|count}>"><{$key}></td>
+	  <{foreach $items as $k=>$row}>
+	  <{if $k!=0}><tr><{/if}>
+		<td><{$row['name']}></td>
+		<td><{$row['level']}></td>
+		<td><{$row['start_time']}></td>
+		<td><{$row['count']}></td>
+		<td><{$row['player']}></td>
+        <td><{$row['avg_count']}></td>
+		<td><{$row['allow_player']}></td>
+        <td><{$row['hot_ratio']}>%</td>
+        <td><{$row['max_online']|default:0}></td>
+        <td><{$row['avg_online']|default:0}></td>
+		<td><{$row['online']}></td>
+		<{if $k+1!=count($items)}></tr><{/if}>
+		<{/foreach}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

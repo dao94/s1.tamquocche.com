@@ -1,0 +1,247 @@
+<!--BUFF活动-->
+<{if $tpl=='set'}>
+<script language="javascript" src="../../public/js/kindeditor/kindeditor.js"></script>
+<script language="javascript">
+var info_editor;
+KindEditor.ready(function(K) {
+	info_editor = K.create('.info',{
+		themeType:'diy',
+		items : ['source', '|', 'undo', 'redo', '|', 'fontsize', 'forecolor','bold','underline'],
+		fontSizeTable : ['9', '10', '12','14','16','18','24','32'],
+		filterMode : true,
+		newlineTag:'br',
+		htmlTags : {
+			font : ['id', 'class', 'color', 'size', 'face', '.background-color'],
+			div : [
+				'id', 'class', 'align', '.border', '.margin', '.padding', '.text-align', '.color',
+				'.background-color', '.font-size', '.font-family', '.font-weight', '.background',
+				'.font-style', '.text-decoration', '.vertical-align', '.margin-left'
+			],
+			a : ['id', 'class', 'href', 'target', 'name'],
+			img : ['id', 'class', 'src', 'width', 'height', 'border', 'alt', 'title', 'align', '.width', '.height', '.border'],
+			'p,ol,ul,li,blockquote,h1,h2,h3,h4,h5,h6' : [
+				'id', 'class', 'align', '.text-align', '.color', '.background-color', '.font-size', '.font-family', '.background',
+				'.font-weight', '.font-style', '.text-decoration', '.vertical-align', '.text-indent', '.margin-left'
+			],
+			pre : ['id', 'class'],
+			hr : ['id', 'class', '.page-break-after'],
+			'br,tbody,tr,b,sub,sup,em,i,u,strike,s,del' : ['id', 'class'],
+		},
+		afterBlur:function(){
+			this.sync();
+		},
+	});
+});
+
+function strtotime(date){
+	if(date==''||typeof(date)=='undefined'){
+		return false;
+	}
+	var arr=date.replace(/:/g,'-').replace(/ /g,'-').split('-');
+	var time=(new Date(Date.UTC(arr[0],arr[1]-1,arr[2],arr[3]-8,arr[4],arr[5])).getTime())/1000;
+	return isNaN(time) ? false : time;
+}
+function getParam(){
+	var param=[],buff_list=[],check_result=true;
+
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		$(control_group).each(function(b,control){
+			var buff_type=parseInt($(control).find('[name="buff_type"]').val()),
+				addition=parseInt($(control).find('[name="addition"]').val());
+			if(isNaN(buff_type)||buff_type<1){
+				alert('<{t}>buff类型错误<{/t}>');
+				check_result=false;
+				return false;
+			}else if($.inArray(buff_type,buff_list)!=-1){
+				alert('<{t}>buff类型不能重复<{/t}>');
+				check_result=false;
+				return false;
+			}else if(isNaN(addition)||addition<1||addition>500){
+				$(control).find('[name="addition"]').focus();
+				alert('<{t}>加成百分比必须为1-500的正整数<{/t}>');
+				check_result=false;
+				return false;
+			}
+			buff_list.push(buff_type);
+			if(!check_result) return false;
+
+			var time_list=[];
+			$($(control).find('.controls')).each(function(c,controls){
+				var buff_start_date=$.trim($(controls).find('[name="buff_start_date"]').val()),
+						buff_end_date=$.trim($(controls).find('[name="buff_end_date"]').val());
+				if(buff_start_date==''){
+					$(controls).find('[name="buff_start_date"]').focus();
+					alert('<{t}>加成开始时间不能为空<{/t}>');
+					check_result=false;
+					return false;
+				}else if(buff_end_date==''){
+					$(controls).find('[name="buff_end_date"]').focus();
+					alert('<{t}>加成结束时间不能为空<{/t}>');
+					check_result=false;
+					return false;
+				}
+				time_list.push({0:strtotime(buff_start_date),1:strtotime(buff_end_date)});
+			});
+			param.push({id:a+1,buffId:buff_type,addition:addition,time:time_list});
+		});
+	});
+	return check_result ? param : check_result;
+}
+
+function getXml(){
+	var show_start_date=$.trim($('#show_start_date').val()),
+			show_end_date=$.trim($('#show_end_date').val()),
+			name=$.trim($('#name').val()),
+			info=$.trim($('#info').val()),check_result=true;
+	if(!show_start_date || !show_end_date || show_start_date>=show_end_date){
+		$('#show_start_date').focus();
+		alert('<{t}>请正确选择图标显示时间<{/t}>');
+		return false;
+	}else if(name==''){
+		$('#name').focus();
+		alert('<{t}>活动名称不能为空<{/t}>');
+		return false;
+	}
+	var item_list=[];
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		$(control_group).each(function(b,control){
+			var time_list=[],buff_info=$.trim($(control).find('[name="info"]').val());
+			$($(control).find('.controls')).each(function(c,controls){
+				var buff_show_date=$.trim($(controls).find('[name="buff_show_date"]').val()),
+						buff_hide_date=$.trim($(controls).find('[name="buff_hide_date"]').val()),
+						buff_start_date=$.trim($(controls).find('[name="buff_start_date"]').val()),
+						buff_end_date=$.trim($(controls).find('[name="buff_end_date"]').val());
+				if(buff_show_date==''){
+					$(controls).find('[name="buff_show_date"]').focus();
+					alert('<{t}>图标显示起始时间不能为空<{/t}>');
+					check_result=false;
+					return false;
+				}else if(buff_hide_date==''){
+					$(controls).find('[name="buff_hide_date"]').focus();
+					alert('<{t}>图标显示结束时间不能为空<{/t}>');
+					check_result=false;
+					return false;
+				}
+				time_list.push({buff_show_date:buff_show_date,buff_hide_date:buff_hide_date,buff_start_date:buff_start_date,buff_end_date:buff_end_date});
+			});
+			if(!check_result) return false;
+			item_list.push({time_list:time_list,buff_info:buff_info});
+		})
+	});
+	var xml_config={show_start_date:show_start_date,show_end_date:show_end_date,name:name,info:info,item_list:item_list};
+	return check_result ? xml_config : false;
+}
+</script>
+
+<input type="hidden" name="is_xml"  value="1"/>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="show_start_date"><{t}>图标显示时间<{/t}></label>
+	<div class="controls">
+		<input type="text" id="show_start_date" name="show_start_date" class="input-medium" value="<{$data['xml_config']['show_time']|default:''}>" placeholder="<{t}>图标显示时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+		<i class="icon-minus"></i>
+		<input type="text" id="show_end_date" name="show_end_date" class="input-medium" value="<{$data['xml_config']['hide_time']|default:''}>" placeholder="<{t}>图标隐藏时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+	</div>
+</div>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="name"><{t}>活动名称<{/t}></label>
+	<div class="controls">
+		<input type="text" id="name" name="name" class="input-xlarge" value="<{$data['xml_config']['name']|default:''}>" maxlength="50" placeholder="<{t}>长度在50个字符之内<{/t}>">
+	</div>
+</div>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="info"><{t}>活动描述<{/t}></label>
+	<div class="controls">
+		<textarea class="info" id="info" style="height:180px"><{$data['xml_config']['info']|default:''}></textarea>
+	</div>
+</div>
+
+<{* "设置"功能默认一个元素，"更新"根据数据展现 *}>
+<{if isset($data['param'])}>
+	<{$param_list=$data['param']}>
+<{else}>
+	<{$param_list=array(1)}>
+<{/if}>
+
+<{foreach $param_list as $a=>$param}>
+<div class="control-group">
+	<div class="control-label">
+		<button type="button" class="btn btn-mini btn-inverse btn_add_config"><i class="icon-plus icon-white"></i></button>
+		<button type="button" class="btn btn-mini btn-inverse btn_del_config"><i class="icon-minus icon-white"></i></button>
+		<{t}>活动配置<{/t}>
+	</div>
+	<div style="margin-left:180px;" class="form-search">
+		<{t}>buff类型<{/t}>：
+		<select name="buff_type" class="input-small" >
+		<{foreach $activity_config['buff_type'] as $key=>$item}>
+			<option value="<{$key}>" <{if isset($param['buffId'])&&$param['buffId']==$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+		</select>
+		<{t}>加成百分比<{/t}>：
+		<input type="text" name="addition" value="<{$param['addition']|default:''}>" class="input-mini" maxlength="3" placeholder="<{t}>正整数<{/t}>"/>%
+	</div>
+	<div style="margin-left:180px;" class="form-search">
+		<{t}>buff描述<{/t}>：
+		<textarea class="info" name="info" style="height:150px"><{$data['xml_config']['item_list'][$a]['buff_info']|default:''}></textarea>
+	</div>
+
+	<{$time_list=array()}>
+	<{if isset($param['time'])}>
+		<{$time_list=$param['time']}>
+	<{/if}>
+	<{if !$time_list}>
+		<{$time_list=array(1)}>
+	<{/if}>
+
+	<{foreach $time_list as $b=>$items}>
+	<div class="controls form-search" style="margin-bottom:5px; margin-top:5px;">
+		<table>
+			<tr>
+				<td valign="top">
+					<{t}>图标显示时间<{/t}>：
+					<input type="text" name="buff_show_date" class="input-medium" value="<{$data['xml_config']['item_list'][$a]['time_list'][$b]['buff_show_date']|default:''}>" placeholder="<{t}>图标显示开始时间<{/t}>" onclick="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:00'})">
+					<i class="icon-minus"></i>
+					<input type="text" name="buff_hide_date" class="input-medium" value="<{$data['xml_config']['item_list'][$a]['time_list'][$b]['buff_hide_date']|default:''}>" placeholder="<{t}>图标显示结束时间<{/t}>" onclick="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:00'})">
+					<{t}>加成时间<{/t}>：
+					<input type="text" name="buff_start_date" class="input-medium" value="<{$items[0]|date_format:'%Y-%m-%d %T'|default:''}>" placeholder="<{t}>加成开始时间<{/t}>" onclick="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:00'})">
+					<i class="icon-minus"></i>
+					<input type="text" name="buff_end_date" class="input-medium" value="<{$items[1]|date_format:'%Y-%m-%d %T'|default:''}>" placeholder="<{t}>加成结束时间<{/t}>" onclick="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:00'})">
+				</td>
+				<td valign="top">
+					<button type="button" class="btn btn-small btn-primary btn_add_items"><i class="icon-plus icon-white"></i></button>
+					<button type="button" class="btn btn-small btn-primary btn_del_items"><i class="icon-minus icon-white"></i></button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<{/foreach}>
+</div>
+<{/foreach}>
+
+<{else if $tpl=='show'}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+	<{foreach $row['param'] as $param}>
+		<div>
+			ID：<{$param['id']}>
+			<{t}>buff类型<{/t}>：<{$activity_config['buff_type'][$param['buffId']]}>
+			<{t}>加成百分比<{/t}>：<{$param['addition']}>%
+		</div>
+	<{/foreach}>
+	<{if !empty($param['time'])}>
+		<ul class="unstyled" style="margin-top:10px;">
+			<{foreach $param['time'] as $items}>
+				<li>
+					<{t}>加成时间<{/t}>：<{$items[0]|date_format:'%Y-%m-%d %T'}> <i class="icon-minus"></i> <{$items[1]|date_format:'%Y-%m-%d %T'}>
+				</li>
+			<{/foreach}>
+		</ul>
+		<{/if}>
+	</dd>
+</dl>
+
+<{/if}>

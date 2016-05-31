@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>家园统计<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+<script language="javascript">
+$(function($){
+	$('.chapter').colorbox({inline:true,fixed:true,width:'750px', height:'250px',opacity:0.1});
+	
+	$('.tab').click(function(){
+		$('#tab').val(this.name);
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well form-search" style="margin:10px 0;">
+	<label><{t}>日期<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"  style="margin-left:5px;"><i class="icon-search icon-white"></i><{t}>搜索<{/t}></button>
+	<input type="hidden" id="tab" name="tab" value="<{$conditions['tab']|default:''}>">
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button onClick="javascript:window.location='?start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<div class="tabbable" style="margin-top:10px;">
+	<ul class="nav nav-tabs">
+		<li <{if $conditions['tab']=='tab1'}>class="active"<{/if}>><a href="#tab1" name="tab1" class="tab" data-toggle="tab"><{t}>家园汇总<{/t}></a></li>
+		<li <{if $conditions['tab']=='tab2'}>class="active"<{/if}>><a href="#tab2" name="tab2" class="tab" data-toggle="tab"><{t}>丫鬟等级<{/t}></a></li>
+		<li <{if $conditions['tab']=='tab3'}>class="active"<{/if}>><a href="#tab3" name="tab3" class="tab" data-toggle="tab"><{t}>丫鬟传艺<{/t}></a></li>
+		<li <{if $conditions['tab']=='tab4'}>class="active"<{/if}>><a href="#tab4" name="tab4" class="tab" data-toggle="tab"><{t}>舒适度<{/t}></a></li>
+	</ul>
+	
+	<div class="tab-content">
+	
+		<div class="tab-pane <{if $conditions['tab']=='tab1'}>active<{/if}>" id="tab1">
+		<table class="table table-bordered table-condensed table-hover">
+		<thead>
+			<tr>
+				<th><{t}>日期<{/t}></th>
+				<th><{t}>家园品质<{/t}></th>
+				<th><{t}>购买人数<{/t}></th>
+				<th><{t}>访问人数<{/t}></th>
+				<th><{t}>仙女开启次数<{/t}></th>
+				<th><{t}>家具数量<{/t}></th>
+				<th><{t}>当天家具制造人数<{/t}></th>
+				<th><{t}>当天家具制造数量<{/t}></th>
+			</tr>
+		</thead>
+		<tbody>
+		<{foreach $data as $row}>
+		<{$num=0}>
+		<{foreach $row['buy_level'] as $type=>$count}>
+			<tr>
+				<{if $num==0}>
+				<td rowspan="<{$row['buy_level']|count}>"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+				<{/if}>
+				<td><{$buy_level_conf[$type]|default:<{$type}>}></td>
+				<td><{$count}></td>
+				<td><{$row['access_count'][$type]|default:'--'}></td>
+				<td><{$row['call_peri'][$type]|default:'--'}></td>
+				<td><{$row['make_furniture'][$type]|default:'--'}></td>
+				<td><{$row['day_make_furniture'][$type]['player']|default:'--'}></td>
+				<td><{$row['day_make_furniture'][$type]['count']|default:'--'}></td>
+			</tr>
+			<{$num=$num+1}>
+		<{/foreach}>
+		<{/foreach}>
+		</tbody>
+		</table>
+		</div>
+		
+		<div class="tab-pane <{if $conditions['tab']=='tab2'}>active<{/if}>" id="tab2">
+		<table class="table table-bordered table-condensed table-hover">
+		<thead>
+			<tr>
+				<th><{t}>日期<{/t}></th>	
+				<th></th>
+				<{foreach $slavey_level_conf as $level}>
+				<th><{$level}><{t}>级<{/t}></th>
+				<{/foreach}>
+			</tr>
+		</thead>
+		<tbody>
+		<{foreach $data as $row}>
+			<tr>
+				<td rowspan="2"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+				<td><{t}>数量<{/t}></td>
+				<{foreach $slavey_level_conf as $level}>
+				<td><{$row['slavey_level'][$level]|default:'--'}></td>
+				<{/foreach}>
+			</tr>
+			<tr>
+				<td><{t}>比例<{/t}></td>
+				<{$slavey_count=array_sum($row['slavey_level'])}>
+				<{foreach $slavey_level_conf as $level}>
+				<td><{if $slavey_count&&isset($row['slavey_level'][$level])}><{round($row['slavey_level'][$level]/$slavey_count,4)*100}>%<{else}>--<{/if}></td>
+				<{/foreach}>
+			</tr>
+		<{/foreach}>
+		</tbody>
+		</table>
+		</div>
+		
+		<div class="tab-pane <{if $conditions['tab']=='tab3'}>active<{/if}>" id="tab3">
+		<table class="table table-bordered table-condensed table-hover">
+		<thead>
+			<tr>
+				<th><{t}>日期<{/t}></th>	
+				<th><{t}>丫鬟传艺<{/t}></th>
+				<th></th>
+				<{foreach $skill_level_conf as $level}>
+				<th><{$level}><{t}>级<{/t}></th>
+				<{/foreach}>
+			</tr>
+		</thead>
+		<tbody>
+		<{foreach $data as $row}>
+			<{foreach $skill_conf as $key=>$skill_name}>
+			<tr>
+				<{if $key==0}>
+				<td rowspan="<{$skill_conf|count*2}>"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+				<{/if}>
+				<td rowspan="2"><{$skill_name}></td>
+				<td><{t}>数量<{/t}></td>
+				<{foreach $skill_level_conf as $level}>
+				<td><{$row['skill_count'][$key][$level]|default:'--'}></td>
+				<{/foreach}>
+			</tr>
+			<tr>
+				<td><{t}>比例<{/t}></td>
+				<{foreach $skill_level_conf as $level}>
+				<td>
+					<{$skill_count=array_sum($row['skill_count'][$key])}>
+					<{if $skill_count&&isset($row['skill_count'][$key][$level])}>
+						<{round($row['skill_count'][$key][$level]/$skill_count,4)*100}>%
+					<{else}> --
+					<{/if}>
+				</td>
+				<{/foreach}>
+			</tr>
+			<{/foreach}>
+		<{/foreach}>
+		</tbody>
+		</table>
+		</div>
+		
+		<div class="tab-pane <{if $conditions['tab']=='tab4'}>active<{/if}>" id="tab4">
+		<table class="table table-bordered table-condensed table-hover">
+		<thead>
+			<tr>
+				<th><{t}>日期<{/t}></th>	
+				<th><{t}>家园品质<{/t}></th>
+				<th></th>
+				<{foreach $fine_conf as $item}>
+				<th>[<{$item[0]}>,<{$item[1]}>)</th>
+				<{/foreach}>
+			</tr>
+		</thead>
+		<tbody>
+			<{foreach $data as $row}>
+			<{$num=0}>
+			<{$fine_player=0}>
+			<{foreach $buy_level_conf as $key=>$value}>
+			<tr>
+				<{if $num==0}>
+				<td rowspan="<{$buy_level_conf|count*2}>"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+				<{/if}>
+				<td rowspan="2"><{$value}></td>
+				<td><{t}>数量<{/t}></td>
+				<{foreach $fine_conf as $k=>$item}>
+				<td>
+					<{if isset($row['fine'][$key][$k])}>
+						<{$row['fine'][$key][$k]}></td>
+						<{$fine_player=$fine_player+$row['fine'][$key][$k]}>
+					<{else}>--
+					<{/if}>
+				<{/foreach}>
+			</tr>
+			<tr>
+				<td><{t}>比例<{/t}></td>
+				<{foreach $fine_conf as $k=>$item}>
+				<td><{if $fine_player&&isset($row['fine'][$key][$k])}><{round($row['fine'][$key][$k]/$fine_player,4)*100}>%<{else}>--<{/if}></td>
+				<{/foreach}>
+			</tr>
+			<{$num=$num+1}>
+			<{/foreach}>
+			<{/foreach}>
+		</tbody>
+		</table>
+		</div>
+		
+	</div>
+</div>
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

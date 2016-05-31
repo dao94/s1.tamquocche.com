@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>寄售流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<style type="text/css">
+#type_list .span2{
+	width:70px;
+	height:20px;
+	line-height:20px;
+	overflow:hidden;
+}
+</style>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript">
+$(function($){
+	$("#item_name").typeahead({
+		items:200,
+		minLength:1,
+		source: function(value, process) {
+			value=$.trim(value);
+			var client = new PHPRPC_Client('http://<{$smarty.const.CENTER_DOMAIN}>/center/app/interface/item_info.php', ['search']);
+			client.search(value,'<{$smarty.session.__single_LANG}>', function (result, args, output, warning) {
+				result=jQuery.parseJSON(result);
+				var data=new Array();
+				var length=result.length;
+				length==0 ? $("input[name='item_id']").val('') : '';
+				$(result).each(function(i,obj){
+					data.push(obj[1]+"-"+obj[0]);
+					length==1 ? $("input[name='item_id']").val(obj[0]) : '';
+				});
+				var reg=new RegExp("^[0-9]*$");
+				reg.test(value) ? $("input[name='item_id']").val(value) : '';
+				process(data);
+			});
+		},
+		updater:function(data){
+			var arr=data.split('-');
+			$("input[name='item_id']").val(arr[1]);
+			return arr[0];
+		},
+	});
+
+	$('#item_name').blur(function(){
+		this.value=='' ? $("input[name='item_id']").val('') : '';
+	}).next().click(function(){
+		$(this).prevAll(':input').keyup();
+	});
+
+	$('#btn_type').toggle(function(){
+		$('#type_list').fadeIn();
+	},function(){
+		$('#type_list').fadeOut();
+	});
+
+	$('#cb_all').click(function(){
+		$('.type').attr('checked',this.checked);
+	});
+
+	$('.btn_selected').click(function(){
+		$("input[name='type[]'][value='"+this.value+"']").attr('checked',false);
+		$('#btn_search').click();
+	});
+
+	<{if $conditions['type']}>
+		$('#type_list').fadeIn();
+	<{/if}>
+});
+</script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<label style="margin-left:5px;"><{t}>寄售元宝<{/t}>：</label>
+	<input class="input-mini" placeholder="<{t}>最低元宝<{/t}>" type="text" name="min_jade" value="<{$conditions['min_jade']}>" maxlength="12">
+	<i class="icon-minus"></i>
+	<input class="input-mini" placeholder="<{t}>最高元宝<{/t}>" type="text" name="max_jade" value="<{$conditions['max_jade']}>" maxlength="12">
+	<label style="margin-left:5px;"><{t}>寄售铜币<{/t}>：</label>
+	<input class="input-mini" placeholder="<{t}>最低铜币<{/t}>" type="text" name="min_gold" value="<{$conditions['min_gold']}>" maxlength="12">
+	<i class="icon-minus"></i>
+	<input class="input-mini" placeholder="<{t}>最高铜币<{/t}>" type="text" name="max_gold" value="<{$conditions['max_gold']}>" maxlength="12">
+	<label style="margin-left:5px;"><{t}>寄售道具<{/t}>：
+	<div class="input-append">
+		<input id="item_name" class="input-medium" placeholder="<{t}>请输入道具名称<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="<{t}><{$conditions['item_id']}><{/t}>"><span class="add-on"><i class="icon-search"></i></span>
+	</div>
+	</label>
+    <label><{t}>货币类型<{/t}>：</label>
+    <select name="money_type" class="input-small">
+    	<option value=""><{t}>全部<{/t}>...</option>
+        <{foreach $money_class_conf as $key=>$item}>
+        <{if $key==1 || $key==3}>
+        <option value="<{$key}>" <{if $conditions['money_type']==$key}>selected<{/if}>><{$item}></option>
+        <{/if}>
+        <{/foreach}>
+    </select>
+    <label><{t}>来源角色名<{/t}>：</label>
+    <input type="text" name="from_char_name" class="input-medium" maxlength="20" placeholder="<{t}>输入来源角色名<{/t}>" value="<{$conditions['from_char_name']}>">
+    <button id="btn_type" type="button" class="btn btn-link"><{t}>项目类型<{/t}></button>
+   	<button class="btn btn-primary" id="btn_search" style="margin-left:5px;"><i class="icon-search icon-white"></i> <{t}>搜索<{/t}></button>
+
+<{if $conditions['type']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['type'] as $item}>
+		<button class="btn btn-mini btn_selected" type="button" value="<{$item}>"><{$type_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $type_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="type[]" value="<{$key}>" class="type" <{if in_array($key,$conditions['type'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+<input type="hidden" name="item_id"  value="<{$conditions['item_id']}>">
+</form>
+
+<div class="pagination pagination-right" style="margin:0;"><{$page}></div>
+<table class="table table-bordered table-hover" style="margin-top:5px;">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>类型<{/t}></th>
+		<th><{t}>道具<{/t}></th>
+		<th><{t}>数量<{/t}></th>
+		<th><{t}>货币类型<{/t}></th>
+		<th><{t}>单价<{/t}></th>
+        <th><{t}>总价<{/t}></th>
+		<th><{t}>保管费<{/t}></th>
+		<th><{t}>来源<{/t}></th>
+		<th><{t}>有效时间<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>" target="_parent"><{$row['char_name']}></a></td>
+		<td><{$type_conf[$row['type']]|default:$row['type']}></td>
+		<td>
+			<{if $row['item_id']==-1}><{t}>铜币<{/t}>
+			<{elseif $row['item_id']==-2}><{t}>元宝<{/t}>
+			<{else}><{t}><{$row['item_id']}><{/t}>
+			<{/if}>
+		</td>
+		<td><{$row['item_num']}></td>
+		<td><{$money_class_conf[$row['money_type']]|default:$row['money_type']}></td>
+		<td><{$row['price']}></td>
+        <td><{$row['price']*$row['item_num']}></td>
+		<td><{$row['charge']}></td>
+		<td><a href="../gm/player.php?id=<{$row['from_char_id']}>" target="_parent"><{if $row['char_id']==$row['from_char_id']}><{t}><{/t}><{else}><{$row['from_char_name']}><{/if}></a></td>
+		<td><span <{if $row['valid_time']<date('Y-m-d H:i:s')}>class="badge"<{/if}>><{$row['valid_time']}></span></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

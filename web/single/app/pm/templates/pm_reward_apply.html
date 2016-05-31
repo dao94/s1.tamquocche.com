@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/kindeditor/kindeditor-min.js"></script>
+<script language="javascript" src="../../public/js/lwjsback.js.php"></script>
+<script lang="javascript">
+var char_editor;
+KindEditor.ready(function(K) {
+		char_editor = K.create('[name="char_econtent"]',{
+				themeType:'diy',
+				width:'400px',
+				minWidth:'400px',
+				height:'150px',
+				items : ['source','undo', 'redo', '|','bold','link','unlink'],
+				filterMode : false
+		});
+});
+$(document).ready(function(){
+		//相同不同切换
+		$('[name="char_reward_type"]').change(function(){
+				$(".reward_list").toggle() ;
+		});
+		//角色申请
+		$('#char_send').click(function(){
+				var char_type = $('[name="char_type"]:checked').val(),
+				char_player = $.trim($("#char_player").val()),
+				char_etitle = $.trim($('[name="char_etitle"]').val()),
+				char_econtent = $.trim(char_editor.html()),
+				char_reason = $.trim($('[name="char_reason"]').val()),
+				char_reward_type = $('[name="char_reward_type"]:checked').val(),
+				reward_list = {};
+
+				$("#char_ajax_result").html('');
+				if(char_player === '' || char_etitle ===''||char_econtent===''||char_reason===''){
+						$("#char_ajax_result").html('<{t}>请设置玩家列表、奖励列表、邮件文本内容<{/t}>');
+						return;
+				}
+				var item_num=0;
+				var item_count=0;
+				if(char_reward_type==0){
+
+						//遍历奖励
+						$('#char_reward .reward').each(function(i){
+								var type=$(this).val(),
+								num = $(this).siblings('[name="num"]').val();
+								item_count++;
+								if(type==='item' && num>=1000){
+									//判断item是不是1000个
+									item_num=1;
+								}
+								if(type==='item'){
+										var item_info = $(this).siblings('.item').children('[name=item_info]').val(),
+										item_bind = $(this).siblings('.item').children('[name=item_bind]').attr('checked')==='checked'?1:0;
+										if(item_info!=''){
+											reward_list[i]={type:'item',num:num,item:item_info,bind:item_bind};
+										}
+								}else{
+										reward_list[i]={type:type,num:num};
+								}
+						})
+				}
+				if(item_count>=10){
+					alert('<{t}>申请奖励列表必须小于10个<{/t}>');
+					return false;
+				}
+				if(item_num==1){
+					alert('<{t}>道具数量必须小于1000个<{/t}>');
+					item_num=0;
+					return false;
+				}
+
+				$.ajax({
+						type:'POST',
+						url:'?',
+						data:{type:'char_send',char_type:char_type,player:char_player,etitle:char_etitle,econtent:char_econtent,reason:char_reason,reward_type:char_reward_type,reward:reward_list},
+						dataType:'json',
+						success:function(result){
+								if(result.status==='error'){
+										if(result.info==='player_exists'){
+												var player_check = '';
+												for(var key in result.data){
+														player_check += key + ': ';
+														player_check += result.data[key]===null?'not exist':'exist';
+														player_check += "\n";
+												}
+												$("#char_player_check").show().html($.trim(player_check));
+										}else{
+												$("#char_ajax_result").html(result.info);
+										}
+								}else{
+										$("#char_player").val('');
+										$('[name="char_etitle"]').val('');
+										char_editor.html('');
+										$('[name="char_reason"]').val('');
+										$("#char_ajax_result").html(result.info);
+								}
+						}
+				})
+		})
+		//编辑器同步滚动
+		$('.scroll_t').scroll(function(){
+				var id = $(this).attr('id');
+				if(id.match(/.*_check/)){
+						$('#'+id.replace(/_check/,'')).scrollTop($(this).scrollTop());
+				}else{
+						$('#'+id+'_check').scrollTop($(this).scrollTop());
+				}
+		})
+})
+</script>
+</head>
+<body>
+<div class="tabbable">
+	<ul class="nav nav-tabs">
+		<li class="<{if $type eq 'log'}><{else}>active<{/if}>"><a href="#char" data-toggle="tab"><{t}>角色申请<{/t}></a></li>
+		<!-- <li><a href="#condition" data-toggle="tab"><{t}>条件申请<{/t}></a></li> -->
+		<li <{if $type eq 'log'}>class="active"<{/if}>><a href="?type=log"><{t}>申请日志<{/t}></a></li>
+	</ul>
+		<div class="tab-content">
+			<div class="row tab-pane<{if $type eq 'log'}><{else}> active<{/if}>" id="char">
+					<dl class="dl-horizontal">
+					<dt><{t}>申请原因<{/t}></dt>
+					<dd><input type="text" name="char_reason" class="input-xlarge" maxlength="200" placeholder="<{t}>必填，长度不得超过200字符<{/t}>"></dd>
+					<dt><{t}>邮件标题<{/t}></dt>
+					<dd><input type="text" name="char_etitle" class="input-xlarge" maxlength="50" placeholder="<{t}>必填，长度不得超过50字符<{/t}>"></dd>
+					<dt><{t}>邮件内容<{/t}></dt>
+					<dd><textarea name="char_econtent"></textarea></dd>
+					<dt><{t}>奖励内容<{/t}></dt>
+					<dd class="form-inline">
+						<input type="radio" name="char_reward_type" value="0" id="reward_type_0" checked="checked">
+						<label for="reward_type_0"><{t}>相同<{/t}></label>
+						<input type="radio" name="char_reward_type" value="1" id="reward_type_1" style="margin-left:5px;">
+						<label for="reward_type_1"><{t}>不同<{/t}></label>
+					</dd>
+					<dt><{t}>收件人<{/t}></dt>
+					<dd>
+						<ul>
+							<li><{t}>相同奖励内容收件人只填写角色信息，不同奖励内容时填写奖励列表。<{/t}></li>
+							<li><{t}>对于货币类型的奖励，会自动忽略掉数量后面的参数<{/t}></li>
+							<li><{t}>格式：角色信息,物品id(1:铜币2:铜券3:元宝4:礼券),数量,是否绑定(0:绑定1非绑定，默认为0绑定)<{/t}></li>
+						</ul>
+					</dd>
+					<dd class="form-inline">
+						<input type="radio" name="char_type" value="3" id="char_type_3" checked="checked">
+						<label for="char_type_3"><{t}>角色名<{/t}></label>
+						<input type="radio" name="char_type" value="1" id="char_type_1" style="margin-left:5px;">
+						<label for="char_type_1"><{t}>角色id<{/t}></label>
+						<input type="radio" name="char_type" value="2" id="char_type_2" style="margin-left:5px;">
+						<label for="char_type_2"><{t}>账号<{/t}></label>
+					</dd>
+					<dd>
+						<textarea id="char_player" style="width:400px;height:100px;resize: none;" class="scroll_t"></textarea>
+						<textarea id="char_player_check" style="width:400px;height:100px;resize: none; display: none;" class="scroll_t"></textarea>
+					</dd>
+					<dt class="reward_list"><{t}>奖励列表<{/t}></dt>
+					<dd class="reward_list">
+						<ul id="char_reward" class="unstyled form-inline">
+							<li><select class="span1 reward" onchange="lwjsback.rewardSet.reward_change(this)"><option value="item"><{t}>道具<{/t}></option><option value="gold"><{t}>铜币<{/t}></option><option value="giftGold"><{t}>铜券<{/t}></option><option value="jade"><{t}>元宝<{/t}></option><option value="giftJade"><{t}>礼券<{/t}></option></select> <{t}>数量<{/t}>：<input type="text" name="num" class="span1"> <span class="item"><{t}>道具<{/t}>：<input type="text" name="item_info" class="span3" onkeyup="lwjsback.itemSearch.searchItem(this)"> <input type="checkbox" name="item_bind"> <{t}>非绑定<{/t}></span>
+							<button type="button" class="btn btn-mini" onclick="lwjsback.rewardSet.reward_add(this)"><i class="icon-plus"></i></button>
+							</li>
+						</ul>
+					</dd>
+					<dt></dt>
+					<dd>
+						<button type="button" class="btn btn-primary" id="char_send"><i class="icon-share-alt icon-white"></i><{t}>提交申请<{/t}></button>
+						<span id="char_ajax_result" class="badge badge-warning"></span>
+					</dd>
+					</dl>
+				</div>
+				<div class="tab-pane" id="condition"></div>
+
+				<{if $type eq 'log'}>
+				<div class="tab-pane active" id="log">
+				<table class="table table-striped table-bordered table-condensed">
+					<thead>
+						<tr>
+						<th><{t}>账号<{/t}></th>
+						<th><{t}>角色<{/t}></th>
+						<th><{t}>原因<{/t}></th>
+						<th><{t}>邮件<{/t}></th>
+						<th><{t}>物品列表<{/t}></th>
+						<th><{t}>申请人<{/t}></th>
+						<th><{t}>申请时间<{/t}></th>
+						<th><{t}>审核人<{/t}></th>
+						<th><{t}>状态<{/t}></th>
+						<th><{t}>通过时间<{/t}></th>
+						</tr>
+					</thead>
+					<tbody>
+					<{while $apply_list = $apply_list_query->fetch_assoc()}>
+					<tr>
+						<td><{$apply_list['account']}></td>
+						<td><a href="../gm/player.php?id=<{$apply_list['char_id']}>"><{$apply_list['char_name']}></td>
+						<td><{$apply_list['reason']}></td>
+						<td>
+							<a class="accordion-toggle" data-toggle="collapse" href="#email_<{$apply_list['id']}>"><{$apply_list['email_title']}></a>
+							<div id="email_<{$apply_list['id']}>" class="accordion-body collapse"<{$apply_list['email_content']}></div>
+					</td>
+					<td><a class="accordion-toggle btn btn-small" data-toggle="collapse" href="#reward_<{$apply_list['id']}>"><i class="icon-search"></i></a>
+						<div id="reward_<{$apply_list['id']}>" class="accordion-body collapse" style="text-align:left">
+						<{foreach json_decode($apply_list['reward_list'],true) as $key=>$val}>
+							<{if $key eq 'itemList'}>
+							<{foreach $val as $item}>
+								<{t}><{$item['itemId']}><{/t}>[<{$item['number']}>]<{if $item['bind']}><{t}>非绑定<{/t}><{else}><{t}>绑定<{/t}><{/if}><br/>
+							<{/foreach}>
+							<{elseif $key eq 'moneyList'}>
+							<{foreach $val as $moneyType=>$moneyNum}>
+							<{if $moneyType eq 'gold'}>
+								<{t}>铜币<{/t}>
+							<{elseif $moneyType eq 'giftGold'}>
+								<{t}>铜券<{/t}>
+							<{elseif $moneyType eq 'jade'}>
+								<{t}>元宝<{/t}>
+							<{elseif $moneyType eq 'giftJade'}>
+								<{t}>礼券<{/t}>
+							<{/if}>
+							[<{$moneyNum}>]<br/>
+							<{/foreach}>
+							<{/if}>
+						<{/foreach}>
+						</div>
+					</td>
+					<td><{$apply_list['applyer']}></td>
+					<td><{$apply_list['apply_ts']|date_format:'%Y-%m-%d %T'}></td>
+					<td><{$apply_list['verifyer']}></td>
+					<td><{if $apply_list['status'] eq 1}><span class="badge badge-warning"><{t}>通过<{/t}></span><{elseif $apply_list['status'] eq 2}><span class="badge badge-info"><{t}>未通过<{/t}></span><{else}><span class="badge"><{t}>未处理<{/t}></span><{/if}></td>
+					<td><{$apply_list['verify_ts']|date_format:'%Y-%m-%d %T'}></td>
+					</tr>
+					<{/while}>
+				</tbody>
+			</table>
+			<div class="pagination pagination-centered"><{$page}></div>
+		</div>
+	<{/if}>
+</div>
+</div>
+</body>
+</html>

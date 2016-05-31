@@ -1,0 +1,374 @@
+<!--怪物掉落-->
+<{if $tpl=='set'}>
+<script language="javascript">
+$(function($){
+	$('select[name="fall_type"]').live('change',function(){
+		$(this).find('option[value="'+this.value+'"]').attr('selected',true);
+		$(this).find('option[value!="'+this.value+'"]').attr('selected',false);
+		$(this).parents('table').find('.items').hide();
+		$(this).parents('table').find('.items').find('input').attr('disabled',true);
+		$(this).parents('table').find('.items').find('select').attr('disabled',true);
+		$(this).parents('table').find('.items_'+this.value).fadeIn();
+		$(this).parents('table').find('.items_'+this.value).find('input').attr('disabled',false);
+		$(this).parents('table').find('.items_'+this.value).find('select').attr('disabled',false);
+	});
+
+	//怪物选择对话框
+	var param_obj=null;
+	$('.btn_select_monster').live('click',function(){
+		param_obj=$(this).parents('.control-group');
+		$('#monster_box').find(':checkbox').attr('checked',false);
+		$('.copy_row').hide();
+		var occ_list=param_obj.find('[name="occ"]').val().split(',');
+		if(occ_list!=''){
+			$(occ_list).each(function(i,val){
+				var obj=$('.occ[value="'+val+'"]');
+				$('.occ[value="'+val+'"]').each(function(j,obj){
+					$(obj).attr('checked',true);
+					$('.copy[value="'+$(obj).attr('copy')+'"]').attr('checked',true);
+					$('.copy_'+$(obj).attr('copy')).fadeIn();
+				});
+			});
+		}
+		$.colorbox({inline:true,href:'#monster_box',overlayClose:false,fixed:true,width:'890px', height:'460px'});
+	});
+
+	//确定
+	$('#btn_select_ok').click(function(){
+		if(!param_obj||typeof(param_obj)=='undefined')	return false;
+		var occ_list='';
+		$('.occ:checked').each(function(i,obj){
+			occ_list+=occ_list ? ','+obj.value : obj.value;
+		});
+		param_obj.find('[name="occ"]').val(occ_list);
+		$('#cboxClose').click();
+	});
+
+	//全/反选怪物
+	$('#all_monster').click(function(){
+		$(this).attr('checked',this.checked);
+		$('.copy').attr('checked',this.checked);
+		$('.layer').attr('checked',this.checked);
+		$('.occ').attr('checked',this.checked);
+		if(this.checked){
+			$('#collapse').addClass('in');
+			$('.copy_row').fadeIn();
+		}else{
+			$('#collapse').removeClass('in');
+			$('.copy_row').hide();
+		}
+	});
+
+	//全/反选副本
+	$('.copy').click(function(){
+		$('[copy="'+this.value+'"]').attr('checked',this.checked);
+		$('.copy[value="'+this.value+'"]').attr('checked',this.checked);
+		if(this.checked){
+			$('.copy_'+this.value).fadeIn();
+		}else{
+			$('.copy_'+this.value).hide();
+		}
+	});
+
+	//全/反选层数
+	$('.layer').click(function(){
+			$('.occ[name="'+this.value+'"][copy="'+$(this).attr('copy')+'"]').attr('checked',this.checked);
+	});
+});
+
+function getParam(){
+	var param=[],check_result=true;
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		$(control_group).each(function(b,control){
+			var pack=[],type_obj=$(control).find('[name="fall_type"]:enabled');
+			$(type_obj).each(function(c,obj){
+				var type=$(obj).val();
+				var items_row=$(obj).parents('table').find('.items_'+type);
+				var per=parseFloat(items_row.find('[name="per"]').val());
+				var num=parseInt(items_row.find('[name="num"]').val());
+				if(isNaN(per)||per>1||per<=0){
+					items_row.find('[name="per"]').focus();
+					alert('<{t}>掉率必填,且是0-1之内的小数点<{/t}>');
+					check_result=false;
+					return false;
+				}
+				switch(type){
+					case '1':
+						//单道具
+						var item_val=items_row.find('[name="item"]').val().split('|');
+						var bind=items_row.find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+						if(isNaN(num)||num<1){
+							items_row.find('[name="num"]').focus();
+							alert('<{t}>数量必填,且是大于1的数字<{/t}>');
+							check_result=false;
+							return false;
+						}else if($.trim(item_val[0])==''){
+							items_row.find('[name="item"]').focus();
+							alert('<{t}>道具为必填项<{/t}>');
+							check_result=false;
+							return false;
+						}
+						list={type:type,per:per,item:{itemId:item_val[0],number:num,bind:bind}};
+						break;
+					case '2':
+						//金钱
+						if(isNaN(num)||num<1){
+							items_row.find('[name="num"]').focus();
+							alert('<{t}>数量必填,且是大于1的数字<{/t}>');
+							check_result=false;
+							return false;
+						}
+						var money_type=items_row.find('[name="money_type"]').val();
+						list={type:type,per:per,item:{money:num,type:money_type}};
+						break;
+					case '3':
+						//掉落包
+						var count=parseInt(items_row.find('[name="count"]').val());
+						if(isNaN(count)||count<1){
+							items_row.find('[name="count"]').focus();
+							alert('<{t}>掉落个数必填，且大于1的整数<{/t}>');
+							check_result=false;
+							return false;
+						}
+						var sub_list=[];
+						$(items_row.find('.sub_item')).each(function(d,sub_item){
+							var item_val=$(sub_item).find('[name="item"]').val().split('|');
+							var sub_num=parseInt($(sub_item).find('[name="sub_num"]').val());
+							var sub_per=parseInt($(sub_item).find('[name="sub_per"]').val());
+							var bind=$(sub_item).find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+							if(isNaN(sub_num)||sub_num<1){
+								$(sub_item).find('[name="sub_num"]').focus();
+								alert('<{t}>掉落包道具数量必填，且大于1的整数<{/t}>');
+								check_result=false;
+								return false;
+							}else if(isNaN(sub_per)||sub_per<1){
+								$(sub_item).find('[name="sub_per"]').focus();
+								alert('<{t}>掉落包道具权重必填，且大于1的整数<{/t}>');
+								check_result=false;
+								return false;
+							}else if($.trim(item_val[0])==''){
+								$(sub_item).find('[name="item"]').focus();
+								alert('<{t}>道具为必填项<{/t}>');
+								check_result=false;
+								return false;
+							}
+							var item_bag={item:{itemId:item_val[0],number:sub_num,bind:bind},per:sub_per};
+							sub_list.push(item_bag);
+						});
+						list={type:type,per:per,count:count,item:sub_list};
+						break;
+				}
+				pack.push(list);
+			});
+			var occ=$(control_group).find('[name="occ"]').val().split(',');
+			var model=$(control_group).find('[name="model"]').val();
+			occ=$.unique(occ);
+			if((occ.length==0||occ=='')&&check_result){
+				alert('<{t}>请选择怪物<{/t}>');
+				check_result=false;
+				$(control_group).find('.btn_select_monster').click();
+				return false;
+			}
+			param.push({occ:occ,model:model,pack:pack});
+		});
+	});
+	return check_result ? param : check_result;
+}
+</script>
+
+<{if isset($data['param'])}>
+	<{$params=$data['param']}>
+<{else}>
+	<{$params=array(1)}>
+<{/if}>
+<{foreach $params as $param}>
+<div class="control-group">
+	<div class="control-label">
+		<div>
+		<button type="button" class="btn btn-mini btn-inverse btn_add_config"><i class="icon-plus icon-white"></i></button>
+		<button type="button" class="btn btn-mini btn-inverse btn_del_config"><i class="icon-minus icon-white"></i></button>
+		<{t}>掉落配置<{/t}>
+		</div>
+		<div style="margin-top:5px;">
+			<{t}>模式<{/t}>：
+			<select name="model" class="input-small">
+			<{foreach $activity_config['fall_model'] as $key=>$item}>
+				<option value="<{$key}>" <{if isset($param['model'])&&$param['model']==$key}>selected="selected"<{/if}>><{$item}></option>
+			<{/foreach}>
+			</select>
+		</div>
+		<div style="margin-top:5px;">
+			<button type="button" class="btn btn-small btn-danger btn_select_monster"><i class="icon-book icon-white"></i><{t}>选择怪物<{/t}></button>
+			<input type="hidden" name="occ" value="<{$param['occ']|implode:','|default:''}>">
+		</div>
+	</div>
+
+	<{if isset($param['pack'])}>
+		<{$packs=$param['pack']}>
+	<{else}>
+		<{$packs=array(1)}>
+	<{/if}>
+	<{foreach $packs as $pack}>
+	<div class="controls form-search" style="margin-bottom:5px;">
+		<table>
+			<tr>
+				<td valign="top">
+					<select class="input-small" name="fall_type">
+					<{foreach $activity_config['fall_type'] as $key=>$item}>
+						<option value="<{$key}>" <{if isset($pack['type'])&&$pack['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+					<{/foreach}>
+					</select>
+				</td>
+				<td class="items items_1 <{if isset($pack['type'])&&$pack['type']!=1}>hide<{/if}>">
+					<{t}>掉率<{/t}>：<input type="text" class="input-mini-mini" name="per" maxlength="6" value="<{if isset($pack['type'])&&$pack['type']==1}><{$pack['per']|default:''}><{/if}>">
+					<{t}>道具<{/t}>：
+					<div class="input-append">
+						<input type="text" class="input-large" name="item"  value="<{if isset($pack['type'])&&$pack['type']==1}><{$pack['item']['itemId']}>|<{t}><{$pack['item']['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+						<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+					</div>
+					<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" maxlength="6" value="<{if isset($pack['type'])&&$pack['type']==1}><{$pack['item']['number']|default:''}><{/if}>">
+					<label><input type="checkbox" name="bind" <{if isset($pack['type'])&&$pack['type']==1&&$pack['item']['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+				</td>
+				<td class="items items_2 <{if !isset($pack['type'])||(isset($pack['type'])&&$pack['type']!=2)}>hide<{/if}>">
+					<{t}>掉率<{/t}>：<input type="text" class="input-mini-mini" name="per" maxlength="6" value="<{if isset($pack['type'])&&$pack['type']==2}><{$pack['per']|default:''}><{/if}>">
+					<select class="input-small" name="money_type">
+					<{foreach $activity_config['money_type'] as $key=>$item}>
+					<{if $key>0&&$key<=2}>
+						<option value="<{$key}>" <{if isset($pack['type'])&&$pack['type']==2&&$pack['item']['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+					<{/if}>
+					<{/foreach}>
+					</select>
+					<{t}>数量<{/t}>：<input type="text" class="input-small" name="num" maxlength="8" value="<{$pack['item']['money']|default:''}>">
+				</td>
+				<td valign="top" class="items items_3 <{if !isset($pack['type'])||(isset($pack['type'])&&$pack['type']!=3)}>hide<{/if}>">
+					<{t}>掉率<{/t}>：<input type="text" class="input-mini-mini" name="per" maxlength="6" value="<{if isset($pack['type'])&&$pack['type']==3}><{$pack['per']|default:''}><{/if}>">
+					<{t}>掉落个数<{/t}>：<input type="text" class="input-mini-mini" name="count" maxlength="6" value="<{if isset($pack['type'])&&$pack['type']==3}><{$pack['count']|default:''}><{/if}>">
+				</td>
+				<td class="items items_3 <{if !isset($pack['type'])||(isset($pack['type'])&&$pack['type']!=3)}>hide<{/if}>">
+				<ul class="unstyled" style="margin:0;">
+				<{if isset($pack['type'])&&$pack['type']==3&&isset($pack['item'])}>
+					<{$items=$pack['item']}>
+				<{else}>
+					<{$items=array(1)}>
+				<{/if}>
+				<{foreach $items as $item}>
+					<li class="sub_item" style="margin-bottom:5px;">
+						<{t}>道具<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($item['item'])}><{$item['item']['itemId']}>|<{t}><{$item['item']['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="sub_num" maxlength="6" value="<{$item['item']['number']|default:''}>">
+						<{t}>权重<{/t}>：<input type="text" class="input-mini-mini" name="sub_per" maxlength="6" value="<{$item['per']|default:''}>">
+						<label><input type="checkbox" name="bind" <{if isset($item['item'])&&$item['item']['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+						<input type="hidden" name="occ_list">
+						<button type="button" class="btn btn-mini btn_add_item"><i class="icon-plus"></i></button>
+						<button type="button" class="btn btn-mini btn_del_item"><i class="icon-minus"></i></button>
+					</li>
+				<{/foreach}>
+				</ul>
+				</td>
+				<td valign="top">
+					<button type="button" class="btn btn-small btn-primary btn_add_items"><i class="icon-plus icon-white"></i></button>
+					<button type="button" class="btn btn-small btn-primary btn_del_items"><i class="icon-minus icon-white"></i></button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<{/foreach}>
+</div>
+<{/foreach}>
+
+<!--怪物列表-->
+<div class="hide">
+	<div id="monster_box" class="accordion-group">
+		<div class="form-inline" style="padding:5px;">
+			<span><input type="checkbox" id="all_monster"> <{t}>全选<{/t}></span>
+			<span class="accordion-toggle" data-toggle="collapse" href="#collapse"><a href="javascript:;"><{t}>展开怪物列表<{/t}></a></span>
+		</div>
+		<div id="collapse" class="accordion-body collapse in">
+			<ul class="unstyled inline">
+			<{foreach $copy_list as $key=>$items}>
+				<li class="span2"><label><input type="checkbox" class="copy" value="<{$key}>"> <{$items['name']}></label></li>
+			<{/foreach}>
+			</ul>
+			<table class="table form-inline table-condensed" style="margin-bottom:0;">
+				<{foreach $copy_list as $key=>$items}>
+				<tr class="copy_row copy_<{$key}> hide">
+					<td colspan="2" style="text-align:left;"><label class="label label-important"><input type="checkbox" class="copy" value="<{$key}>"> <b><{$items['name']}></b></label></td>
+				</tr>
+				<{foreach $items['layer_list'] as $k=>$item}>
+				<tr class="copy_row copy_<{$key}> hide">
+					<td style="text-align:left; width:65px;"><label><input type="checkbox" class="layer" copy="<{$key}>" value="<{$k}>"> <b><{$k}></b></label></td>
+					<td style="text-align:left;">
+					<{foreach $item as $row}>
+						<label class="span2" <{if $row['is_boss']}>style="color:red; font-weight:bold"<{/if}>><input class="occ" copy="<{$key}>"  name="<{$k}>" type="checkbox" value="<{$row['occ']}>"> <{$row['name']}></label>
+					<{/foreach}>
+					</td>
+				</tr>
+				<{/foreach}>
+				<{/foreach}>
+				<tr>
+					<td colspan="2"><button type="button" class="btn btn-inverse" id="btn_select_ok"><i class="icon-ok icon-white"></i><{t}>确定<{/t}></button></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+
+<{else if $tpl=='show'}>
+<!--怪物掉落-->
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<{foreach $row['param'] as $params}>
+	<dt style="width:80px;"><{t}>掉落模式<{/t}></dt>
+	<dd style="margin-left:100px"><{$activity_config['fall_model'][$params['model']]|default:$occ}></dd>
+	<dt style="width:80px;"><{t}>怪物对象<{/t}></dt>
+	<dd style="margin-left:100px">
+		<ul class="unstyled inline">
+		<{foreach $params['occ'] as $occ}>
+			<li><{$monster_occ_list[trim($occ)]|default:$occ}></li>
+		<{/foreach}>
+		</ul>
+	</dd>
+	<dt style="width:80px;"><{t}>掉落配置<{/t}></dt>
+	<dd style="margin-left:100px">
+		<ul class="unstyled">
+		<{foreach $params['pack'] as $pack}>
+			<li>
+				<{$activity_config['fall_type'][$pack['type']]|default:$pack['type']}>：
+				<{t}>掉率<{/t}><span class="label label-important"><b><{$pack['per']}></b></span>
+			<{if $pack['type']==1}>
+				<{t}>道具<{/t}><span class="label label-important"><b><{t}><{$pack['item']['itemId']}><{/t}></b></span>
+				<{t}>数量<{/t}><span class="label label-important"><b><{$pack['item']['number']}></b></span>
+				<{if $pack['item']['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>
+			</li>
+			<{else if $pack['type']==2}>
+				<{$activity_config['money_type'][$pack['item']['type']]|default:$pack['item']['type']}>
+				<span class="label label-important"><b><{$pack['item']['money']}></b></span>
+			<{else if $pack['type']==3}>
+				<{t}>掉落个数<{/t}><span class="label label-important"><b><{$pack['count']}></b></span>
+				<{t}>掉落包<{/t}>：
+				<ol>
+				<{foreach $pack['item'] as $item}>
+					<li style="margin-top:3px;">
+						<{t}>道具<{/t}>:<{t}><{$item['item']['itemId']}><{/t}>
+						<{t}>数量<{/t}>:<{$item['item']['number']}>
+						<{t}>权重<{/t}>:<{$item['per']}>
+						<{if $item['item']['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>
+					</li>
+				<{/foreach}>
+				</ol>
+			</li>
+			<{/if}>
+			<li style="height:2px; line-height:2px; margin:5px 0;"><hr/></li>
+		<{/foreach}>
+		</ul>
+	</dd>
+	<hr/>
+	<{/foreach}>
+</dl>
+
+<{/if}>

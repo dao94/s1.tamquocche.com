@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>在线数据<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<{if $action=='online' && $date==$today}>
+<meta http-equiv="refresh" content="300">
+<{/if}>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div id="nav">
+<ul class="nav nav-tabs">
+<{foreach $action_conf as $key=>$item}>
+	<li <{if $action==$key}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+<{/foreach}>
+</ul>
+</div>
+
+<{if $action=='online'}> 
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+$(function($){
+	Highcharts.setOptions({
+		global:{useUTC:false}
+	});
+	$.getJSON('?action=chart&date=<{$date}>',function(msg){
+		var data=msg.data,series=[],i=0,type_conf={
+			<{$num=1}>
+			<{foreach $type_conf as $key=>$item}>
+				<{$key}>:"<{$item['name']}>"<{if count($type_conf)!=$num}>,<{/if}>
+				<{$num=$num+1}>
+			<{/foreach}>
+			};
+		$.each(data.online,function(type,online){
+			series[i]={
+				type:'areaspline',
+				id:'dataseries_'+type,
+				name:type_conf[type],
+				lineWidth:3,
+				data:online
+			};
+			i++;
+		});
+		$.each(data.flags,function(type,flags){
+			if(type=='count'){
+				series[i]={
+					type:'flags',
+					onSeries:'dataseries_'+type,
+					shape:'squarepin',
+					name:type_conf[type],
+					lineWidth:2,
+					data:flags
+				};
+			}
+			i++;
+		});
+		chart=new Highcharts.StockChart({
+			chart:{
+				renderTo:'container'
+			},
+			rangeSelector:false,
+			yAxis:{min:0},
+			title:{
+				y:10,
+				text:data.title,
+				style:{color:'#333333',fontSize:'14px',fontWeight:'bold'}
+			},
+			subtitle:{
+				y:30,
+				text:data.subtitle,
+				style:{color:'#77536F',fontSize:'12px'}
+			},
+			tooltip:{
+				xDateFormat:'%Y-%m-%d %H:%M',
+				shared:true,
+				valueDecimals:'0'
+			},
+			exporting:{enabled:false},
+			series:series
+		});
+	});
+});
+</script>
+<form action="?action=<{$action}>" class="well well-small form-search">
+	<{t}>选择日期<{/t}>：
+	<input name="date" class="input-medium" id="appendedInputButton" type="text" placeholder="<{t}>选择日期<{/t}>" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$open_time}>',dateFmt:'yyyy-MM-dd'})" value="<{$date}>">
+	<button class="btn btn-primary" type="submit"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+</form>
+<script type="text/javascript" src="../../public/js/highstock.js"></script>
+<script type="text/javascript" src="../../public/js/exporting.js"></script>
+<div id="container" class="well well-small" style="height:400px;" align="center">
+	<div style="margin-top:120px;"><img src="../../public/images/logo.png"></div>
+	<h3><{t}>数据正在加载中<{/t}>...</h3>
+</div>
+
+<{else if $action=='history'}>
+<script type="text/javascript">
+$(function($){
+	Highcharts.setOptions({
+		global : {
+			useUTC : false
+		},
+		xAxis : {
+			type:'datetime',
+			//x轴时间的格式化
+			dateTimeLabelFormats: {
+				second: '%Y-%m-%d<br/>%H:%M:%S',
+				minute: '%Y-%m-%d<br/>%H:%M',
+				hour: '%Y-%m-%d<br/>%H:%M',
+				day: '%Y<br/>%m-%d',
+				week: '%Y<br/>%m-%d',
+				month: '%Y-%m',
+				year: '%Y'
+			}
+		}
+	});
+
+	createChart('<{$start_date}>','<{$end_date}>');
+	
+	function createChart(start_date,end_date){
+		$.getJSON('?action=history_chart&start_date='+start_date+'&end_date='+end_date,function(msg){
+			if(msg.status!=1){
+				alert('<{t}>数据加载有误！<{/t}>');
+				return false;
+			}else{
+				$.each(msg.data,function(id,data){
+					$('#container').append('<div class="well well-small"><div id="container'+id+'" style="height:300px;min-width: 600px"></div></div>');
+					historyChart(id,data);
+				});	
+			}
+		});
+	}
+
+	function historyChart(id,data) {
+		var series= [];
+		var i=0;
+		$.each(data.data,function(type,obj){
+			series[i] = {
+				name: data.name[type],
+				lineWidth : 3,
+				data: obj
+			};
+			i++;
+		});
+		chart = new Highcharts.StockChart({
+			chart: {
+				renderTo: 'container'+id
+			},
+			rangeSelector:false,
+			title : {
+				text : data.base.title
+			},			
+			yAxis : {
+				min : 1
+			},
+			xAxis : {
+				type:'datetime',
+				//x轴时间的格式化
+				dateTimeLabelFormats: {
+					second: '-',
+					minute: '-',
+					hour: '-',
+					day: '%m-%d',
+					week: '%m-%d',
+					month: '%Y-%m',
+					year: '%Y'
+				}
+			},
+			tooltip: {
+				xDateFormat: '%Y-%m-%d',
+				shared: true
+			},
+			exporting: {
+				enabled: false
+			},
+			series: series
+		});
+	}
+});
+</script>
+<script type="text/javascript" src="../../public/js/highstock.js"></script>
+<script type="text/javascript" src="../../public/js/exporting.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<form action="?" class="well form-search" style="margin-bottom:10px;">
+	<label><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$open_time}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$start_date}>"> <i class="icon-minus"></i> 
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$open_time}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$end_date}>">
+<button id="btn_search" type="submit" class="btn btn-primary" style="margin-left: 5px;"><i class="icon-search icon-white"></i><{t}>查 询<{/t}></button>
+	<input type="hidden" name="action" value="<{$action}>">
+</form>
+<div id="container"></div>
+<div>
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+	<th><{t}>日期<{/t}></th>
+	<th><{t}>最高在线<{/t}></th>
+	<th><{t}>最低在线<{/t}></th>
+	<th><{t}>平均在线<{/t}></th>
+	<th><{t}>最高在线IP<{/t}></th>
+	<th><{t}>最低在线IP<{/t}></th>
+	<th><{t}>平均在线IP<{/t}></th>
+</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+<tr>
+	<td><{$row['date']}></td>
+	<td><{$row['max_count']}></td>
+	<td><{$row['min_count']}></td>
+	<td><{$row['avg_count']}></td>
+	<td><{$row['max_ip']}></td>
+	<td><{$row['min_ip']}></td>
+	<td><{$row['avg_ip']}></td>
+</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+
+
+<{else if $action=='online_user'}>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css" />
+<script type="text/javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$('.type').click(function(){
+		$('#type_text').html($(this).html());
+		$('#type').val($(this).attr('type'));
+	});	
+	
+	//导出数据
+	$('#list_ip').click(function(){
+		$.getJSON('?action=list_ip',function(msg){
+				if(msg.status==1){
+					$('#list_ip_body').empty();
+					$.each(msg.data,function(i,obj){
+						if(i%4==0){
+							$('#list_ip_body').append('<tr></tr>');
+						}
+						$('#list_ip_body').append('<td>'+obj.ip+'</td>');
+						$('#list_ip_body').append('<td>'+obj.count+'</td>');
+						i++;
+					});
+				}
+		});
+		$(this).colorbox({inline:true,fixed:true,width:'750px', height:'440px',opacity:0.1});
+	});
+});
+</script>
+<form action="?" method="get">
+<div class="input-prepend input-append">
+	<div class="btn-group">
+		<button class="btn dropdown-toggle" data-toggle="dropdown">
+			<span id="type_text"><{if $type}><{$search_type[$type]}><{else}><{t}>搜索类型<{/t}><{/if}></span>
+			<span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu">
+		<{foreach $search_type as $key=>$item}>
+			<li><a href="javascript:void(0)" class="type" type="<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+		</ul>
+	</div>
+	<input class="span2" name="text" type="text" value="<{$text}>">
+	<div class="btn-group">
+		<button type="submit" class="btn btn-primary"><{t}>搜索<{/t}></button>
+	</div>
+	<span class="add-on">
+		<span style="margin-left:10px;"><{t}>总注册数<{/t}>：<b><{$info['reg_count']}></b></span>
+		<span style="margin-left:10px;"><{t}>总登录数<{/t}>：<b><{$info['login_count']}></b></span>
+		<span style="margin-left:10px;"><{t}>当前在线数<{/t}>：<b><{$info['online']}></b></span>
+		<span style="margin-left:10px;"><{t}>当前在线IP<{/t}>：<b><{$info['ip']}></b></span> 
+		<span style="margin-left:10px;"><a href="#list_ip_box" id="list_ip"><{t}>显示详情<{/t}></a></span>
+	</span>
+	<button class="btn" type="submit" name="do" value="export"><{t}>导出数据<{/t}></button>
+</div>
+<input type="hidden" id="action" name="action" value="<{$action}>"/>
+<input type="hidden" id="type" name="type" value="<{$type}>"/>
+</form>
+
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th>ID</th>
+		<th><{t}>帐号<{/t}></th>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>创建时间<{/t}></th>
+		<th><{t}>登录时间<{/t}></th>
+		<th><{t}>在线时长<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+		<th><{t}>所在地图<{/t}></th>
+		<th>IP</th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_id']}></td>
+		<td><{$row['account']}></td>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>"><{$row['char_name']}></a></td>
+		<td><{$row['create_time']}></td>
+		<td><{$row['login_time']}></td>
+		<td><{$row['hour']}><{t}>小时<{/t}><{$row['minute']}><{t}>分<{/t}></td>
+		<td><{$row['level']}></td>
+		<td><{if empty($row['map_name'])}>--<{else}><{$row['map_name']}>(<{$row['map_x']}>,<{$row['map_y']}>)<{/if}></td>
+		<td><{$row['ip']}>(<{$row['country']}>)</td>
+	</tr>
+<{/foreach}>
+<{else}>
+	<tr>
+		<td colspan="9"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+	</tr>
+<{/if}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+
+<!--当前在线ip列表-->
+<div style="display: none">
+<table class="table table-bordered table-hover" id="list_ip_box"
+	style="width: 700px;">
+	<thead id="list_ip_head">
+		<tr>
+			<th>IP</th>
+			<th><{t}>数量<{/t}></th>
+			<th>IP</th>
+			<th><{t}>数量<{/t}></th>
+			<th>IP</th>
+			<th><{t}>数量<{/t}></th>
+			<th>IP</th>
+			<th><{t}>数量<{/t}></th>
+		</tr>
+	</thead>
+	<tbody id="list_ip_body"></tbody>
+</table>
+</div>
+
+<{else if $action=='map'}>
+<div><{t}>当前在线<{/t}>：<b><{$total_count}></b></div>
+<table class="table table-bordered table-hover" style="margin-top: 10px">
+<thead>
+	<tr>
+		<th><{t}>地图<{/t}>ID</th>
+		<th><{t}>地图名称<{/t}></th>
+		<th><{t}>人数<{/t}></th>
+		<th><{t}>比例<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $map_id=>$row}>
+	<tr>
+		<td><{$map_id}></td>
+		<td><{$row['name']}></td>
+		<td><{$row['count']}></td>
+		<td style="text-align: left"><img src="../../public/images/baifenbi.gif" style="height: 10px;" width:<{<{$row['ratio']*2}>}>px;"/><{$row['ratio']}>%</td>
+	</tr>
+<{/foreach}>
+<{else}>
+	<tr>
+		<td colspan="4"><font color="red"><{t}>没有在线用户！<{/t}></font></td>
+	</tr>
+<{/if}>
+</tbody>
+</table>
+<{/if}>
+</body>
+</html>

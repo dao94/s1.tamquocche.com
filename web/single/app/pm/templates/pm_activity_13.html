@@ -1,0 +1,306 @@
+<!--装备强化-->
+<{if $tpl=='set'}>
+<script language="javascript" src="../../public/js/kindeditor/kindeditor.js"></script>
+<script language="javascript">
+var info_editor;
+KindEditor.ready(function(K) {
+	info_editor = K.create('#info',{
+		themeType:'diy',
+		items : ['source', '|', 'undo', 'redo', '|', 'fontsize', 'forecolor','bold','underline'],
+		fontSizeTable : ['9', '10', '12','14','16','18','24','32'],
+		filterMode : true,
+		newlineTag:'br',
+		htmlTags : {
+			font : ['id', 'class', 'color', 'size', 'face', '.background-color'],
+			div : [
+				'id', 'class', 'align', '.border', '.margin', '.padding', '.text-align', '.color',
+				'.background-color', '.font-size', '.font-family', '.font-weight', '.background',
+				'.font-style', '.text-decoration', '.vertical-align', '.margin-left'
+			],
+			a : ['id', 'class', 'href', 'target', 'name'],
+			img : ['id', 'class', 'src', 'width', 'height', 'border', 'alt', 'title', 'align', '.width', '.height', '.border'],
+			'p,ol,ul,li,blockquote,h1,h2,h3,h4,h5,h6' : [
+				'id', 'class', 'align', '.text-align', '.color', '.background-color', '.font-size', '.font-family', '.background',
+				'.font-weight', '.font-style', '.text-decoration', '.vertical-align', '.text-indent', '.margin-left'
+			],
+			pre : ['id', 'class'],
+			hr : ['id', 'class', '.page-break-after'],
+			'br,tbody,tr,b,sub,sup,em,i,u,strike,s,del' : ['id', 'class'],
+		},
+		afterBlur:function(){
+			this.sync();
+		},
+	});
+});
+
+$(function($){
+	$('select[name="reward_type"]').live('change',function(){
+		$(this).find('option[value="'+this.value+'"]').attr('selected',true);
+		$(this).find('option[value!="'+this.value+'"]').attr('selected',false);
+		$(this).parents('table').find('.items').hide();
+		var reward_item=this.value>0 ? 1 : 0;
+		$(this).parents('table').find('.items_'+reward_item).fadeIn();
+	});
+});
+
+
+function getParam(){
+	var reward_list=[],index_list=[],check_result=true;
+
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		$(control_group).each(function(b,control){
+			var item_list=[],money_list=[],
+			type=parseInt($(control).find('[name="type"]').val()),
+			number=parseInt($(control).find('[name="number"]').val()),
+			strongLv=parseInt($(control).find('[name="strongLv"]').val()),
+			index=parseInt($(control).find('[name="index"]').val());
+			if(isNaN(number)||number<1){
+				$(control).find('[name="aim_num"]').focus();
+				alert('<{t}>装备数量为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if(isNaN(strongLv)||strongLv<1){
+				$(control).find('[name="aim_num"]').focus();
+				alert('<{t}>神化等级为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if(isNaN(index)||index<1){
+				$(control).find('[name="index"]').focus();
+				alert('<{t}>序号为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if(jQuery.inArray(index,index_list)>=0){
+				$(control).find('[name="index"]').focus();
+				alert('<{t}>序号不能相同<{/t}>');
+				check_result=false;
+				return false;
+			}
+
+
+			index_list.push(index);
+
+			$($(control).find('.controls')).each(function(c,controls){
+				var reward_type=parseInt($(controls).find('[name="reward_type"]').val());
+				switch(reward_type){
+					case 0:
+						//道具奖励
+						$($(controls).find('.sub_item')).each(function(d,sub_item){
+							var item_val=$.trim($(sub_item).find('[name="item"]').val()).split('|');
+							var num=parseInt($.trim($(sub_item).find('[name="num"]').val()));
+							var bind=$(sub_item).find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+							var item_id=$.trim(item_val[0]);
+							if(item_id==''){
+								$(sub_item).find('[name="item"]').focus();
+								alert('<{t}>道具为必填项<{/t}>');
+								check_result=false;
+								return false;
+							}else if(isNaN(num)||num<1){
+								$(sub_item).find('[name="num"]').focus();
+								alert('<{t}>数量为必填,且是大于0的整字<{/t}>');
+								check_result=false;
+								return false;
+							}
+							item_list.push({itemId:item_id,number:num,bind:bind});
+						});
+						break;
+
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+						//金钱奖励
+						var num=parseInt($.trim($(controls).find('.items_1').find('[name="num"]').val()));
+						if(isNaN(num)||num<1){
+							$(controls).find('.items_1').find('[name="num"]').focus();
+							alert('<{t}>数量为必填,且是大于1的数字<{/t}>');
+							check_result=false;
+							return false;
+						}
+						money_list.push({money:num,type:reward_type});
+						break;
+
+					default:
+						alert('<{t}>选择错误<{/t}>');
+						check_result=false;
+						return false;
+						break;
+				}
+			});
+				reward_list.push({number:number,strongLv:strongLv,fireLv:type,index:index,id:index,itemList:item_list,moneyList:money_list});
+
+
+		});
+	});
+	return check_result ? reward_list : check_result;
+}
+
+//获取xml配置
+function getXml(){
+	var show_start_date=$.trim($('#show_start_date').val()),
+			show_end_date=$.trim($('#show_end_date').val()),
+			name=$.trim($('#name').val()),
+			info=$.trim(info_editor.html());
+	if(!show_start_date || !show_end_date || show_start_date>=show_end_date){
+		$('#show_start_date').focus();
+		alert('<{t}>请正确选择图标显示时间<{/t}>');
+		return false;
+	}else if(name==''){
+		$('#name').focus();
+		alert('<{t}>活动名称不能为空<{/t}>');
+		return false;
+	}
+	var xml_config={show_start_date:show_start_date,show_end_date:show_end_date,name:name,info:info};
+	return xml_config;
+}
+</script>
+<input type="hidden" name="is_xml"  value="1"/>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="show_start_date"><{t}>图标显示时间<{/t}></label>
+	<div class="controls">
+		<input type="text" id="show_start_date" name="show_start_date" class="input-medium" value="<{$data['xml_config']['show_time']|default:''}>" placeholder="<{t}>图标显示时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+		<i class="icon-minus"></i>
+		<input type="text" id="show_end_date" name="show_end_date" class="input-medium" value="<{$data['xml_config']['hide_time']|default:''}>" placeholder="<{t}>图标隐藏时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+	</div>
+</div>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="name"><{t}>活动名称<{/t}></label>
+	<div class="controls">
+		<input type="text" id="name" name="name" class="input-xlarge" value="<{$data['xml_config']['name']|default:''}>" maxlength="50" placeholder="<{t}>长度在50个字符之内<{/t}>">
+	</div>
+</div>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="info"><{t}>活动描述<{/t}></label>
+	<div class="controls">
+		<textarea id="info" style="height:180px"><{$data['xml_config']['info']|default:''}></textarea>
+	</div>
+</div>
+
+<{* "设置"功能默认一个元素，"更新"根据数据展现 *}>
+<{if isset($data['param'])}>
+	<{$reward_list=$data['param']}>
+<{else}>
+	<{$reward_list=array(1)}>
+<{/if}>
+<{foreach $reward_list as $rewards}>
+<div class="control-group">
+	<div class="control-label">
+		<div>
+			<button type="button" class="btn btn-mini btn-inverse btn_add_config"><i class="icon-plus icon-white"></i></button>
+			<button type="button" class="btn btn-mini btn-inverse btn_del_config"><i class="icon-minus icon-white"></i></button>
+			<{t}>奖励列表<{/t}>
+		</div>
+	</div>
+
+	<div style="margin-left: 180px;" class="form-search">
+		<{t}>序号<{/t}>：<input name="index" value="<{$rewards['index']|default:''}>" class="input-mini" maxlength="6" placeholder="正整数" type="text">
+		<{t}>装备数量<{/t}>：<input name="number" value="<{$rewards['number']|default:''}>" class="input-mini" maxlength="6" placeholder="正整数" type="text">
+		<{t}>类型<{/t}>：
+		<select name="type" class="input-small">
+		<{foreach $activity_config['equip_fire_type'] as $key=>$item}>
+			<option value="<{$key}>" <{if isset($rewards['fireLv'])&&$key==$rewards['fireLv']}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+		</select>
+		<{t}>神化等级<{/t}>：<input type="text" name="strongLv" value="<{$rewards['strongLv']|default:''}>" class="input-mini" maxlength="6" placeholder="<{t}>正整数<{/t}>"/>
+
+
+	</div>
+	<{$item_list=array()}>
+	<{$money_list=array()}>
+	<{if isset($rewards['itemList'])}>
+		<{$item_list=$rewards['itemList']}>
+	<{/if}>
+	<{if isset($rewards['moneyList'])}>
+		<{$money_list=$rewards['moneyList']}>
+	<{/if}>
+	<{$item_list=array_merge($item_list,$money_list)}>
+	<{if !$item_list}>
+		<{$item_list=array(1)}>
+	<{/if}>
+
+	<{foreach $item_list as $items}>
+	<div class="controls form-search" style="margin-bottom:5px; margin-top:5px;">
+		<table>
+			<tr>
+				<td valign="top">
+					<select name="reward_type" class="input-small" >
+					<{foreach $activity_config['money_type'] as $key=>$item}>
+						<option value="<{$key}>" <{if isset($items['type'])&&$items['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+					<{/foreach}>
+					</select>
+				</td>
+				<td class="items items_0 <{if empty($items['itemId'])&&$items!=1}>hide<{/if}>">
+				<ul class="unstyled" style="margin:0;">
+					<li class="sub_item">
+						<{t}>道具<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($items['itemId'])}><{$items['itemId']}>|<{t}><{$items['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$items['number']|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+						<label><input type="checkbox" name="bind" <{if isset($items['bind'])&&$items['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+					</li>
+				</ul>
+				</td>
+				<td class="items items_1 <{if empty($items['money'])}>hide<{/if}>">
+					</select>
+					<{t}>数量<{/t}>：<input type="text" class="input-small" name="num" maxlength="8" value="<{$items['money']|default:''}>" placeholder="<{t}>正整数<{/t}>">
+				</td>
+				<td valign="top">
+					<button type="button" class="btn btn-small btn-primary btn_add_items"><i class="icon-plus icon-white"></i></button>
+					<button type="button" class="btn btn-small btn-primary btn_del_items"><i class="icon-minus icon-white"></i></button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<{/foreach}>
+
+
+</div>
+<{/foreach}>
+
+
+<{else if $tpl=='show'}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"><{t}>显示时间<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['show_time']}> <i class="icon-minus"></i> <{$row['xml_config']['hide_time']}></dd>
+	<dt style="width:80px;"><{t}>活动名称<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['name']}></dd>
+	<dt style="width:80px;"><{t}>活动描述<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['info']}></dd>
+
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+	<{foreach $row['param'] as $reward_list}>
+		<div>
+			<{t}>序号<{/t}>：<{$reward_list['index']}>
+			<{t}>装备数量<{/t}>：<{$reward_list['number']}>
+			<{t}>类型<{/t}>：<{$activity_config['equip_fire_type'][$reward_list['fireLv']]}>
+			<{t}>神化等级<{/t}>：<{$reward_list['strongLv']}>
+
+		</div>
+		<ul class="unstyled">
+		<{if !empty($reward_list['itemList'])}>
+			<{foreach $reward_list['itemList'] as $item}>
+				<li>
+					<{t}>道具<{/t}>：<{t}><{$item['itemId']}><{/t}>(<{if $item['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+					<{t}>数量<{/t}>：<{$item['number']}>
+				</li>
+			<{/foreach}>
+		<{/if}>
+		<{if !empty($reward_list['moneyList'])}>
+			<{foreach $reward_list['moneyList'] as $item}>
+				<li>
+					<{t}><{$activity_config['money_type'][$item['type']]}><{/t}>：<{t}><{$item['money']}><{/t}>
+				</li>
+			<{/foreach}>
+		<{/if}>
+		</ul>
+		<hr style="margin:2px 0 5px 0"/>
+	<{/foreach}>
+	</dd>
+</dl>
+
+<{/if}>

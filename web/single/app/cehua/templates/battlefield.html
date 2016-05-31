@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>战场分析<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well form-search" style="margin:10px 0;">
+	<label><{t}>日期<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"  style="margin-left:5px;"><{t}>搜 索<{/t}></button>
+</form>
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button type="button" onClick="javascript:window.location='?start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>参与人数<{/t}></th>
+		<th><{t}>平均在线<{/t}></th>
+		<th><{t}>在线参与率<{/t}></th>
+		<th><{t}>实际进入比<{/t}></th>
+		<th><{t}>开启数<{/t}></th>
+		<th><{t}>人均杀人<{/t}></th>
+		<th><{t}>人均助攻<{/t}></th>
+		<th><{t}>人均占领<{/t}></th>
+		<th><{t}>人均自爆<{/t}></th>
+		<th><{t}>铁血胜利<{/t}></th>
+		<th><{t}>铁血胜率<{/t}></th>
+		<th><{t}>黄巾胜利<{/t}></th>
+		<th><{t}>黄巾胜率<{/t}></th>
+		<th><{t}>完整场数比<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td><{$row['join_in']}></td>
+		<td><{$row['avg_online']}></td>
+		<td><{$row['online_ratio']}>%</td>
+		<td>0</td>
+		<td><{$row['count']}></td>
+		<td><{$row['avg_kill']}></td>
+		<td><{$row['avg_assist']}></td>
+		<td><{$row['avg_occupy']}></td>
+		<td><{$row['avg_self_destruction']}></td>
+		<td><{$row['win1']}></td>
+		<td><{$row['win1_ratio']}>%</td>
+		<td><{$row['win2']}></td>
+		<td><{$row['win2_ratio']}>%</td>
+		<td><{$row['completion_ratio']}>%</td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

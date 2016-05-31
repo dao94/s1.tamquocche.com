@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Expires" CONTENT="0">
+<meta http-equiv="Cache-Control" CONTENT="no-cache">
+<meta http-equiv="Pragma" CONTENT="no-cache">
+<meta charset="utf-8">
+<title><{t}>乱舞江山<{/t}> <{$smarty.const.SERVER_AGENT}>_<{$smarty.const.SERVER_ID}></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="Bookmark" href="../../../../favicon.ico">
+<link rel="Shortcut Icon" href="../../../favicon.ico" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/jquery.md5.js"></script>
+<script language="javascript">
+//自动加载登录
+$(function($){
+	$('#login_user').focus().val("<{$account|default:''}>");
+	update_server_list();
+	//是否为刚退出
+	var hold	=	document.cookie.indexOf('hold=1');
+	if(hold==-1){
+		$.ajax({
+			url:'check_login.php',
+			type:'POST',
+			dataType:'json',
+			data:{action:'code'},
+			beforeSend:function(){
+				$('input').attr('disabled',true);
+				$('#loginform_stat').html('<{t}>登录中，请稍后…………<{/t}>');
+			},
+			success:function(res){
+				if(res.status=='ok'){
+					window.top.location.href	=	'../../index.php';
+				}
+			},
+			complete:function(){
+				$('input').attr('disabled',false);
+					if($.browser.msie && $.browser.version<10){
+					$('#loginform_stat').html('<{t}>为了更好使用系统，建议使用非IE浏览器（推荐：firefox、chrome）<{/t}>');
+				}else{
+					$('#loginform_stat').empty();
+				}
+			}
+		});
+	}
+
+	var mail_config=['tamquoc.com'];
+	$('#login_user').typeahead({
+		source: function(value, process) {
+			var arr=value.split('@');
+			var data=new Array();
+			for(i in mail_config){
+				data.push(arr[0]+'@'+mail_config[i]);
+			}
+			process(data);
+		}
+	});
+
+	$('#user_pwd').focus(function(){
+		$.post('get_code.php',function(res){
+			if(res.status=='ok'){
+				$('#verify_code').val(res.data);
+			}
+		},'json');
+	});
+
+	$('#login_form').submit(function(){
+		var user=$.trim($('#login_user').val()),
+		pwd=$.trim($('#user_pwd').val()),
+		verify_code = $.trim($('#verify_code').val()),
+		lang = $('[name="lang"]').val();
+		is_save	= $('#is_save:checked').val();
+		if(user==''){
+			$('#loginform_stat').html('<{t}>请输入用户名！<{/t}>');
+			$('#login_user').focus();
+			return false;
+		}else if(pwd==''){
+			$('#loginform_stat').html('<{t}>请输入登录密码！<{/t}>');
+			$('#user_pwd').focus();
+			return false;
+		}
+		return check_login(user,pwd,verify_code,lang,is_save);
+	});
+});
+
+function update_server_list(){
+	$.get('update.php');
+	setTimeout('update_server_list()',300000);
+}
+function check_login(user,pwd,verify_code,lang,is_save){
+	pwd = $.md5($.md5(pwd)+verify_code);
+	$.ajax({
+		type:'POST',
+		url:'check_login.php',
+		dataType:'json',
+		data:{user:user,pwd:pwd,verify_code:verify_code,is_save:is_save,lang:lang},
+		beforeSend:function(){
+			$('#loginform_stat').html('<{t}>登录中，请稍后…………<{/t}>');
+		},
+		success:function(result){
+			if(result.status=='error'){
+				$('#loginform_stat').html(result.info);
+				$('#reset').click();
+				return false;
+			}else if(result.status=='ok'){
+				$('#loginform_stat').html('<{t}>登录成功，页面跳转中，请稍后……<{/t}>');
+				window.top.location.href	=	'../../index.php';
+			}else{
+				return ajax_error;
+			}
+		}
+	})
+	return false;
+}
+
+function ajax_error(){
+	$('#loginform_stat').html('<{t}>请求失败！<{/t}>');
+	$('#login_user').focus();
+	return false;
+}
+</script>
+<style type="text/css">
+body {background:#CADFF0 url(../../public/images/login_bg.jpg) no-repeat top center;}
+.form-signin {max-width: 300px;padding: 50px 50px 20px 50px;margin: 0 auto 20px;background-color: #fff;border: 1px solid #e5e5e5;-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .05);-moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .05);box-shadow: 0 1px 2px rgba(0, 0, 0, .05);}
+.form-signin .form-signin-heading,.form-signin .checkbox {margin-bottom: 10px;}
+.form-signin input[type="text"],.form-signin input[type="password"] {font-size: 16px;height: auto;margin-bottom: 15px;padding: 7px 9px;font-weight:bold;}
+#loginform_stat{color:#ff0000;font-family:Arial,Helvetica,sans-serif;font-size:14px;margin-top:5px; font-weight:bold;}
+#login_logo{position:absolute;width:400px;height:100px;left:50%;top:50%;margin-left:-200px;margin-top:-210px; z-index:1;}
+.logo{width:200px; height:100px; float:left;}
+.server_title{margin:10px 0;text-align:right;color:#77778A;}
+.container{position:absolute;width:500px;height:300px;left:50%;top:50%;margin-left:-250px;margin-top:-160px;}
+</style>
+</head>
+<body>
+<div id="login_logo">
+	<div class="logo"><img src="../../public/images/logo.png" border="0"></div>
+	<div class="logo">
+		<div class="server_title"><h3><{$smarty.const.SERVER_AGENT}>@<{$smarty.const.SERVER_ID}></h3></div>
+	</div>
+</div>
+<div class="container">
+<form class="form-signin" action="../../index.php" method="post" id="login_form">
+	<input id="login_user" name="user" type="text" class="input-block-level" autocomplete="off" placeholder="<{t}>邮箱<{/t}>">
+	<input id="user_pwd" name="pwd" type="password" class="input-block-level" autocomplete="off" placeholder="<{t}>密码<{/t}>">
+	<select class="input-medium" name="lang">
+		<option value="zh-cn" <{if $lang eq "zh-cn"}>selected="selected"<{/if}>>简体中文</option>
+		<option value="zh-tw" <{if $lang eq "zh-tw"}>selected="selected"<{/if}>>繁體中文</option>
+	</select>
+	<input id="is_save" name="is_save" value="1" type="checkbox" checked="checked" value="remember-me"> <{t}>记住我<{/t}>
+	<div><button class="btn btn-primary" type="submit"><i class="icon-user icon-white"></i><{t}>登录<{/t}></button></div>
+	<div id="loginform_stat"></div>
+	<input type="reset" id="reset" class="hide">
+	<input type="hidden" name="verify_code" id="verify_code"/>
+</form>
+</div>
+</body>
+</html>

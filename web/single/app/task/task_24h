@@ -1,0 +1,7 @@
+/data/lwjs/4399_s1/web/single/app/task/stat_day_ended.php --task=money
+/data/lwjs/4399_s1/web/single/app/task/stat_day_ended.php --task=level
+/data/lwjs/4399_s1/web/single/app/task/stat_day_ended.php --task=fight
+/data/lwjs/4399_s1/web/single/app/task/stat_rank.php --task=personal
+/data/lwjs/4399_s1/web/single/app/task/stat_rank.php --task=faction
+/data/lwjs/4399_s1/web/single/app/task/stat_rank.php --task=pet
+/data/lwjs/4399_s1/web/single/app/task/stat_rank.php --task=equip

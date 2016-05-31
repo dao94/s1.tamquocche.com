@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title><{t}>BOSS查询<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function($){
+	$('.show_detail').toggle(function(){
+		$('.detail_'+this.name).fadeIn();
+		$('.collect_'+this.name).attr({style:"font-weight:bold;font-size:14px;background-color:#F5F5F5"});
+	},function(){
+		$('.detail_'+this.name).hide();;
+	});
+});
+</script>
+</head>
+<body>
+	<form class="accordion-group" style="margin-bottom:10px; padding-bottom:10px;">
+		<div class="accordion-heading">
+			<span class="accordion-toggle" data-toggle="collapse" href="#collapse">
+				<a href="javascript:;"><{t}>定义说明<{/t}></a>
+			</span>
+		</div>
+		<div id="collapse" class="accordion-body in collapse">
+			<div class="accordion-inner">
+			    <ol>
+			       <li><{t}>击杀成员：显示boss死亡时，对boss造成伤害最高的个人或队伍中的玩家信息；<{/t}></li>
+			       <li><{t}>掉落拾取：拾取boss掉落物品的玩家列表，所有拾取物品玩家全部列出；<{/t}></li>
+			       <li><{t}>boss类型：暂时只有2种（世界boss、游荡boss)；<{/t}></li>
+			       <li><{t}>掉落物品：每个捡到东西的玩家对应捡到的物品；<{/t}></li>
+			       <li><{t}>击杀时间：boss被击杀的时间，如未被成功击杀则显示为空；<{/t}></li>
+			       <li><{t}>boss名称：暂时有7种，八卦冥主（45）、双蛇郎君（35）、深渊霸王（35）、镇魂鬼座（55）、铁归藏（40）、银归藏（50）、金归藏（60）。<{/t}></li>
+			    </ol>
+			</div>
+		</div>
+	</form>
+	<div style="margin-top:5px;">
+	<form action="?" method="get" class="well well-small form-search">
+		<div>
+			<label for="name"><{t}>角色名<{/t}>：
+				<div class="input-append">
+					<input class="input-medium" placeholder="<{t}>输入角色名<{/t}>" type="text" data-provide="typeahead" id="char_name" name="char_name" maxlength="30" value="<{$conditions['char_name']}>">
+					<span class="add-on" style="cursor: pointer"><i class="icon-search"></i></span>
+				</div>
+			</label>
+			<label for="name"><{t}>物品ID<{/t}>：
+				<div class="input-append">
+					<input class="input-medium" placeholder="<{t}>输入物品ID<{/t}>" type="text" data-provide="typeahead" id="item_id" name="item_id" maxlength="30" value="<{t}><{$conditions['item_id']}><{/t}>">
+					<span class="add-on" style="cursor: pointer"><i class="icon-search"></i></span>
+				</div>
+			</label>
+			<label><{t}>BOOS名称<{/t}>：</label>
+			<select name="boss" class="input-small">
+			<option value=""><{t}>全部<{/t}>...</option>
+			<{foreach $refresh_conf as $key=>$item}>
+			<option value="<{$key}>" <{if $conditions['boss']==$key}>selected="selected"<{/if}>><{$item['name']}></option>
+			<{/foreach}>
+			</select>
+			<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+			<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+			<i class="icon-minus"></i>
+			<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+			<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+		</div>	
+	</form>
+	<table class="table table-bordered table-hover" style="margin-top:10px;">
+		<thead>
+	   		<tr>
+	   		<th><{t}>日期<{/t}></th>
+	   		<th><{t}>刷新时间<{/t}></th>
+	   		<th><{t}>BOSS名称<{/t}></th>
+			<th><{t}>击杀成员<{/t}></th>
+			<th><{t}>击杀时间<{/t}></th>
+			<th><{t}>掉落拾取<{/t}></th>
+	   		</tr>
+	   	</thead>
+	   	<tbody>	
+		   	<{if $data}>
+		   	<{foreach $data as $date=>$items}>
+		   	<tr>
+		   		<td rowspan="<{$items['count']}>"><{$date}>(<{t}>周<{/t}><{strtotime($date)|date_format:'%w'}>)</td>
+		   		<{$key=0}>
+			   	<{foreach $items['list'] as $time=>$item}>
+			   	<{if $key!=0}><tr><{/if}>
+			   	<td rowspan="<{$item|count}>"><{$time}></td>
+			   	<{$k=0}>
+			   	<{foreach $item as $boss_id=>$boss}>
+			   	<{if $k!=0}><tr><{/if}>
+				<td><{$boss['boss_name']}></td>
+				<td>
+				<{foreach $boss['kill_char_list'] as $char_id=>$char_name}>
+				<a href="../gm/player.php?id=<{$char_id}>"><{$char_name}></a> 
+				<{/foreach}>
+				</td>
+				<td><{$boss['kill_time']}></td>
+				<td style="text-align:left">
+					<ul class="unstyled">
+					<{foreach $boss['pick_up_list'] as $char_id=>$list}>
+						<li>
+							<span><a href="../gm/player.php?id=<{$char_id}>"><{$list['name']}></a>： </span>
+							<{foreach $list['item'] as $item_id=>$item_count}>
+							<span style="margin-right:10px;"><{t}><{$item_id}><{/t}>*<{$item_count}></span> 
+							<{/foreach}>
+						</li>
+					<{/foreach}>
+					</ul>
+				</td>
+				<{if $k+1!=count($boss)}></tr><{/if}>
+				<{$k=$k+1}>
+			   	<{/foreach}>
+			   	<{if $key+1!=count($items)}></tr><{/if}>
+				<{$key=$key+1}>
+			   	<{/foreach}>			   	 						   			   	
+		   	</tr>
+		   	<{/foreach}>
+		   	<{else}>
+		   	<tr><td colspan="200"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+		   	<{/if}>
+	   	</tbody>
+	</table>
+	<div class="pagination pagination-centered"><{$page|default:''}></div>
+</div>
+</body>
+</html>

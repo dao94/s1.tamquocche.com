@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/highcharts/highcharts.js"></script>
+<script language="javascript" src="../../public/js/highcharts/themes/gray.js"></script>
+<script language="javascript">
+var newChart = function(res){
+$('#pie1').highcharts({
+	chart: {
+		plotBackgroundColor: null,
+		plotBorderWidth: null,
+		plotShadow: false
+	},
+	title: {
+		text: '<b>注册玩家付费比</b>'
+	},
+	tooltip: {
+		pointFormat: '<b>{point.percentage}%</b>',
+		percentageDecimals: 1
+	},
+	plotOptions: {
+		pie: {
+			allowPointSelect: true,
+			cursor: 'pointer',
+			dataLabels: {
+				enabled: true,
+				color: '#000000',
+				connectorColor: '#000000',
+				formatter: function() {
+					return '<b>'+ this.point.name +'</b>: '+ Math.round(this.percentage) +' %';
+				}
+			}
+		}
+	},
+	series: [{
+		type: 'pie',
+		data: [
+			['<{t}>付费玩家<{/t}>',	parseInt(res.payer)],
+			['<{t}>非付费玩家<{/t}>',parseInt(res.unpayer)]
+			]
+	}]
+});
+
+$('#pie2').highcharts({
+	chart: {
+		plotBackgroundColor: null,
+		plotBorderWidth: null,
+		plotShadow: false
+	},
+	title: {
+		text: '<b>活跃玩家付费比</b>'
+	},
+	tooltip: {
+		pointFormat: '<b>{point.percentage}%</b>',
+		percentageDecimals: 1
+	},
+	plotOptions: {
+		pie: {
+			allowPointSelect: true,
+			cursor: 'pointer',
+			dataLabels: {
+				enabled: true,
+				color: '#000000',
+				connectorColor: '#000000',
+				formatter: function() {
+					return '<b>'+ this.point.name +'</b>: '+ Math.round(this.percentage) +' %';
+				}
+			}
+		}
+	},
+	series: [{
+		type: 'pie',
+		data: [
+				['<{t}>充值玩家<{/t}>',parseInt(res.a_payer)],
+				['<{t}>非充值玩家<{/t}>',parseInt(res.a_unpayer)]
+		]
+	}]
+});
+$('#pie3').highcharts({
+	chart: {
+		plotBackgroundColor: null,
+		plotBorderWidth: null,
+		plotShadow: false
+	},
+	title: {
+		text: '<b>充值区间比</b>'
+	},
+	tooltip: {
+		pointFormat: '<b>{point.percentage}%</b>',
+		percentageDecimals: 1
+	},
+	plotOptions: {
+		pie: {
+			allowPointSelect: true,
+			cursor: 'pointer',
+			dataLabels: {
+				enabled: true,
+				color: '#000000',
+				connectorColor: '#000000',
+				formatter: function() {
+						return '<b>'+ this.point.name +'</b>: '+ Math.round(this.percentage) +' %';
+				}
+			}
+		}
+	},
+	series: [{
+		type: 'pie',
+		data: [
+			['1-100',parseInt(res.pay1)],
+			['100-500',	parseInt(res.pay2)],
+			['500-1000', parseInt(res.pay3)],
+			['1000-5000', parseInt(res.pay4)],
+			['5000-10000', parseInt(res.pay5)],
+			['10000+', parseInt(res.pay6)]
+		]
+	}]
+});
+$('#pie4').highcharts({
+	chart: {
+		plotBackgroundColor: null,
+		plotBorderWidth: null,
+		plotShadow: false
+	},
+	title: {
+		text: '<b>新增玩家付费比</b>'
+	},
+	tooltip: {
+		pointFormat: '<b>{point.percentage}%</b>',
+		percentageDecimals: 1
+	},
+	plotOptions: {
+		pie: {
+			allowPointSelect: true,
+			cursor: 'pointer',
+			dataLabels: {
+					enabled: true,
+					color: '#000000',
+					connectorColor: '#000000',
+					formatter: function() {
+							return '<b>'+ this.point.name +'</b>: '+ Math.round(this.percentage) +' %';
+					}
+			}
+		}
+	},
+	series: [{
+		type: 'pie',
+		data: [
+				['<{t}>付费玩家<{/t}>', parseInt(res.np_payer)],
+				['<{t}>非付费玩家<{/t}>', parseInt(res.np_unpayer)],
+		]
+	}]
+});
+}
+
+$(document).ready(function(){
+	$('.contrl').click(function(){
+		var day = $(this).val();
+		var action_player = $('[name="action_player"]').val();
+		$('.contrl').removeClass('btn-inverse');
+		$(this).addClass('btn-inverse');
+		$.ajax({
+			url:'?action_player='+action_player,
+			type:'post',
+			data:{action:'day',day:day},
+			dataType:'json',
+			success: newChart
+		})
+	});
+	$('#search').click(function(){
+		var date = $('[name="date"]').val();
+		var action_player = $('[name="action_player"]').val();
+		if(date=='')return false;
+		$('.contrl').removeClass('btn-inverse');
+		$.ajax({
+			url:'?action_player='+action_player,
+			type:'post',
+			data:{action:'date',date:date},
+			dataType:'json',
+			success: newChart
+		})
+	})
+});
+</script>
+</head>
+<body>
+<div id="nav">
+<ul class="nav nav-tabs">
+	<{foreach $action_player_conf as $key=>$item}>
+	<li <{if $action_player==$key}>class="active"<{/if}>><a href="?action_player=<{$key}>"><{$item}></a></li>
+	<{/foreach}>
+</ul>
+</div>
+<form class="well form-inline">
+	<div>
+		<{t}>时间<{/t}>：
+		<div class="input-append">
+			<input type="text" name="date" class="span1" style="width: 100px" onclick="WdatePicker({dateFmt:'yyyyMMdd',maxDate:'%y-%M-{%d-1}'})">
+			<span class="add-on"><i class="icon-time"></i></span>
+		</div>
+		<input type="hidden" id="action_player" name="action_player" value="<{$action_player}>">
+		<button type="button" id="search" class="btn btn-primary"><{t}>查询<{/t}></button>
+	</div>
+	<div class="btn-group" style="margin-top:10px;">
+		<button type="button" class="btn contrl" value="1"><{t}>开服<{/t}>1<{t}>天<{/t}></button>
+		<button type="button" class="btn contrl" value="2"><{t}>开服<{/t}>2<{t}>天<{/t}></button>
+		<button type="button" class="btn contrl" value="3"><{t}>开服<{/t}>3<{t}>天<{/t}></button>
+		<button type="button" class="btn contrl" value="4"><{t}>开服<{/t}>4<{t}>天<{/t}></button>
+		<button type="button" class="btn contrl" value="5"><{t}>开服<{/t}>5<{t}>天<{/t}></button>
+		<button type="button" class="btn contrl" value="6"><{t}>开服<{/t}>6<{t}>天<{/t}></button>
+		<button type="button" class="btn contrl" value="7"><{t}>开服<{/t}>7<{t}>天<{/t}></button>
+		<button type="button" class="btn contrl" value="14"><{t}>开服<{/t}>14<{t}>天<{/t}></button>
+		<button type="button" class="btn contrl" value="30"><{t}>开服<{/t}>30<{t}>天<{/t}></button>
+	</div>
+</form>
+</div>
+
+<table width="100%" cellpadding="10">
+	<tr>
+		<td><div class="span5" id="pie1"></div></td>
+		<td><div class="span5" id="pie2"></div></td>
+	</tr>
+	<tr>
+		<td><div class="span5" id="pie3"></div></td>
+		<td><div class="span5" id="pie4"></div></td>
+	</tr>
+</table>
+</body>
+</html>

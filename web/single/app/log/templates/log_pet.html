@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>宠物流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../public/js/bootstrap-prompts-alert.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+
+<style type="text/css">
+#type_list .span2{
+	width:122px;
+	height:20px;
+	line-height:20px;
+	overflow:hidden;
+}
+</style>
+
+<script language="javascript">
+$(function($){
+	$('#item_name').blur(function(){
+		this.value=='' ? $("input[name='item_id']").val('') : '';
+	}).next().click(function(){
+		$(this).prevAll(':input').keyup();
+	});
+
+	$('#btn_type').toggle(function(){
+		$('#type_list').fadeIn();
+	},function(){
+		$('#type_list').fadeOut();
+	});
+
+	$('#type_cb_all').click(function(){
+		$('.type').attr('checked',this.checked);
+	});
+
+	$('.btn_selected').click(function(){
+		$("input[name='xm_type[]'][value='"+this.value+"']").attr('checked',false);
+		$('#btn_search').click();
+	});
+
+	$('*[rel="tooltip"]').live('mouseover',function(){
+		$(this).tooltip({placement:'top',html:true}).tooltip('show');
+	});
+
+	<{if $conditions['xm_type']}>
+		$('#type_list').fadeIn();
+	<{/if}>
+});
+
+</script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" id="char_id" name="char_id" class="input-small" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+	<label style="margin-left:5px;"><{t}>宠物ID<{/t}>：
+	<input type="text" name="pet_id" class="input-small" maxlength="20" value="<{$conditions['pet_id']}>">
+	</label>
+	<label style="margin-left:5px;"><{t}>原型<{/t}>：
+	<input type="text" name="pet_original" class="input-small" maxlength="20" value="<{$conditions['pet_original']}>">
+	</label>
+<{if !empty($pet_realm_conf) && $conditions['action']!='egg'}>
+	<label style="margin-left:5px;"><{t}>境界类型<{/t}>：
+	<select name="rank" class="input-small">
+		<option value=""><{t}>全部...<{/t}></option>
+	<{foreach $pet_realm_conf as $key=>$item}>
+		<option value="<{$key+1}>"  <{if $conditions['rank']===$key+1}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	</label>
+<{/if}>
+
+<{if !empty($type_conf) && $conditions['action']!='egg' && $conditions['action']!='skill' && $conditions['action']!='realm' && $conditions['action']!='pullulate' && $conditions['action']!='equip' && $conditions['action']!='up' }>
+	<label style="margin-left:5px;"><{t}>项目<{/t}>：
+	<select name="type" class="input-small">
+		<option value=""><{t}>全部...<{/t}></option>
+	<{foreach $type_conf as $key=>$item}>
+		<option value="<{$key}>"  <{if $conditions['type']===$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	</label>
+<{/if}>
+
+<{if $conditions['action']=='egg'}>
+	<label style="margin-left:5px;"><{t}>操作<{/t}>：
+	<select name="io" class="input-small">
+		<option value=""><{t}>全部...<{/t}></option>
+	<{foreach $io_conf as $key=>$item}>
+		<option value="<{$key}>"  <{if $conditions['io']===$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	</label>
+<{/if}>
+
+<{if $conditions['action']=='skill'}>
+	<label style="margin-left:5px;"><{t}>操作<{/t}>：
+	<select name="io" class="input-small">
+		<option value=""><{t}>全部...<{/t}></option>
+	<{foreach $io_conf as $key=>$item}>
+		<option value="<{$key}>"  <{if $conditions['io']===$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	</label>
+<{/if}>
+
+<{if $conditions['action']=='equip'}>
+	<label style="margin-left:5px;"><{t}>操作<{/t}>：
+	<select name="io" class="input-small">
+		<option value=""><{t}>全部...<{/t}></option>
+	<{foreach $io_conf as $key=>$item}>
+		<option value="<{$key}>"  <{if $conditions['io']===$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	</label>
+<{/if}>
+
+<{if $conditions['action']=='up'}>
+	<label style="margin-left:5px;"><{t}>操作<{/t}>：
+	<select name="io" class="input-small">
+		<option value=""><{t}>全部...<{/t}></option>
+	<{foreach $io_conf as $key=>$item}>
+		<option value="<{$key}>"  <{if $conditions['io']===$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	</label>
+<{/if}>
+
+<{if $conditions['action']=='exp' || $conditions['action']=='pullulate' || $conditions['action']=='equip'}>
+<label><input type="checkbox" name="is_upgrade" value="1" <{if $conditions['is_upgrade']}>checked="checked"<{/if}> > <{t}>升级<{/t}></label>
+<{/if}>
+
+<{if $conditions['action']=='up'}>
+<label><input type="checkbox" name="is_upgrade" value="4" <{if $conditions['is_upgrade']}>checked="checked"<{/if}> > <{t}>升级<{/t}></label>
+<{/if}>
+
+<{if $conditions['action']=='egg' }>
+<label><input type="checkbox" name="is_rare" value="1" <{if $conditions['is_rare']}>checked="checked"<{/if}> > <{t}>稀有蛋<{/t}></label>
+<{/if}>
+
+    <button id="btn_type" type="button" class="btn btn-link"><{t}>项目类型<{/t}></button>
+
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" id="btn_search"><i class="icon-search icon-white"></i><{t}>搜索<{/t}></button>
+
+<{if $conditions['xm_type']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['xm_type'] as $item}>
+		<button class="btn btn-mini btn_selected" type="button" value="<{$item}>"><{$pet_xm_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list" class="row hide">
+		<div class="span2"><input type="checkbox" id="type_cb_all"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $pet_xm_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="xm_type[]" value="<{$key}>" class="type" <{if in_array($key,$conditions['xm_type'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+
+
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<div id="nav">
+	<ul class="nav nav-tabs" style="margin-bottom:10px;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>&char_id=<{$conditions['char_id']}>&from=<{$conditions['from']}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+
+<div class="pagination pagination-right" style="margin:0;"><{$page}></div>
+<{if $conditions['action']=='egg'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<{if $is_restore}>
+		<th></th>
+		<{/if}>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>宠物ID<{/t}></th>
+		<th><{t}>名字<{/t}></th>
+		<th><{t}>原型<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+		<th><{t}>稀有蛋<{/t}></th>
+		<th><{t}>项目<{/t}></th>
+		<th><{t}>操作<{/t}></th>
+		<th><{t}>属性<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<{if $is_restore}>
+		<td>
+		<{if $row['io']==0}>
+			<input type="checkbox" class="cb" value="<{$row['id']}>">
+		<{/if}>
+	   </td>
+		<{/if}>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>" target="_parent"><{$row['char_name']|default:''}></a></td>
+		<td><{$row['pet_id']}></td>
+		<td><{$row['pet_name']}></td>
+		<td><{$row['original_name']}></td>
+		<td><{$row['level']}></td>
+		<td><{if $row['is_rare']==1}><span class="badge badge-inverse"><{t}>是<{/t}></span><{else}><{t}>否<{/t}><{/if}></td>
+		<td><{$type_conf[$row['type']]}></td>
+		<td>
+			<span class="badge <{if $row['io']==0}>badge-warning<{else if $row['io']==1}>badge-success<{/if}>"><{$io_conf[$row['io']]|default:''}></span>
+		</td>
+		<td style="text-align:left">
+		    <div><{t}>战斗力<{/t}>：【<{$row['remark']['attr']['fight']|default:0}>】</div>
+		    <div><{t}>生命<{/t}>：【<{$row['remark']['attr']['hp']|default:0}>】</div>
+		    <div><{t}>攻击<{/t}>：【<{$row['remark']['attr']['att']|default:0}>】</div>
+		    <div><{t}>防御<{/t}>：【<{$row['remark']['attr']['def']|default:0}>】</div>
+		<{if isset($row['remark']['realm'])}>
+			<div>
+				<{t}>境界<{/t}>：【<{$petRealmList[$row['remark']['realm']['level']]['name']|default:0}>】
+			</div>
+			<div>
+				<{t}>境界祝福值<{/t}>：【<{$row['remark']['realm']['blessing']|default:0}>】
+			</div>
+		<{/if}>
+
+		<{if !empty($row['remark']['skillList'])}>
+			<div>
+				<{t}>技能<{/t}>：
+				<{foreach $row['remark']['skillList'] as $key=>$item}>
+					<{$item}>
+				<{/foreach}>
+			</div>
+		<{/if}>
+		<{if !empty($row['remark']['modelList'])}>
+		<div><{t}>形象<{/t}>：
+					<{$row['remark']['modelList']}>
+		</div>
+		<{/if}>
+		</td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+<tfoot>
+<tr>
+	<td colspan="20" style="text-align:left;" class="form-search">
+		<label><input type="checkbox" id="cb_all"> <{t}>全选<{/t}></label>
+		<{t}>原因<{/t}>：<input id="reason" class="input-large" placeholder="<{t}>请输入恢复宠物的原因<{/t}>" type="text">
+		<button type="button" id="btn_restore" class="btn btn-primary"><i class="icon-ok icon-white"></i><{t}>批量恢复<{/t}></button>
+	</td>	
+</tr>
+</tfoot>
+</table>
+<script language="javascript">
+$(function($){
+	$('#cb_all').click(function(){
+		$('.cb').attr('checked',this.checked);	
+	});
+	
+	$('#btn_restore').click(function(){
+		var reason=$.trim($('#reason').val()),count=$('.cb:checked').length;
+		if(count==0){
+			alert('<{t}>请勾选恢复选项<{/t}>');
+			return false;	
+		}
+		if(!reason){
+			alert('<{t}>原因不能为空<{/t}>');
+			$('#reason').focus();
+			return false;
+		}
+		if(!confirm('<{t}>您确认要恢复以上宠物吗？<{/t}>'))	return false;
+		var id=[];
+		$('.cb:checked').each(function(index, element) {
+			id.push(element.value);
+		});
+		$.ajax({
+			url:'log_restore.php?action=pet',
+			type:'POST',
+			data:{char_id:"<{$conditions['char_id']}>",reason:reason,id:id},
+			dataType:'json',
+			beforeSend: function(){
+				$('#btn_restore').attr('disabled',true);
+				$('#reason').attr('disabled',true);
+			},
+			success: function(msg){
+				alert(msg.info);
+				if(msg.status==1){
+					$('#reason').val('');
+					$(':checked').attr('checked',false);
+				}
+			},
+			complete: function(){
+				$('#btn_restore').attr('disabled',false);
+				$('#reason').attr('disabled',false);
+			}
+		});
+	});
+});
+</script>
+
+
+<{elseif $conditions['action']=='exp'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>宠物ID<{/t}></th>
+		<th><{t}>名字<{/t}></th>
+		<th><{t}>原型<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+
+		<th><{t}>当前经验<{/t}></th>
+		<th><{t}>增加经验<{/t}></th>
+		<th><{t}>是否升级<{/t}></th>
+		<th><{t}>经验来源<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']|default:''}></td>
+		<td><{$row['pet_id']}></td>
+		<td><{$row['pet_name']}></td>
+		<td><{$row['original_name']}></td>
+		<td><{$row['level']}></td>
+		<td><{$row['cur_exp']}></td>
+		<td><{$row['add_exp']}></td>
+		<td>
+		<{if $row['is_level']==1}>
+			<span class="badge badge-success"><{t}>是<{/t}></span>
+		<{else}>
+			<{t}>否<{/t}>
+		<{/if}>
+		</td>
+		<td><{$row['type']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+
+
+<{else if $conditions['action']=='pullulate'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th rowspan="2" style="vertical-align:middle"><{t}>角色名<{/t}></th>
+		<th rowspan="2" style="vertical-align:middle"><{t}>宠物ID<{/t}></th>
+		<th rowspan="2" style="vertical-align:middle"><{t}>名字<{/t}></th>
+		<th rowspan="2" style="vertical-align:middle"><{t}>原型<{/t}></th>
+		<th colspan="1"><{t}>生命<{/t}></th>
+		<th colspan="1"><{t}>攻击<{/t}></th>
+		<th colspan="1"><{t}>防御<{/t}></th>
+		<th rowspan="2" style="vertical-align:middle"><{t}>项目<{/t}></th>
+		<th rowspan="2" style="vertical-align:middle"><{t}>是否升级<{/t}></th>
+		<th rowspan="2" style="vertical-align:middle"><{t}>时间<{/t}></th>
+	</tr>
+	<tr>
+		<td><{t}>等级<{/t}></td>
+		<td><{t}>等级<{/t}></td>
+		<td><{t}>等级<{/t}></td>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']|default:''}></td>
+		<td><{$row['pet_id']}></td>
+		<td>
+			<{$row['pet_name']}>
+		</td>
+		<td>
+			<{$row['original_name']}>
+		</td>
+		<td><{$row['hp_pullulate']}></td>
+		<td><{$row['attack_pullulate']}></td>
+		<td><{$row['defense_pullulate']}></td>
+		<td>
+			<span class="badge <{if $row['type']==0}>badge-important<{else if $row['type']==1}>badge-inverse<{/if}>"><{t}><{$type_conf[$row['type']]}><{/t}></span>
+		</td>
+		<td>
+		<{if $row['is_level']==1}>
+			<span class="badge badge-success"><{t}>是<{/t}></span>
+		<{else if $row['is_level']==2}>
+			<span class="badge badge-important"><{t}>降级<{/t}></span>
+		<{else}>
+			<{t}>否<{/t}>
+		<{/if}>
+		</td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<{else if $conditions['action']=='realm'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>宠物ID<{/t}></th>
+		<th><{t}>名字<{/t}></th>
+		<th><{t}>原型<{/t}></th>
+		<th><{t}>境界<{/t}></th>
+		<th><{t}>增加祝福值<{/t}></th>
+		<th><{t}>祝福值<{/t}></th>
+		<th><{t}>境界等级<{/t}></th>
+		<th><{t}>项目<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']|default:''}></td>
+		<td><{$row['pet_id']}></td>
+		<td><{$row['pet_name']}></td>
+		<td><{$row['original_name']}></td>
+		<td>
+			<span class="badge <{if $row['rank']==1}>badge-success<{elseif $row['rank']==2}>badge-warning<{elseif $row['rank']==3}>badge-info<{elseif $row['rank']==4}>badge-inverse<{/if}>"><{t}><{$pet_realm_conf[$row['rank']-1]}><{/t}></span>
+		</td>
+		<td><{$row['add_bless']}></td>
+		<td><{$row['bless_value']}></td>
+		<td><{$row['level']}></td>
+		<td>
+			<span class="<{if $row['type']==0}>badge badge-important<{/if}>"><{t}><{$type_conf[$row['type']]}><{/t}></span>
+		</td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='skill'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>宠物ID<{/t}></th>
+		<th><{t}>名字<{/t}></th>
+		<th><{t}>原型<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+		<th><{t}>技能<{/t}></th>
+		<th><{t}>项目<{/t}></th>
+		<th><{t}>操作<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+		<th><{t}>备注<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']|default:''}></td>
+		<td><{$row['pet_id']}></td>
+		<td><{$row['pet_name']}></td>
+		<td><{$row['original_name']}></td>
+		<td><{$row['level']}></td>
+		<td><{$row['skillName']}></td>
+		<td>
+			<span class="badge <{if $row['type']==0}>badge-important<{else if $row['type']==1}>badge-inverse<{/if}>"><{t}><{$type_conf[$row['type']]}><{/t}></span>
+		</td>
+		<td>
+			<span class="badge <{if $row['io']==0}>badge-warning<{else if $row['io']==1}>badge-success<{/if}>"><{$io_conf[$row['io']]|default:''}></span>
+		</td>
+		<td><{$row['time']}></td>
+		<td style="text-align:left">
+		  <{if !empty($row['remark']['skillList'])}>
+				<div>
+					<{t}>技能<{/t}>：
+					<{foreach $row['remark']['skillList'] as $key=>$item}>
+						<span class="label label-important" style="margin-left:5px;"><{$item}></span>
+					<{/foreach}>
+				</div>
+		   <{/if}>
+		</td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<{else if $conditions['action']=='equip'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>宠物ID<{/t}></th>
+		<th><{t}>名字<{/t}></th>
+		<th><{t}>原型<{/t}></th>
+		<th><{t}>装备部位<{/t}></th>
+		<th><{t}>装备名称<{/t}></th>
+		<th><{t}>项目<{/t}></th>
+		<th><{t}>操作<{/t}></th>
+		<th><{t}>装备等级<{/t}></th>
+		<th><{t}>当前经验值<{/t}></th>
+		<th><{t}>增加经验值<{/t}></th>
+		<th><{t}>是否升级<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>" target="_parent"><{$row['char_name']|default:''}></a></td>
+		<td><{$row['pet_id']}></td>
+		<td><{$row['pet_name']}></td>
+		<td><{$row['original_name']}></td>
+		<td><{$part_conf[$row['part']]|default:$row['part']}></td>
+		<td><{t}><{$row['equip_id']}><{/t}></td>
+		<td><{$type_conf[$row['type']]|default:''}></td>
+		<td><{$io_conf[$row['io']]|default:''}></td>
+		<td><{$row['remark']['level']}></td>
+		<td><{$row['remark']['exp']}></td>
+		<td><{$row['remark']['addExp']}></td>
+		<td>
+		<{if $row['is_up']==1}>
+			<span class="badge badge-success"><{t}>是<{/t}></span>
+		<{else}>
+			<{t}>否<{/t}>
+		<{/if}>
+		</td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<{else if $conditions['action']=='up'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>宠物ID<{/t}></th>
+		<th><{t}>名字<{/t}></th>
+		<th><{t}>原型<{/t}></th>
+		<th><{t}>装备部位<{/t}></th>
+		<th><{t}>装备名称<{/t}></th>
+		<th><{t}>项目<{/t}></th>
+		<th><{t}>操作<{/t}></th>
+		<th><{t}>装备品阶<{/t}></th>
+		<th><{t}>是否进阶<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>" target="_parent"><{$row['char_name']|default:''}></a></td>
+		<td><{$row['pet_id']}></td>
+		<td><{$row['pet_name']}></td>
+		<td><{$row['original_name']}></td>
+		<td><{$part_conf[$row['part']]|default:$row['part']}></td>
+		<td><{t}><{$row['equip_id']}><{/t}></td>
+		<td><{$type_conf[$row['type']]|default:''}></td>
+		<td><{$io_conf[$row['io']]|default:''}></td>
+		<td><{$row['remark']['rank']}></td>
+		<td>
+		<{if $row['is_up']==4}>
+			<span class="badge badge-success"><{t}>是<{/t}></span>
+		<{else}>
+			<{t}>否<{/t}>
+		<{/if}>
+		</td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<{/if}>
+
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+
+</body>
+</html>

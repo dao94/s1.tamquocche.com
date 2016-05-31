@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>加载时间<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/highcharts/highcharts.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function () {
+	//Radialize the colors
+	Highcharts.getOptions().colors = $.map(Highcharts.getOptions().colors, function(color) {
+		return {
+			radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+			stops: [
+				[0, color],
+				[1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
+			]
+		};
+	});
+	
+	$('.action').click(function(){
+		$('.table').hide();
+		$('#'+this.name).fadeIn();
+		$('#nav').find('li').removeClass('active');
+		$(this).parents('li').addClass('active');
+		$("input[name='action']").val(this.name);
+	});
+	
+	$('.btn_time').click(function(){
+		var action=$("input[name='action']").val();
+		var date=$(this).attr('date');
+		window.location='?action='+action+'&start_date='+date+'&end_date='+date;	
+	});
+});
+function pie_chart(id,data,title){
+	var chart;
+	// Build the chart
+	chart = new Highcharts.Chart({
+		chart: {
+			renderTo: id,
+			plotBackgroundColor: null,
+			plotBorderWidth: null,
+			plotShadow: false
+		},
+		title: {
+			text:title
+		},
+		tooltip: {
+			pointFormat: '{series.name}: <b>{point.y}%</b>',
+			percentageDecimals: 1
+		},
+		plotOptions: {
+			pie: {
+				allowPointSelect: true,
+				cursor: 'pointer',
+				dataLabels: {
+						enabled: false,
+						color: '#000000',
+						connectorColor: '#000000',
+						formatter: function() {
+							return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
+						}
+				},
+				showInLegend:true,
+			}
+		},
+		credits:{
+			enabled:false,
+		},
+		series: [{
+				type: 'pie',
+				name: '<{t}>所占比例<{/t}>',
+				data: data
+			}]
+	});
+}
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $conditions['action']==$key}>class="active"<{/if}>><a href="javascript:;" name="<{$key}>" class="action"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<form class="well form-search" style="margin-bottom:10px;">
+	<label><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<{t}>类型<{/t}>：
+	<label><input type="radio" name="type" value="1" <{if $conditions['type']==1}>checked<{/if}>> <{t}>创号玩家<{/t}></label>
+	<label><input type="radio" name="type" value="0" <{if $conditions['type']==0}>checked<{/if}>> <{t}>非创号玩家<{/t}></label>
+	<button class="btn btn-primary" type="submit" id="btn_search"><i class="icon-search icon-white"></i><{t}>搜索<{/t}></button>
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form> 
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<$conditions['today']}>
+	<button type="button" date="<{$key}>" class="btn btn_time <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<table id="loader_time" class="table table-bordered <{if $conditions['action']!='loader_time'}>hide<{/if}>" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2" style="vertical-align:middle"><{t}>日期<{/t}></th>	
+		<th colspan="<{$loader_login_conf|count}>"><{t}>进入创建界面时间(单位：秒)<{/t}></th>
+		<th colspan="<{$stop_login_conf|count}>"><{t}>创建页面停留时间(单位：秒)<{/t}></th>
+		<th colspan="<{$loader_game_conf|count}>"><{t}>进入游戏时间(单位：秒)<{/t}></th>
+	</tr>
+	<tr>
+	<{foreach $loader_login_conf as $item}>
+		<th><{$item[0]}>-<{$item[1]}></th>
+	<{/foreach}>
+	<{foreach $stop_login_conf as $item}>
+		<th><{$item[0]}>-<{$item[1]}></th>
+	<{/foreach}>
+	<{foreach $loader_game_conf as $item}>
+		<th><{$item[0]}>-<{$item[1]}></th>
+	<{/foreach}>
+	</tr>
+</thead>
+<{foreach $data as $key=>$row}>
+	<tr>
+		<td rowspan="2"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+	<{foreach $loader_login_conf as $item}>
+		<td><{$row['loader_login_data'][$item[0]|cat:'-'|cat:$item[1]]|default:0}></td>
+	<{/foreach}>
+	<{foreach $stop_login_conf as $item}>
+		<td><{$row['stop_login_data'][$item[0]|cat:'-'|cat:$item[1]]|default:0}></td>
+	<{/foreach}>
+	<{foreach $loader_game_conf as $item}>
+		<td><{$row['loader_game_data'][$item[0]|cat:'-'|cat:$item[1]]|default:0}></td>
+	<{/foreach}>
+	</tr>
+	<tr>
+		<td colspan="<{$loader_login_conf|count}>">
+<{if $row['loader_login_count']}>
+<script language="javascript">
+$(function($){
+	var data=[
+<{foreach $loader_login_conf as $k=>$item}>
+	<{$count=$row['loader_login_data'][$item[0]|cat:'-'|cat:$item[1]]|default:0}>
+	<{if $k==0}>
+		{name: '<{$item[0]}>-<{$item[1]}><{t}>秒<{/t}>',y: <{round($count/$row['loader_login_count'],4)*100}>,sliced: true,selected: true},
+	<{else}>
+		['<{$item[0]}>-<{$item[1]}><{t}>秒<{/t}>',<{round($count/$row['loader_login_count'],4)*100}>],
+	<{/if}>
+<{/foreach}>
+		];
+		pie_chart('loader_login_<{$key}>',data,'<{t}>进入创建界面时间<{/t}>');
+});
+</script>
+<div style="width:350px; height:300px;" id="loader_login_<{$key}>"></div>
+<{else}>
+<div class="badge"><{t}>数据不足，无法构饼状图<{/t}></div>
+<{/if}>
+		</td>
+		<td colspan="<{$stop_login_conf|count}>">
+<{if $row['stop_login_count']}>
+<script language="javascript">
+$(function($){
+	var data=[
+<{foreach $stop_login_conf as $k=>$item}>
+	<{$count=$row['stop_login_data'][$item[0]|cat:'-'|cat:$item[1]]|default:0}>
+	<{if $k==0}>
+		{name: '<{$item[0]}>-<{$item[1]}><{t}>秒<{/t}>',y: <{round($count/$row['loader_login_count'],4)*100}>,sliced: true,selected: true},
+	<{else}>
+		['<{$item[0]}>-<{$item[1]}><{t}>秒<{/t}>',<{round($count/$row['loader_login_count'],4)*100}>],
+	<{/if}>
+<{/foreach}>
+		];
+		pie_chart('stop_login_<{$key}>',data,'<{t}>创建页面停留时间<{/t}>');
+});
+</script>
+<div style="width:350px; height:300px;" id="stop_login_<{$key}>"></div>
+<{else}>
+<div class="badge"><{t}>数据不足，无法构饼状图<{/t}></div>
+<{/if}>
+		</td>
+		<td colspan="<{$loader_game_conf|count}>">
+<{if $row['loader_game_count']}>
+<script language="javascript">
+$(function($){
+	var data=[
+<{foreach $loader_game_conf as $k=>$item}>
+	<{$count=$row['loader_game_data'][$item[0]|cat:'-'|cat:$item[1]]|default:0}>
+	<{if $k==0}>
+		{name: '<{$item[0]}>-<{$item[1]}><{t}>秒<{/t}>',y: <{round($count/$row['loader_game_count'],4)*100}>,sliced: true,selected: true},
+	<{else}>
+		['<{$item[0]}>-<{$item[1]}><{t}>秒<{/t}>',<{round($count/$row['loader_game_count'],4)*100}>],
+	<{/if}>
+<{/foreach}>
+		];
+		pie_chart('loader_game_<{$key}>',data,'<{t}>进入游戏时间<{/t}>');
+});
+</script>
+<div style="width:350px; height:300px;" id="loader_game_<{$key}>"></div>
+<{else}>
+<div class="badge"><{t}>数据不足，无法构饼状图<{/t}></div>
+<{/if}>
+		</td>
+	</tr>
+<{/foreach}>
+</table>
+
+<!--进入游戏总耗时-->
+<table id="total_loader_time" class="table table-bordered <{if $conditions['action']!='total_loader_time'}>hide<{/if}>" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2" style="vertical-align:middle"><{t}>日期<{/t}></th>	
+		<th colspan="<{$total_loader_game_conf|count}>"><{t}>进入游戏总耗时(单位：秒)<{/t}></th>
+	</tr>
+	<tr>
+	<{foreach $total_loader_game_conf as $item}>
+		<th><{$item[0]}>-<{$item[1]}></th>
+	<{/foreach}>
+	</tr>
+</thead>
+<{foreach $data as $key=>$row}>
+	<tr>
+		<td rowspan="2"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+	<{foreach $total_loader_game_conf as $item}>
+		<td><{$row['total_loader_game_data'][$item[0]|cat:'-'|cat:$item[1]]|default:0}></td>
+	<{/foreach}>
+	</tr>
+	<tr>
+		<td colspan="<{$total_loader_game_conf|count}>">
+<{if $row['total_loader_game_count']}>
+<script language="javascript">
+$(function($){
+	var data=[
+<{foreach $total_loader_game_conf as $k=>$item}>
+	<{$count=$row['total_loader_game_data'][$item[0]|cat:'-'|cat:$item[1]]|default:0}>
+	<{if $k==0}>
+		{name: '<{$item[0]}>-<{$item[1]}><{t}>秒<{/t}>',y: <{round($count/$row['total_loader_game_count'],4)*100}>,sliced: true,selected: true},
+	<{else}>
+		['<{$item[0]}>-<{$item[1]}><{t}>秒<{/t}>',<{round($count/$row['total_loader_game_count'],4)*100}>],
+	<{/if}>
+<{/foreach}>
+		];
+		pie_chart('total_loader_game_<{$key}>',data,'<{t}>进入游戏总耗时(单位：秒)<{/t}>');
+});
+</script>
+<div style="width:850px; height:300px;" id="total_loader_game_<{$key}>"></div>
+<{else}>
+<div class="badge"><{t}>数据不足，无法构饼状图<{/t}></div>
+<{/if}>
+		</td>
+	</tr>
+<{/foreach}>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+</div>
+</body>
+</html>

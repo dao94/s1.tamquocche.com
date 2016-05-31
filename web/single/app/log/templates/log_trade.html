@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>交易流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript">
+$(function($){
+	$("#item_name").typeahead({
+		items:200,
+		minLength:1,
+		source: function(value, process) {
+			value=$.trim(value);
+			var client = new PHPRPC_Client('http://<{$smarty.const.CENTER_DOMAIN}>/center/app/interface/item_info.php', ['search']);
+			client.search(value,'<{$smarty.session.__single_LANG}>', function (result, args, output, warning) {
+				result=jQuery.parseJSON(result);
+				var data=new Array();
+				var length=result.length;
+				length==0 ? $("input[name='item_id']").val('') : '';
+				$(result).each(function(i,obj){
+					data.push(obj[1]+"-"+obj[0]);
+					length==1 ? $("input[name='item_id']").val(obj[0]) : '';
+				});
+				var reg=new RegExp("^[0-9]*$");
+				reg.test(value) ? $("input[name='item_id']").val(value) : '';
+				process(data);
+			});
+		},
+		updater:function(data){
+			var arr=data.split('-');
+			$("input[name='item_id']").val(arr[1]);
+			return arr[0];
+		},
+	});
+
+	$('#item_name').blur(function(){
+		this.value=='' ? $("input[name='item_id']").val('') : '';
+	}).next().click(function(){
+		$(this).prevAll(':input').keyup();
+	});
+});
+</script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+    <label for="trade_char_name"><{t}>交易方<{/t}>：</label>
+    <input class="input-small" placeholder="<{t}>输入对方角色名<{/t}>" type="text" id="trade_char_name" name="trade_char_name" value="<{$conditions['trade_char_name']}>" maxlength="32">
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<label style="margin-left:5px;"><{t}>元宝<{/t}>：</label>
+	<input class="input-mini" placeholder="<{t}>最低元宝<{/t}>" type="text" name="min_jade" value="<{$conditions['min_jade']}>" maxlength="12">
+	<i class="icon-minus"></i>
+	<input class="input-mini" placeholder="<{t}>最高元宝<{/t}>" type="text" name="max_jade" value="<{$conditions['max_jade']}>" maxlength="12">
+	<label style="margin-left:5px;"><{t}>铜币<{/t}>：</label>
+	<input class="input-mini" placeholder="<{t}>最低铜币<{/t}>" type="text" name="min_gold" value="<{$conditions['min_gold']}>" maxlength="12">
+	<i class="icon-minus"></i>
+	<input class="input-mini" placeholder="<{t}>最高铜币<{/t}>" type="text" name="max_gold" value="<{$conditions['max_gold']}>" maxlength="12">
+	<label style="margin-left:5px;"><{t}>道具<{/t}>：
+	<div class="input-append">
+		<input id="item_name" class="input-medium" placeholder="<{t}>请输入道具名称<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="<{t}><{$conditions['item_id']}><{/t}>"><span class="add-on"><i class="icon-search"></i></span>
+	</div>
+	</label>
+	<button class="btn btn-primary" id="btn_search" style="margin-left:5px;"><i class="icon-search icon-white"></i> <{t}>搜索<{/t}></button>
+
+
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+<input type="hidden" name="item_id"  value="<{$conditions['item_id']}>">
+</form>
+
+<div class="btn-group">
+<{foreach $type_conf as $key=>$item}>
+		<button type="button" onClick="javascript:window.location='?from=<{$conditions['from']}>&char_id=<{$conditions['char_id']}>&type=<{$key}>';" class="btn <{if $conditions['type']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/foreach}>
+</div>
+
+<div class="pagination pagination-right" style="margin:0;"><{$page}></div>
+<table class="table table-bordered table-hover" style="margin-top:5px;">
+<thead>
+	<tr>
+		<th colspan="3"><{t}>请求方<{/t}></th>
+		<th rowspan="2"></th>
+		<th colspan="3"><{t}>接收方<{/t}></th>
+		<th rowspan="2" style="vertical-align:middle"><{t}>时间<{/t}></th>
+	</tr>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>货币<{/t}></th>
+		<th><{t}>道具<{/t}></th>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>货币<{/t}></th>
+		<th><{t}>道具<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td style="vertical-align:middle">
+			<a href="../gm/player.php?id=<{$row['ask_char_id']}>" target="_parent"><span <{if $conditions['char_id']==$row['ask_char_id']}> class="badge badge-inverse"<{/if}>><{$row['ask_char_name']}></span></a>
+		</td>
+		<td style="text-align:left;vertical-align:middle">
+		<ul class="dl-horizontal">
+			<{if $row['ask_jade']}><li><{t}>元宝<{/t}>：<{$row['ask_jade']}></li><{/if}>
+			<{if $row['ask_gold']}><li><{t}>铜币<{/t}>：<{$row['ask_gold']}></li><{/if}>
+		</ul>
+		</td>
+		<td style="text-align:left;vertical-align:middle">
+		<{if $row['ask_item']}>
+			<ul class="dl-horizontal">
+			<{foreach $row['ask_item'] as $item}>
+				<li><span <{if $conditions['item_id']==$item[0]}>class="label label-important"<{/if}>><{t}><{$item[0]}><{/t}> * <{$item[1]}></span></li>
+			<{/foreach}>
+			</ul>
+		<{/if}>
+		</td>
+		<td style="border-top:0"></td>
+		<td style="vertical-align:middle">
+			<a href="../gm/player.php?id=<{$row['answer_char_id']}>" target="_parent"><span <{if $conditions['char_id']==$row['answer_char_id']}> class="badge badge-inverse"<{/if}>><{$row['answer_char_name']}></span></a>
+		</td>
+		<td style="text-align:left;vertical-align:middle">
+		<ul class="dl-horizontal">
+			<{if $row['answer_jade']}><li><{t}>元宝<{/t}>：<{$row['answer_jade']}></li><{/if}>
+			<{if $row['answer_gold']}><li><{t}>铜币<{/t}>：<{$row['answer_gold']}></li><{/if}>
+		</ul>
+		</td>
+		<td style="text-align:left;vertical-align:middle">
+		<{if $row['answer_item']}>
+			<ul class="dl-horizontal">
+			<{foreach $row['answer_item'] as $item}>
+				<li><span <{if $conditions['item_id']==$item[0]}>class="label label-important"<{/if}>><{t}><{$item[0]}><{/t}> * <{$item[1]}></span></li>
+			<{/foreach}>
+			</ul>
+		<{/if}>
+		</td>
+		<td style="vertical-align:middle"><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

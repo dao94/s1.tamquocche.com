@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>在线充值申请<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript">
+$(document).ready(function(){
+	//提交数据
+	$('#btn_search').click(function(){
+		var param1=[],param2=[],param3=[],param4=[],param5=[],param6=[],param7=[];
+		var char_id1=$("#id1").val(),char_name1=$("#name1").val(),jade1=$("#jade1").val(),
+			char_id2=$("#id2").val(),char_name2=$("#name2").val(),jade2=$("#jade2").val(),
+			char_id3=$("#id3").val(),char_name3=$("#name3").val(),jade3=$("#jade3").val(),
+			char_id4=$("#id4").val(),char_name4=$("#name4").val(),jade4=$("#jade4").val(),
+			char_id5=$("#id5").val(),char_name5=$("#name5").val(),jade5=$("#jade5").val(),
+			char_id6=$("#id6").val(),char_name6=$("#name6").val(),jade6=$("#jade6").val(),
+			char_id7=$("#id7").val(),char_name7=$("#name7").val(),jade7=$("#jade7").val();
+
+		if(char_id1!='' || char_name1!=''){
+			if(isNaN(jade1)||jade1<1){
+				alert('<{t}>元宝必须为正整数<{/t}>');
+				return false;
+			}else{
+				param1=char_id1+"####"+char_name1+"####"+jade1;
+			}
+		}
+		if(char_id2!='' || char_name2!=''){
+			if(isNaN(jade2)||jade2<1){
+				alert('<{t}>元宝必须为正整数<{/t}>');
+				return false;
+			}else{
+				param2=char_id2+"####"+char_name2+"####"+jade2;
+			}
+		}
+		if(char_id3!='' || char_name3!=''){
+			if(isNaN(jade3)||jade3<1){
+				alert('<{t}>元宝必须为正整数<{/t}>');
+				return false;
+			}else{
+				param3=char_id3+"####"+char_name3+"####"+jade3;
+			}
+		}
+		if(char_id4!='' || char_name4!=''){
+			if(isNaN(jade4)||jade4<1){
+				alert('<{t}>元宝必须为正整数<{/t}>');
+				return false;
+			}else{
+				param4=char_id4+"####"+char_name4+"####"+jade4;
+			}
+		}
+		if(char_id5!='' || char_name5!=''){
+			if(isNaN(jade5)||jade5<1){
+				alert('<{t}>元宝必须为正整数<{/t}>');
+				return false;
+			}else{
+				param5=char_id5+"####"+char_name5+"####"+jade5;
+			}
+		}
+		if(char_id6!='' || char_name6!=''){
+			if(isNaN(jade6)||jade6<1){
+				alert('<{t}>元宝必须为正整数<{/t}>');
+				return false;
+			}else{
+				param6=char_id6+"####"+char_name6+"####"+jade6;
+			}
+		}
+		if(char_id7!='' || char_name7!=''){
+			if(isNaN(jade7)||jade7<1){
+				alert('<{t}>元宝必须为正整数<{/t}>');
+				return false;
+			}else{
+				param7=char_id7+"####"+char_name7+"####"+jade7;
+			}
+		}
+		$.ajax({
+			type:'POST',
+			url:'?action=set',
+			data:{param1:param1,param2:param2,param3:param3,param4:param4,param5:param5,param6:param6,param7:param7},
+			dataType:'json',
+			success:function(result){
+					if(result.status=='error'){
+						$('#tab1_ajax_log').html(result.info);
+					}else{
+						$('#tab1_ajax_log').html(result.info);
+					}
+			}
+		});
+	});
+
+
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $conditions['action']==$key}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<{if $conditions['action']=='list'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;margin-left:10px;width:950px;">
+	<caption align="top">在线充值元宝申请</caption>
+	<tr>
+		<td><{t}>玩家1<{/t}></td>
+		<td><label><{t}>玩家ID<{/t}>：<input id="id1" name="id1" class="input-small" placeholder="<{t}>玩家ID<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><label style="margin-left:5px;"><{t}>角色名<{/t}>：
+		<div class="input-append">
+			<input id="name1" name="name1" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="">
+		</div></td>
+		<td><label><{t}>元宝<{/t}>：<input id="jade1" name="jade1" class="input-small" placeholder="<{t}>数量<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><{t}>玩家ID,玩家名2选1;元宝必填<{/t}></td>
+	</tr>
+	<tr>
+		<td><{t}>玩家2<{/t}></td>
+		<td><label><{t}>玩家ID<{/t}>：<input id="id2" name="id2" class="input-small" placeholder="<{t}>玩家ID<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><label style="margin-left:5px;"><{t}>角色名<{/t}>：
+		<div class="input-append">
+			<input id="name2" name="name2" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="">
+		</div></td>
+		<td><label><{t}>元宝<{/t}>：<input id="jade2" name="jade2" class="input-small" placeholder="<{t}>数量<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><{t}>(玩家ID和玩家名都没填 该行没申请玩家)<{/t}></td>
+	</tr>
+	<tr>
+		<td><{t}>玩家3<{/t}></td>
+		<td><label><{t}>玩家ID<{/t}>：<input id="id3" name="id3" class="input-small" placeholder="<{t}>玩家ID<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><label style="margin-left:5px;"><{t}>角色名<{/t}>：
+		<div class="input-append">
+			<input id="name3" name="name3" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="">
+		</div></td>
+		<td><label><{t}>元宝<{/t}>：<input id="jade3" name="jade3" class="input-small" placeholder="<{t}>数量<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><{t}>(玩家ID和玩家名都没填 该行没申请玩家)<{/t}></td>
+	</tr>
+	<tr>
+		<td><{t}>玩家4<{/t}></td>
+		<td><label><{t}>玩家ID<{/t}>：<input id="id4" name="id4" class="input-small" placeholder="<{t}>玩家ID<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><label style="margin-left:5px;"><{t}>角色名<{/t}>：
+		<div class="input-append">
+			<input id="name4" name="name4" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="">
+		</div></td>
+		<td><label><{t}>元宝<{/t}>：<input id="jade4" name="jade4" class="input-small" placeholder="<{t}>数量<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><{t}>(玩家ID和玩家名都没填 该行没申请玩家)<{/t}></td>
+	</tr>
+	<tr>
+		<td><{t}>玩家5<{/t}></td>
+		<td><label><{t}>玩家ID<{/t}>：<input id="id5" name="id5" class="input-small" placeholder="<{t}>玩家ID<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><label style="margin-left:5px;"><{t}>角色名<{/t}>：
+		<div class="input-append">
+			<input id="name5" name="name5" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="">
+		</div></td>
+		<td><label><{t}>元宝<{/t}>：<input id="jade5" name="jade5" class="input-small" placeholder="<{t}>数量<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><{t}>(玩家ID和玩家名都没填 该行没申请玩家)<{/t}></td>
+	</tr>
+	<tr>
+		<td><{t}>玩家6<{/t}></td>
+		<td><label><{t}>玩家ID<{/t}>：<input id="id6" name="id6" class="input-small" placeholder="<{t}>玩家ID<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><label style="margin-left:5px;"><{t}>角色名<{/t}>：
+		<div class="input-append">
+			<input id="name6" name="name6" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="">
+		</div></td>
+		<td><label><{t}>元宝<{/t}>：<input id="jade6" name="jade6" class="input-small" placeholder="<{t}>数量<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><{t}>(玩家ID和玩家名都没填 该行没申请玩家)<{/t}></td>
+	</tr>
+	<tr>
+		<td><{t}>玩家7<{/t}></td>
+		<td><label><{t}>玩家ID<{/t}>：<input id="id7" name="id7" class="input-small" placeholder="<{t}>玩家ID<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><label style="margin-left:5px;"><{t}>角色名<{/t}>：
+		<div class="input-append">
+			<input id="name7" name="name7" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="">
+		</div></td>
+		<td><label><{t}>元宝<{/t}>：<input id="jade7" name="jade7" class="input-small" placeholder="<{t}>数量<{/t}>..." maxlength="16" type="text" value=""></label></td>
+		<td><{t}>(玩家ID和玩家名都没填 该行没申请玩家)<{/t}></td>
+	</tr>
+
+</table>
+
+
+	&nbsp;&nbsp;&nbsp;&nbsp;<button class="btn btn-primary" id="btn_search"><{t}>提 交<{/t}></button>
+	<span id="tab1_ajax_log" class="badge badge-warning"></span>
+<{else if $conditions['action']=='log'}>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="log">
+		<table class="table table-striped table-bordered table-condensed form-inline">
+		<thead>
+			<tr>
+				<th><{t}>账号<{/t}></th>
+				<th><{t}>角色<{/t}></th>
+				<th><{t}>物品列表<{/t}></th>
+				<th><{t}>申请人<{/t}></th>
+				<th><{t}>申请时间<{/t}></th>
+				<th><{t}>审核人<{/t}></th>
+				<th><{t}>状态<{/t}></th>
+				<th><{t}>审核时间<{/t}></th>
+			</tr>
+		</thead>
+		<tbody>
+		<{while $apply_list = $apply_list_query->fetch_assoc()}>
+		<tr id="tr_<{$apply_list['id']}>_<{$apply_list['char_id']}>_<{$apply_list['jade']}>">
+			<td><label for="applyid_<{$apply_list['id']}>"><{$apply_list['account']}></label></td>
+			<td><a href="../gm/player.php?id=<{$apply_list['char_id']}>"><{$apply_list['char_name']}></a>
+			</td>
+			<td>
+					<a class="accordion-toggle btn btn-small" data-toggle="collapse" href="#reward_<{$apply_list['id']}>"><i class="icon-search"></i></a>
+					<div id="reward_<{$apply_list['id']}>" class="accordion-body collapse" style="text-align:left">
+							<{foreach json_decode($apply_list['reward_list'],true) as $key=>$val}>
+							<{if $key eq 'itemList'}>
+							<{foreach $val as $item}>
+							<{t}><{$item['itemId']}><{/t}>[<{$item['number']}>]<{if $item['bind']}><{t}>非绑定<{/t}><{else}><{t}>绑定<{/t}><{/if}><br/>
+							<{/foreach}>
+							<{elseif $key eq 'moneyList'}>
+							<{foreach $val as $moneyType=>$moneyNum}>
+							<{if $moneyType eq 'gold'}>
+							<{t}>铜币<{/t}>
+							<{elseif $moneyType eq 'giftGold'}>
+							<{t}>铜券<{/t}>
+							<{elseif $moneyType eq 'jade'}>
+							<{t}>元宝<{/t}>
+							<{elseif $moneyType eq 'giftJade'}>
+							<{t}>礼券<{/t}>
+							<{/if}>[<{$moneyNum}>]<br/>
+							<{/foreach}>
+							<{/if}>
+							<{/foreach}>
+					</div>
+			</td>
+			<td><{$apply_list['applyer']}></td>
+			<td><{$apply_list['apply_ts']|date_format:'%Y-%m-%d %T'}></td>
+			<td><{$apply_list['verifyer']}></td>
+			<td class="status"><{if $apply_list['status'] eq 1}><span class="badge badge-warning"><{t}>通过<{/t}></span><{elseif $apply_list['status'] eq 2}><span class="badge badge-info"><{t}>拒绝<{/t}></span><{else}><span class="badge"><{t}>未处理<{/t}></span><{/if}></td>
+			<td><{$apply_list['verify_ts']|date_format:'%Y-%m-%d %T'}></td>
+		</tr>
+		<{/while}>
+
+		</tbody>
+	</table>
+	<div class="pagination pagination-centered">
+			<{$page}>
+	</div>
+		</div>
+</div>
+
+<{/if}>
+
+</body>
+</html>

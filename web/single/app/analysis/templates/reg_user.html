@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title><{t}>注册用户<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../../public/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="../../public/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript" src="../../public/js/lwjs.typeahead.js"></script>
+</head>
+
+<body>
+<script language="javascript">
+$(function($){
+	$('#btn_search').click(function(){
+		$('#action').val('');
+	});
+	$('#btn_export').click(function(){
+		$('#action').val('export');
+	});
+});
+</script>
+<form action="?" method="get" class="well well-small form-search">
+<div>
+	<label for="id"><{t}>角色ID<{/t}>：<input class="input-medium" type="text" data-provide="typeahead" id="id" name="id" maxlength="20" value="<{$conditions['id']}>"  placeholder="<{t}>输入角色ID<{/t}>">
+	</label>
+	<label for="account"><{t}>账号<{/t}>：
+		<div class="input-append">
+			<input class="input-medium" type="text" data-provide="typeahead" id="account" name="account" maxlength="60" value="<{$conditions['account']}>"  placeholder="<{t}>输入玩家账号<{/t}>">
+			<span class="add-on" style="cursor: pointer"><i class="icon-search"></i></span>
+		</div>
+	</label>
+	<label for="name"><{t}>角色名<{/t}>：
+		<div class="input-append">
+			<input class="input-medium" placeholder="<{t}>输入角色名<{/t}>" type="text" data-provide="typeahead" id="name" name="name" maxlength="30" value="<{$conditions['name']}>">
+			<span class="add-on" style="cursor: pointer"><i class="icon-search"></i></span>
+		</div>
+	</label>
+	<label><{t}>等级<{/t}>：</label>
+	<input class="input-mini" type="text" maxlength="4" id="min_level" name="min_level" value="<{$conditions['min_level']}>" placeholder="<{t}>最低等级<{/t}>"/>
+	<i class="icon-minus"></i>
+	<input class="input-mini" type="text" maxlength="4" id="max_level" name="max_level" value="<{$conditions['max_level']}>" placeholder="<{t}>最高等级<{/t}>"/>
+</div>
+<div>
+	<label><{t}>职业<{/t}>：</label>
+	<select name="occ" class="input-small">
+		<option value=""><{t}>全部<{/t}>...</option>
+		<{foreach $occ_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['occ']==$key}>selected<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+	<label><{t}>注册时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<label><{t}>每页显示<{/t}>：</label>
+	<select name="list_row" class="input-small">
+		<{foreach $list_row_conf as $key=>$item}>
+		<option value="<{$item}>" <{if $conditions['list_row']==$item}>selected<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+	<div class="btn-group">
+		<button class="btn btn-primary" id="btn_search"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+		<button class="btn btn-inverse" id="btn_export"><{t}>导出数据<{/t}></button>
+	</div>
+</div>
+<input type="hidden" id="action" name="action" value="">
+</form>
+
+<div class="pagination pagination-centered" style="margin:0; padding:0; float:right"><{$page}></div>
+
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th>ID</th>
+		<th><{t}>帐号<{/t}></th>
+		<th><{t}>区服<{/t}></th>
+		<th><{t}>角色<{/t}></th>
+		<th><{t}>职业<{/t}></th>
+		<th><{t}>阵营<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+		<th><{t}>注册时间<{/t}></th>
+		<th><{t}>最后登录时间<{/t}></th>
+		<th>IP</th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}> <{foreach $data as $row}>
+	<tr>
+		<td><{$row['_id']}></td>
+		<td><{$row['account']}></td>
+		<td><{$row['serverId']}></td>
+		<td><a href="../gm/player.php?id=<{$row['_id']}>"><{$row['name']}></a></td>
+		<td><{$row['occ_name']}></td>
+		<td><{$row['camp_name']}></td>
+		<td><{$row['level']}></td>
+		<td><{$row['creat_time']}></td>
+		<td><{$row['last_login_time']}></td>
+		<td><{$row['ip']}></td>
+	</tr>
+	<{/foreach}> <{else}>
+	<tr>
+		<td colspan="9"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+	</tr>
+	<{/if}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

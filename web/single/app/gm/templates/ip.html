@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>IP查询<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css"/>
+<style type="text/css">
+.table th,.table td {
+	text-align:center;
+	vertical-align: middle;
+}
+.bg{ background-color:#999}
+</style>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+</head>
+
+<body>
+<div>
+<form class="well well-small form-search" action="?action=<{$conditions['action']}>">
+	<label style="margin-left:3px;"><{t}>IP<{/t}>：</label>
+	<input name="ip" class="input-medium" placeholder="<{t}>请输入IP<{/t}>" type="text" data-provide="typeahead" maxlength="15" value="<{$conditions['ip']}>">
+	<label style="margin-left:5px;"><{t}>登陆时间<{/t}>：</label>
+	<input type="text" class="input-small" placeholder="<{t}>输入开始日期<{/t}>" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" name="start_date" value="<{$conditions['start_date']}>"> <i class="icon-minus"></i>
+	<input type="text" class="input-small" placeholder="<{t}>输入结束日期<{/t}>" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" name="end_date" value="<{$conditions['end_date']}>">
+	<label style="margin-left:3px;"><{t}>状态<{/t}>：</label>
+	<select name="status" class="input-small">
+		<option value=""><{t}>全部<{/t}>...</option>
+	<{foreach $status_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['status']==$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+
+	<button class="btn btn-primary"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+</form>
+
+<{if $conditions['ip']}>
+<table class="table table-bordered" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>玩家ID<{/t}></th>
+		<th><{t}>账号<{/t}></th>
+		<th><{t}>角色<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+		<th><{t}>注册时间<{/t}></th>
+		<th><{t}>登陆时间<{/t}></th>
+		<th><{t}>是否封禁<{/t}></th>
+		<th><{t}>操作<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_id']}></td>
+		<td><{$row['account']|default:'<span class="label label-warning">Data Deficient</span>'}></td>
+		<td><a href="player.php?id=<{$row['char_id']}>"><{$row['name']|default:'<span class="label label-warning">Data Deficient</span>'}></a></td>
+		<td><{$row['level']|default:'<span class="label label-warning">Data Deficient</span>'}></td>
+		<td><{$row['creat_time']|default:'<span class="label label-warning">Data Deficient</span>'}></td>
+		<td><{$row['login_time']|default:'<span class="label label-warning">Data Deficient</span>'}></td>
+		<td><span class="label <{if $row['status']==1}>label-important<{/if}>"><{$status_conf[$row['status']]}></span></td>
+		<td>
+			<a href="forbid.php?action=manage&type=2&name=<{$row['name']}>">
+			<{if $row['status']==1}>
+				<button class="btn btn-small btn-danger"><i class="icon-warning-sign icon-white"></i> <{t}>解封<{/t}></button>
+			<{else}>
+				<button class="btn btn-small btn-inverse"><i class="icon-lock icon-white"></i> <{t}>封禁<{/t}></button>
+			<{/if}>
+			</a>
+		</td>
+	</tr>
+<{/foreach}>	
+</tbody>
+</table>
+
+<{else}>
+<table class="table table-bordered" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th>IP</th>
+		<th><{t}>归属地<{/t}></th>
+		<th><{t}>人数<{/t}></th>
+		<th><{t}>对应玩家<{/t}></th>
+		<th><{t}>是否封禁<{/t}></th>
+		<th><{t}>操作<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['ip']}></td>
+		<td><{$row['country']}></td>
+		<td><{$row['count']}></td>
+		<td><a href="?action=<{$conditions['action']}>&ip=<{$row['ip']}>"><button class="btn btn-small btn-primary"><i class="icon-search icon-white"></i><{t}>查看<{/t}></button></a></td>
+		<td><span class="label <{if $row['status']==1}>label-important<{/if}>"><{$status_conf[$row['status']]}></span></td>
+		<td>
+		<{if $row['status']==1}>
+			<a href="forbid.php?action=manage&type=3&ip=<{$row['ip']}>" class="unforbid_ip" name="<{$row['ip']}>"><button class="btn btn-small btn-danger"><i class="icon-warning-sign icon-white"></i> <{t}>解封<{/t}></button></a>
+		<{else}>
+			<a href="forbid.php?action=manage&type=3&ip=<{$row['ip']}>" class="forbid_ip" name="<{$row['ip']}>"><button class="btn btn-small btn-inverse"><i class="icon-lock icon-white"></i> <{t}>封禁<{/t}></button></a>
+		<{/if}>
+		</td>
+	</tr>
+<{/foreach}>	
+</tbody>
+</table>
+<{/if}>
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

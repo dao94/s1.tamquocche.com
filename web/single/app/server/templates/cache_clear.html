@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>缓存清理<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />     
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript">
+$(function($){
+	$('.btn_clear').click(function(){
+		$('#clear_iframe').attr('src','?action=clear&type='+this.value).fadeIn();
+	});
+	var height=0;
+	setInterval(function(){
+		var real_height=$('#clear_iframe').contents().height();
+		if(height>0&&height==real_height){
+			return false;	
+		}else{
+				height=real_height;
+				clear_iframe.window.scroll(0,999999);
+		}
+	},100);
+});
+</script>
+</head>
+<body>
+<div class="well well-small">
+	<button class="btn btn-primary btn_clear" value="all"><i class="icon-trash icon-white"></i><{t}>一键清理<{/t}></button>
+<{foreach $type_config as $key=>$item}>
+	<button class="btn btn_clear" value="<{$key}>"><{t}>清理<{/t}><{$item}></button>
+<{/foreach}>
+</div>
+<iframe id="clear_iframe" name="clear_iframe" class="well well-small hide" style="width:99%;height:350px; overflow:"></iframe>
+</body>
+</html> 

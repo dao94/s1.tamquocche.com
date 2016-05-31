@@ -1,0 +1,954 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<copy_conf>
+	<!--层级副本示例-->
+	<copy name="蜀道试炼(单人)" entryid="560100">
+		<!--副本-->
+		<layer name="39级">
+			<!--本层的怪物和boss-->
+			<monster occ="6601">试炼女妖(16)</monster>
+			<monster occ="6602">试炼天鬼(21)</monster>
+			<monster occ="6604">试炼蝰蛇(19)</monster>
+			<monster occ="6605">试炼娜迦(14)</monster>
+			<monster occ="6607">试炼机关兽(13)</monster>
+			<monster occ="6608">试炼机关龙(15)</monster>
+			<boss occ="6603">试炼官·祝融夫人</boss>
+			<boss occ="6606">试炼官·黄盖</boss>
+			<boss occ="6609">试炼官·许褚</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<monster occ="6610">试炼女妖(16)</monster>
+			<monster occ="6611">试炼天鬼(21)</monster>
+			<monster occ="6613">试炼蝰蛇(19)</monster>
+			<monster occ="6614">试炼娜迦(14)</monster>
+			<monster occ="6616">试炼机关兽(13)</monster>
+			<monster occ="6617">试炼机关龙(15)</monster>
+			<boss occ="6612">试炼官·祝融夫人</boss>
+			<boss occ="6615">试炼官·黄盖</boss>
+			<boss occ="6618">试炼官·许褚</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<monster occ="6619">试炼女妖(16)</monster>
+			<monster occ="6620">试炼天鬼(21)</monster>
+			<monster occ="6622">试炼蝰蛇(19)</monster>
+			<monster occ="6623">试炼娜迦(14)</monster>
+			<monster occ="6625">试炼机关兽(13)</monster>
+			<monster occ="6626">试炼机关龙(15)</monster>
+			<boss occ="6621">试炼官·祝融夫人</boss>
+			<boss occ="6624">试炼官·黄盖</boss>
+			<boss occ="6627">试炼官·许褚</boss>
+		</layer>
+	</copy>
+	<copy name="蜀道试炼(组队)" entryid="560200">
+		<!--副本-->
+		<layer name="39级">
+			<!--本层的怪物和boss-->
+			<monster occ="6630">精英试炼女妖(16)</monster>
+			<monster occ="6631">精英试炼天鬼(21)</monster>
+			<monster occ="6633">精英试炼蝰蛇(19)</monster>
+			<monster occ="6634">精英试炼娜迦(14)</monster>
+			<monster occ="6636">精英试炼机关兽(13)</monster>
+			<monster occ="6637">精英试炼机关龙(15)</monster>
+			<boss occ="6632">精英试炼官·祝融夫人</boss>
+			<boss occ="6635">精英试炼官·黄盖</boss>
+			<boss occ="6638">精英试炼官·许褚</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<monster occ="6639">精英试炼女妖(16)</monster>
+			<monster occ="6640">精英试炼天鬼(21)</monster>
+			<monster occ="6642">精英试炼蝰蛇(19)</monster>
+			<monster occ="6643">精英试炼娜迦(14)</monster>
+			<monster occ="6645">精英试炼机关兽(13)</monster>
+			<monster occ="6646">精英试炼机关龙(15)</monster>
+			<boss occ="6641">精英试炼官·祝融夫人</boss>
+			<boss occ="6644">精英试炼官·黄盖</boss>
+			<boss occ="6647">精英试炼官·许褚</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<monster occ="6648">精英试炼女妖(16)</monster>
+			<monster occ="6649">精英试炼天鬼(21)</monster>
+			<monster occ="6651">精英试炼蝰蛇(19)</monster>
+			<monster occ="6652">精英试炼娜迦(14)</monster>
+			<monster occ="6654">精英试炼机关兽(13)</monster>
+			<monster occ="6655">精英试炼机关龙(15)</monster>
+			<boss occ="6650">精英试炼官·祝融夫人</boss>
+			<boss occ="6653">精英试炼官·黄盖</boss>
+			<boss occ="6656">精英试炼官·许褚</boss>
+		</layer>
+	</copy>
+	<copy name="兵临城下(单人)" entryid="600100">
+		<!--副本-->
+		<layer name="35级">
+			<!--本层的怪物和boss-->
+			<monster occ="4001">短枪兵(60)</monster>
+			<monster occ="4002">短枪卒(60)</monster>
+			<monster occ="4003">长枪兵(60)</monster>
+			<monster occ="4004">长枪卒(60)</monster>
+			<monster occ="4006">盾兵(60)</monster>
+			<monster occ="4007">盾卒(60)</monster>
+			<monster occ="4008">狗头兵(60)</monster>
+			<monster occ="4009">狗头卒(60)</monster>
+			<monster occ="4011">轻骑兵(60)</monster>
+			<monster occ="4012">轻骑卒(60)</monster>
+			<monster occ="4013">重骑兵(60)</monster>
+			<monster occ="4014">重骑卒(60)</monster>
+			<monster occ="4016">刀车兵(60)</monster>
+			<monster occ="4017">刀车卒(60)</monster>
+			<monster occ="4018">人马兵(60)</monster>
+			<monster occ="4019">人马卒(60)</monster>
+			<monster occ="4195">刀车兵(60)</monster>
+			<monster occ="4196">刀车卒(60)</monster>
+			<monster occ="4197">人马兵(60)</monster>
+			<monster occ="4198">人马卒(60)</monster>
+			<monster occ="4200">轻骑兵(60)</monster>
+			<monster occ="4201">轻骑卒(60)</monster>
+			<monster occ="4202">重骑兵(60)</monster>
+			<monster occ="4203">重骑卒(60)</monster>
+			<boss occ="4005">左将军（BOSS）</boss>
+			<boss occ="4010">左护大将（BOSS）</boss>
+			<boss occ="4015">右将军（BOSS）</boss>
+			<boss occ="4020">右护大将（BOSS）</boss>
+			<boss occ="4199">右将军（BOSS）</boss>
+			<boss occ="4204">右护大将（BOSS）</boss>
+		</layer>
+		<layer name="40级">
+			<!--本层的怪物和boss-->
+			<monster occ="4021">短枪兵(25)</monster>
+			<monster occ="4022">短枪卒(25)</monster>
+			<monster occ="4023">长枪兵(25)</monster>
+			<monster occ="4024">长枪卒(25)</monster>
+			<monster occ="4026">盾兵(25)</monster>
+			<monster occ="4027">盾卒(25)</monster>
+			<monster occ="4028">狗头兵(25)</monster>
+			<monster occ="4029">狗头卒(25)</monster>
+			<monster occ="4031">轻骑兵(25)</monster>
+			<monster occ="4032">轻骑卒(25)</monster>
+			<monster occ="4033">重骑兵(25)</monster>
+			<monster occ="4034">重骑卒(25)</monster>
+			<monster occ="4036">刀车兵(25)</monster>
+			<monster occ="4037">刀车卒(25)</monster>
+			<monster occ="4038">人马兵(25)</monster>
+			<monster occ="4039">人马卒(25)</monster>
+			<monster occ="4205">刀车兵(60)</monster>
+			<monster occ="4206">刀车卒(60)</monster>
+			<monster occ="4207">人马兵(60)</monster>
+			<monster occ="4208">人马卒(60)</monster>
+			<monster occ="4210">轻骑兵(60)</monster>
+			<monster occ="4211">轻骑卒(60)</monster>
+			<monster occ="4212">重骑兵(60)</monster>
+			<monster occ="4213">重骑卒(60)</monster>
+			<boss occ="4025">左将军（BOSS）</boss>
+			<boss occ="4030">左护大将（BOSS）</boss>
+			<boss occ="4035">右将军（BOSS）</boss>
+			<boss occ="4040">右护大将（BOSS）</boss>
+			<boss occ="4209">右将军（BOSS）</boss>
+			<boss occ="4214">右护大将（BOSS）</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<monster occ="4041">短枪兵(25)</monster>
+			<monster occ="4042">短枪卒(25)</monster>
+			<monster occ="4043">长枪兵(25)</monster>
+			<monster occ="4044">长枪卒(25)</monster>
+			<monster occ="4046">盾兵(25)</monster>
+			<monster occ="4047">盾卒(25)</monster>
+			<monster occ="4048">狗头兵(25)</monster>
+			<monster occ="4049">狗头卒(25)</monster>
+			<monster occ="4051">轻骑兵(25)</monster>
+			<monster occ="4052">轻骑卒(25)</monster>
+			<monster occ="4053">重骑兵(25)</monster>
+			<monster occ="4054">重骑卒(25)</monster>
+			<monster occ="4056">刀车兵(25)</monster>
+			<monster occ="4057">刀车卒(25)</monster>
+			<monster occ="4058">人马兵(25)</monster>
+			<monster occ="4059">人马卒(25)</monster>
+			<monster occ="4215">刀车兵(60)</monster>
+			<monster occ="4216">刀车卒(60)</monster>
+			<monster occ="4217">人马兵(60)</monster>
+			<monster occ="4218">人马卒(60)</monster>
+			<monster occ="4220">轻骑兵(60)</monster>
+			<monster occ="4221">轻骑卒(60)</monster>
+			<monster occ="4222">重骑兵(60)</monster>
+			<monster occ="4223">重骑卒(60)</monster>
+			<boss occ="4045">左将军（BOSS）</boss>
+			<boss occ="4050">左护大将（BOSS）</boss>
+			<boss occ="4055">右将军（BOSS）</boss>
+			<boss occ="4060">右护大将（BOSS）</boss>
+			<boss occ="4219">右将军（BOSS）</boss>
+			<boss occ="4224">右护大将（BOSS）</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<monster occ="4061">短枪兵(25)</monster>
+			<monster occ="4062">短枪卒(25)</monster>
+			<monster occ="4063">长枪兵(25)</monster>
+			<monster occ="4064">长枪卒(25)</monster>
+			<monster occ="4066">盾兵(25)</monster>
+			<monster occ="4067">盾卒(25)</monster>
+			<monster occ="4068">狗头兵(25)</monster>
+			<monster occ="4069">狗头卒(25)</monster>
+			<monster occ="4071">轻骑兵(25)</monster>
+			<monster occ="4072">轻骑卒(25)</monster>
+			<monster occ="4073">重骑兵(25)</monster>
+			<monster occ="4074">重骑卒(25)</monster>
+			<monster occ="4076">刀车兵(25)</monster>
+			<monster occ="4077">刀车卒(25)</monster>
+			<monster occ="4078">人马兵(25)</monster>
+			<monster occ="4079">人马卒(25)</monster>
+			<monster occ="4225">刀车兵(60)</monster>
+			<monster occ="4226">刀车卒(60)</monster>
+			<monster occ="4227">人马兵(60)</monster>
+			<monster occ="4228">人马卒(60)</monster>
+			<monster occ="4230">轻骑兵(60)</monster>
+			<monster occ="4231">轻骑卒(60)</monster>
+			<monster occ="4232">重骑兵(60)</monster>
+			<monster occ="4233">重骑卒(60)</monster>
+			<boss occ="4065">左将军（BOSS）</boss>
+			<boss occ="4070">左护大将（BOSS）</boss>
+			<boss occ="4075">右将军（BOSS）</boss>
+			<boss occ="4080">右护大将（BOSS）</boss>
+			<boss occ="4229">右将军（BOSS）</boss>
+			<boss occ="4234">右护大将（BOSS）</boss>
+		</layer>
+		<layer name="70级">
+			<!--本层的怪物和boss-->
+			<monster occ="4081">短枪兵(20)</monster>
+			<monster occ="4082">短枪卒(20)</monster>
+			<monster occ="4083">长枪兵(20)</monster>
+			<monster occ="4084">长枪卒(20)</monster>
+			<monster occ="4086">盾兵(20)</monster>
+			<monster occ="4087">盾卒(20)</monster>
+			<monster occ="4088">狗头兵(20)</monster>
+			<monster occ="4089">狗头卒(20)</monster>
+			<monster occ="4091">轻骑兵(20)</monster>
+			<monster occ="4092">轻骑卒(20)</monster>
+			<monster occ="4093">重骑兵(20)</monster>
+			<monster occ="4094">重骑卒(20)</monster>
+			<monster occ="4096">刀车兵(20)</monster>
+			<monster occ="4097">刀车卒(20)</monster>
+			<monster occ="4098">人马兵(20)</monster>
+			<monster occ="4099">人马卒(20)</monster>
+			<boss occ="4085">左将军（BOSS）</boss>
+			<boss occ="4090">左护大将（BOSS）</boss>
+			<boss occ="4095">右将军（BOSS）</boss>
+			<boss occ="4100">右护大将（BOSS）</boss>
+		</layer>
+	</copy>
+	<copy name="兵临城下(组队)" entryid="600200">
+		<!--副本-->
+		<layer name="35级">
+			<!--本层的怪物和boss-->
+			<monster occ="4851">精英短枪兵(75)</monster>
+			<monster occ="4852">精英短枪卒(75)</monster>
+			<monster occ="4853">精英长枪兵(75)</monster>
+			<monster occ="4854">精英长枪卒(75)</monster>
+			<monster occ="4856">精英盾兵(75)</monster>
+			<monster occ="4857">精英盾卒(75)</monster>
+			<monster occ="4858">精英狗头兵(75)</monster>
+			<monster occ="4859">精英狗头卒(75)</monster>
+			<monster occ="4861">精英轻骑兵(75)</monster>
+			<monster occ="4862">精英轻骑卒(75)</monster>
+			<monster occ="4863">精英重骑兵(75)</monster>
+			<monster occ="4864">精英重骑卒(75)</monster>
+			<monster occ="4866">精英刀车兵(75)</monster>
+			<monster occ="4867">精英刀车卒(75)</monster>
+			<monster occ="4868">精英人马兵(75)</monster>
+			<monster occ="4869">精英人马卒(75)</monster>
+			<monster occ="7001">精英轻骑兵(60)</monster>
+			<monster occ="7002">精英轻骑卒(60)</monster>
+			<monster occ="7003">精英重骑兵(60)</monster>
+			<monster occ="7004">精英重骑卒(60)</monster>
+			<monster occ="7006">精英刀车兵(60)</monster>
+			<monster occ="7007">精英刀车卒(60)</monster>
+			<monster occ="7008">精英人马兵(60)</monster>
+			<monster occ="7009">精英人马卒(60)</monster>
+			<boss occ="4855">精英左将军（BOSS）</boss>
+			<boss occ="4860">精英左护大将（BOSS）</boss>
+			<boss occ="4865">精英右将军（BOSS）</boss>
+			<boss occ="4870">精英右护大将（BOSS）</boss>
+			<boss occ="7005">精英右将军（BOSS）</boss>
+			<boss occ="7010">精英右护大将（BOSS）</boss>
+		</layer>
+		<layer name="40级">
+			<!--本层的怪物和boss-->
+			<monster occ="4871">精英短枪兵(75)</monster>
+			<monster occ="4872">精英短枪卒(75)</monster>
+			<monster occ="4873">精英长枪兵(75)</monster>
+			<monster occ="4874">精英长枪卒(75)</monster>
+			<monster occ="4876">精英盾兵(75)</monster>
+			<monster occ="4877">精英盾卒(75)</monster>
+			<monster occ="4878">精英狗头兵(75)</monster>
+			<monster occ="4879">精英狗头卒(75)</monster>
+			<monster occ="4881">精英轻骑兵(75)</monster>
+			<monster occ="4882">精英轻骑卒(75)</monster>
+			<monster occ="4883">精英重骑兵(75)</monster>
+			<monster occ="4884">精英重骑卒(75)</monster>
+			<monster occ="4886">精英刀车兵(75)</monster>
+			<monster occ="4887">精英刀车卒(75)</monster>
+			<monster occ="4888">精英人马兵(75)</monster>
+			<monster occ="4889">精英人马卒(75)</monster>
+			<monster occ="7011">精英轻骑兵(60)</monster>
+			<monster occ="7012">精英轻骑卒(60)</monster>
+			<monster occ="7013">精英重骑兵(60)</monster>
+			<monster occ="7014">精英重骑卒(60)</monster>
+			<monster occ="7016">精英刀车兵(60)</monster>
+			<monster occ="7017">精英刀车卒(60)</monster>
+			<monster occ="7018">精英人马兵(60)</monster>
+			<monster occ="7019">精英人马卒(60)</monster>
+			<boss occ="4875">精英左将军（BOSS）</boss>
+			<boss occ="4880">精英左护大将（BOSS）</boss>
+			<boss occ="4885">精英右将军（BOSS）</boss>
+			<boss occ="4890">精英右护大将（BOSS）</boss>
+			<boss occ="7015">精英右将军（BOSS）</boss>
+			<boss occ="7020">精英右护大将（BOSS）</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<monster occ="4891">精英短枪兵(75)</monster>
+			<monster occ="4892">精英短枪卒(75)</monster>
+			<monster occ="4893">精英长枪兵(75)</monster>
+			<monster occ="4894">精英长枪卒(75)</monster>
+			<monster occ="4896">精英盾兵(75)</monster>
+			<monster occ="4897">精英盾卒(75)</monster>
+			<monster occ="4898">精英狗头兵(75)</monster>
+			<monster occ="4899">精英狗头卒(75)</monster>
+			<monster occ="4901">精英轻骑兵(75)</monster>
+			<monster occ="4902">精英轻骑卒(75)</monster>
+			<monster occ="4903">精英重骑兵(75)</monster>
+			<monster occ="4904">精英重骑卒(75)</monster>
+			<monster occ="4906">精英刀车兵(75)</monster>
+			<monster occ="4907">精英刀车卒(75)</monster>
+			<monster occ="4908">精英人马兵(75)</monster>
+			<monster occ="4909">精英人马卒(75)</monster>
+			<monster occ="7021">精英轻骑兵(60)</monster>
+			<monster occ="7022">精英轻骑卒(60)</monster>
+			<monster occ="7023">精英重骑兵(60)</monster>
+			<monster occ="7024">精英重骑卒(60)</monster>
+			<monster occ="7026">精英刀车兵(60)</monster>
+			<monster occ="7027">精英刀车卒(60)</monster>
+			<monster occ="7028">精英人马兵(60)</monster>
+			<monster occ="7029">精英人马卒(60)</monster>
+			<boss occ="4895">精英左将军（BOSS）</boss>
+			<boss occ="4900">精英左护大将（BOSS）</boss>
+			<boss occ="4905">精英右将军（BOSS）</boss>
+			<boss occ="4910">精英右护大将（BOSS）</boss>
+			<boss occ="7025">精英右将军（BOSS）</boss>
+			<boss occ="7030">精英右护大将（BOSS）</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<monster occ="4911">精英短枪兵(75)</monster>
+			<monster occ="4912">精英短枪卒(75)</monster>
+			<monster occ="4913">精英长枪兵(75)</monster>
+			<monster occ="4914">精英长枪卒(75)</monster>
+			<monster occ="4916">精英盾兵(75)</monster>
+			<monster occ="4917">精英盾卒(75)</monster>
+			<monster occ="4918">精英狗头兵(75)</monster>
+			<monster occ="4919">精英狗头卒(75)</monster>
+			<monster occ="4921">精英轻骑兵(75)</monster>
+			<monster occ="4922">精英轻骑卒(75)</monster>
+			<monster occ="4923">精英重骑兵(75)</monster>
+			<monster occ="4924">精英重骑卒(75)</monster>
+			<monster occ="4926">精英刀车兵(75)</monster>
+			<monster occ="4927">精英刀车卒(75)</monster>
+			<monster occ="4928">精英人马兵(75)</monster>
+			<monster occ="4929">精英人马卒(75)</monster>
+			<monster occ="7031">精英轻骑兵(60)</monster>
+			<monster occ="7032">精英轻骑卒(60)</monster>
+			<monster occ="7033">精英重骑兵(60)</monster>
+			<monster occ="7034">精英重骑卒(60)</monster>
+			<monster occ="7036">精英刀车兵(60)</monster>
+			<monster occ="7037">精英刀车卒(60)</monster>
+			<monster occ="7038">精英人马兵(60)</monster>
+			<monster occ="7039">精英人马卒(60)</monster>
+			<boss occ="4915">精英左将军（BOSS）</boss>
+			<boss occ="4920">精英左护大将（BOSS）</boss>
+			<boss occ="4925">精英右将军（BOSS）</boss>
+			<boss occ="4930">精英右护大将（BOSS）</boss>
+			<boss occ="7035">精英右将军（BOSS）</boss>
+			<boss occ="7040">精英右护大将（BOSS）</boss>
+		</layer>
+		<layer name="70级">
+			<!--本层的怪物和boss-->
+			<monster occ="4931">短枪兵(20)</monster>
+			<monster occ="4932">短枪卒(20)</monster>
+			<monster occ="4933">长枪兵(20)</monster>
+			<monster occ="4934">长枪卒(20)</monster>
+			<monster occ="4936">盾兵(20)</monster>
+			<monster occ="4937">盾卒(20)</monster>
+			<monster occ="4938">狗头兵(20)</monster>
+			<monster occ="4939">狗头卒(20)</monster>
+			<monster occ="4941">轻骑兵(20)</monster>
+			<monster occ="4942">轻骑卒(20)</monster>
+			<monster occ="4943">重骑兵(20)</monster>
+			<monster occ="4944">重骑卒(20)</monster>
+			<monster occ="4946">刀车兵(20)</monster>
+			<monster occ="4947">刀车卒(20)</monster>
+			<monster occ="4948">人马兵(20)</monster>
+			<monster occ="4949">人马卒(20)</monster>
+			<boss occ="4935">精英左将军（BOSS）</boss>
+			<boss occ="4940">精英左护大将（BOSS）</boss>
+			<boss occ="4945">精英右将军（BOSS）</boss>
+			<boss occ="4950">精英右护大将（BOSS）</boss>
+		</layer>
+	</copy>
+	<copy name="草船借箭(单人)" entryid="700100">
+		<!--副本-->
+		<layer name="35级">
+			<!--本层的怪物和boss-->
+			<monster occ="4301">初级魔化草人</monster>
+			<monster occ="4302">中级魔化草人</monster>
+			<monster occ="4303">高级魔化草人</monster>
+			<boss occ="4304">一阶稻草魔头</boss>
+			<boss occ="4305">二阶稻草魔头</boss>
+			<boss occ="4306">三阶稻草魔头</boss>
+			<boss occ="4307">四阶稻草魔头</boss>
+			<boss occ="4308">五阶稻草魔头</boss>
+			<boss occ="4309">六阶稻草魔头</boss>
+			<boss occ="4310">七阶稻草魔头</boss>
+			<boss occ="4311">八阶稻草魔头</boss>
+			<boss occ="4312">九阶稻草魔头</boss>
+			<boss occ="4313">终极稻草魔头</boss>
+		</layer>
+		<layer name="40级">
+			<!--本层的怪物和boss-->
+			<monster occ="4314">初级魔化草人</monster>
+			<monster occ="4315">中级魔化草人</monster>
+			<monster occ="4316">高级魔化草人</monster>
+			<boss occ="4317">一阶稻草魔头</boss>
+			<boss occ="4318">二阶稻草魔头</boss>
+			<boss occ="4319">三阶稻草魔头</boss>
+			<boss occ="4320">四阶稻草魔头</boss>
+			<boss occ="4321">五阶稻草魔头</boss>
+			<boss occ="4322">六阶稻草魔头</boss>
+			<boss occ="4323">七阶稻草魔头</boss>
+			<boss occ="4324">八阶稻草魔头</boss>
+			<boss occ="4325">九阶稻草魔头</boss>
+			<boss occ="4326">终极稻草魔头</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<monster occ="4327">初级魔化草人</monster>
+			<monster occ="4328">中级魔化草人</monster>
+			<monster occ="4329">高级魔化草人</monster>
+			<boss occ="4330">一阶稻草魔头</boss>
+			<boss occ="4331">二阶稻草魔头</boss>
+			<boss occ="4332">三阶稻草魔头</boss>
+			<boss occ="4333">四阶稻草魔头</boss>
+			<boss occ="4334">五阶稻草魔头</boss>
+			<boss occ="4335">六阶稻草魔头</boss>
+			<boss occ="4336">七阶稻草魔头</boss>
+			<boss occ="4337">八阶稻草魔头</boss>
+			<boss occ="4338">九阶稻草魔头</boss>
+			<boss occ="4339">终极稻草魔头</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<monster occ="4340">初级魔化草人</monster>
+			<monster occ="4341">中级魔化草人</monster>
+			<monster occ="4342">高级魔化草人</monster>
+			<boss occ="4343">一阶稻草魔头</boss>
+			<boss occ="4344">二阶稻草魔头</boss>
+			<boss occ="4345">三阶稻草魔头</boss>
+			<boss occ="4346">四阶稻草魔头</boss>
+			<boss occ="4347">五阶稻草魔头</boss>
+			<boss occ="4348">六阶稻草魔头</boss>
+			<boss occ="4349">七阶稻草魔头</boss>
+			<boss occ="4350">八阶稻草魔头</boss>
+			<boss occ="4351">九阶稻草魔头</boss>
+			<boss occ="4352">终极稻草魔头</boss>
+		</layer>
+		<layer name="70级">
+			<!--本层的怪物和boss-->
+			<monster occ="4353">初级魔化草人</monster>
+			<monster occ="4354">中级魔化草人</monster>
+			<monster occ="4355">高级魔化草人</monster>
+			<boss occ="4356">一阶稻草魔头</boss>
+			<boss occ="4357">二阶稻草魔头</boss>
+			<boss occ="4358">三阶稻草魔头</boss>
+			<boss occ="4359">四阶稻草魔头</boss>
+			<boss occ="4360">五阶稻草魔头</boss>
+			<boss occ="4361">六阶稻草魔头</boss>
+			<boss occ="4362">七阶稻草魔头</boss>
+			<boss occ="4363">八阶稻草魔头</boss>
+			<boss occ="4364">九阶稻草魔头</boss>
+			<boss occ="4365">终极稻草魔头</boss>
+		</layer>
+	</copy>
+	<copy name="草船借箭(精英)" entryid="700200">
+		<!--副本-->
+		<layer name="35级">
+			<!--本层的怪物和boss-->
+			<monster occ="4401">初级精英草人</monster>
+			<monster occ="4402">中级精英草人</monster>
+			<monster occ="4403">高级精英草人</monster>
+			<boss occ="4404">一阶精英魔头</boss>
+			<boss occ="4405">二阶精英魔头</boss>
+			<boss occ="4406">三阶精英魔头</boss>
+			<boss occ="4407">四阶精英魔头</boss>
+			<boss occ="4408">五阶精英魔头</boss>
+			<boss occ="4409">六阶精英魔头</boss>
+			<boss occ="4410">七阶精英魔头</boss>
+			<boss occ="4411">八阶精英魔头</boss>
+			<boss occ="4412">九阶精英魔头</boss>
+			<boss occ="4413">终极精英魔头</boss>
+		</layer>
+		<layer name="40级">
+			<!--本层的怪物和boss-->
+			<monster occ="4414">初级精英草人</monster>
+			<monster occ="4415">中级精英草人</monster>
+			<monster occ="4416">高级精英草人</monster>
+			<boss occ="4417">一阶精英魔头</boss>
+			<boss occ="4418">二阶精英魔头</boss>
+			<boss occ="4419">三阶精英魔头</boss>
+			<boss occ="4420">四阶精英魔头</boss>
+			<boss occ="4421">五阶精英魔头</boss>
+			<boss occ="4422">六阶精英魔头</boss>
+			<boss occ="4423">七阶精英魔头</boss>
+			<boss occ="4424">八阶精英魔头</boss>
+			<boss occ="4425">九阶精英魔头</boss>
+			<boss occ="4426">终极精英魔头</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<monster occ="4427">初级精英草人</monster>
+			<monster occ="4428">中级精英草人</monster>
+			<monster occ="4429">高级精英草人</monster>
+			<boss occ="4430">一阶精英魔头</boss>
+			<boss occ="4431">二阶精英魔头</boss>
+			<boss occ="4432">三阶精英魔头</boss>
+			<boss occ="4433">四阶精英魔头</boss>
+			<boss occ="4434">五阶精英魔头</boss>
+			<boss occ="4435">六阶精英魔头</boss>
+			<boss occ="4436">七阶精英魔头</boss>
+			<boss occ="4437">八阶精英魔头</boss>
+			<boss occ="4438">九阶精英魔头</boss>
+			<boss occ="4439">终极精英魔头</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<monster occ="4440">初级精英草人</monster>
+			<monster occ="4441">中级精英草人</monster>
+			<monster occ="4442">高级精英草人</monster>
+			<boss occ="4443">一阶精英魔头</boss>
+			<boss occ="4444">二阶精英魔头</boss>
+			<boss occ="4445">三阶精英魔头</boss>
+			<boss occ="4446">四阶精英魔头</boss>
+			<boss occ="4447">五阶精英魔头</boss>
+			<boss occ="4448">六阶精英魔头</boss>
+			<boss occ="4449">七阶精英魔头</boss>
+			<boss occ="4450">八阶精英魔头</boss>
+			<boss occ="4451">九阶精英魔头</boss>
+			<boss occ="4452">终极精英魔头</boss>
+		</layer>
+		<layer name="70级">
+			<!--本层的怪物和boss-->
+			<monster occ="4453">初级精英草人</monster>
+			<monster occ="4454">中级精英草人</monster>
+			<monster occ="4455">高级精英草人</monster>
+			<boss occ="4456">一阶精英魔头</boss>
+			<boss occ="4457">二阶精英魔头</boss>
+			<boss occ="4458">三阶精英魔头</boss>
+			<boss occ="4459">四阶精英魔头</boss>
+			<boss occ="4460">五阶精英魔头</boss>
+			<boss occ="4461">六阶精英魔头</boss>
+			<boss occ="4462">七阶精英魔头</boss>
+			<boss occ="4463">八阶精英魔头</boss>
+			<boss occ="4464">九阶精英魔头</boss>
+			<boss occ="4465">终极精英魔头</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(40级)" entryid="304000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<monster occ="4800">乾卦守卫·天</monster>
+			<boss occ="4601">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<monster occ="4801">乾卦守卫·泽</monster>
+			<boss occ="4603">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<monster occ="4802">乾卦守卫·火</monster>
+			<boss occ="4605">乾(随机出1个)</boss>
+			<boss occ="4606">兑(随机出1个)</boss>
+			<boss occ="4607">离(随机出1个)</boss>
+			<boss occ="4608">震(随机出1个)</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="4613">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="4615">暗夜蝠王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<monster occ="4805">乾卦守卫·水</monster>
+			<boss occ="4618">死水妖王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<monster occ="4622">护山兽</monster>
+			<boss occ="4621">蛮荒巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<monster occ="4806">乾卦守卫·地</monster>
+			<boss occ="4624">大地尊者</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<monster occ="4807">乾卦守卫·阴</monster>
+			<boss occ="4630">乾天蜥神</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="4632">震天雷圣</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<monster occ="4809">乾卦守卫·生</monster>
+			<boss occ="4634">黄泉冥妖</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<monster occ="4638">护山兽</monster>
+			<boss occ="4637">洪荒岩神</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(50级)" entryid="305000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="4640">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="4642">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="4647">火灵战神</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="4652">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="4654">暗夜蝠王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="4657">死水妖王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="4660">蛮荒巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="4663">大地尊者</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="4667">乾天蜥神</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="4669">震天雷圣</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="4671">黄泉冥妖</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="4674">洪荒岩魔</boss>
+		</layer>
+	</copy>
+	<copy name="十面埋伏" entryid="500100">
+		<!--副本-->
+		<layer name="40级">
+			<!--本层的怪物和boss-->
+			<monster occ="5001">轻步兵(8)</monster>
+			<monster occ="5002">轻步卒(10)</monster>
+			<monster occ="5003">弓箭兵(10)</monster>
+			<monster occ="5004">弓箭卒(12)</monster>
+			<monster occ="5006">木械兵(12)</monster>
+			<monster occ="5007">木械卒（冰攻）(12)</monster>
+			<monster occ="5008">铁牛兵(12)</monster>
+			<monster occ="5009">铁牛卒(14)</monster>
+			<monster occ="5011">弩兵(14)</monster>
+			<monster occ="5012">弩卒（火攻）(14)</monster>
+			<monster occ="5013">虎豹骑(14)</monster>
+			<monster occ="5014">虎豹卒(14)</monster>
+			<monster occ="5016">巨象兵(16)</monster>
+			<monster occ="5017">巨象卒（毒攻）(16)</monster>
+			<monster occ="5018">人马兵(18)</monster>
+			<monster occ="5019">人马卒(20)</monster>
+			<monster occ="5081">神射兵(14)</monster>
+			<monster occ="5082">神射卒（火攻）(14)</monster>
+			<monster occ="5083">暴兽骑(14)</monster>
+			<monster occ="5084">暴兽卒(16)</monster>
+			<monster occ="5086">魔象兵(16)</monster>
+			<monster occ="5087">魔象卒（毒攻）(16)</monster>
+			<monster occ="5088">半兽兵(18)</monster>
+			<monster occ="5089">半兽卒(20)</monster>
+			<boss occ="5005">弑杀BOSS</boss>
+			<boss occ="5010">妖姬BOSS（冰攻）</boss>
+			<boss occ="5015">暗女BOSS（火攻）</boss>
+			<boss occ="5020">魔将BOSS（毒攻）</boss>
+			<boss occ="5085">烈妖BOSS（火攻）</boss>
+			<boss occ="5090">鬼帅BOSS（毒攻）</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<monster occ="5021">轻步兵(8)</monster>
+			<monster occ="5022">轻步卒(10)</monster>
+			<monster occ="5023">弓箭兵(10)</monster>
+			<monster occ="5024">弓箭卒(12)</monster>
+			<monster occ="5026">木械兵(12)</monster>
+			<monster occ="5027">木械卒（冰攻）(12)</monster>
+			<monster occ="5028">铁牛兵(12)</monster>
+			<monster occ="5029">铁牛卒(14)</monster>
+			<monster occ="5031">弩兵(14)</monster>
+			<monster occ="5032">弩卒（火攻）(14)</monster>
+			<monster occ="5033">虎豹骑(14)</monster>
+			<monster occ="5034">虎豹卒(14)</monster>
+			<monster occ="5036">巨象兵(16)</monster>
+			<monster occ="5037">巨象卒（毒攻）(16)</monster>
+			<monster occ="5038">人马兵(18)</monster>
+			<monster occ="5039">人马卒(20)</monster>
+			<monster occ="5091">神射兵(14)</monster>
+			<monster occ="5092">神射卒（火攻）(14)</monster>
+			<monster occ="5093">暴兽骑(14)</monster>
+			<monster occ="5094">暴兽卒(16)</monster>
+			<monster occ="5096">魔象兵(16)</monster>
+			<monster occ="5097">魔象卒（毒攻）(16)</monster>
+			<monster occ="5098">半兽兵(18)</monster>
+			<monster occ="5099">半兽卒(20)</monster>
+			<boss occ="5025">弑杀BOSS</boss>
+			<boss occ="5030">妖姬BOSS（冰攻）</boss>
+			<boss occ="5035">暗女BOSS（火攻）</boss>
+			<boss occ="5040">魔将BOSS（毒攻）</boss>
+			<boss occ="5095">烈妖BOSS（火攻）</boss>
+			<boss occ="5100">鬼帅BOSS（毒攻）</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<monster occ="5041">轻步兵(8)</monster>
+			<monster occ="5042">轻步卒(10)</monster>
+			<monster occ="5043">弓箭兵(10)</monster>
+			<monster occ="5044">弓箭卒(12)</monster>
+			<monster occ="5046">木械兵(12)</monster>
+			<monster occ="5047">木械卒（冰攻）(12)</monster>
+			<monster occ="5048">铁牛兵(12)</monster>
+			<monster occ="5049">铁牛卒(14)</monster>
+			<monster occ="5051">弩兵(14)</monster>
+			<monster occ="5052">弩卒（火攻）(14)</monster>
+			<monster occ="5053">虎豹骑(14)</monster>
+			<monster occ="5054">虎豹卒(14)</monster>
+			<monster occ="5056">巨象兵(16)</monster>
+			<monster occ="5057">巨象卒（毒攻）(16)</monster>
+			<monster occ="5058">人马兵(18)</monster>
+			<monster occ="5059">人马卒(20)</monster>
+			<monster occ="5101">神射兵(14)</monster>
+			<monster occ="5102">神射卒（火攻）(14)</monster>
+			<monster occ="5103">暴兽骑(14)</monster>
+			<monster occ="5104">暴兽卒(16)</monster>
+			<monster occ="5106">魔象兵(16)</monster>
+			<monster occ="5107">魔象卒（毒攻）(16)</monster>
+			<monster occ="5108">半兽兵(18)</monster>
+			<monster occ="5109">半兽卒(20)</monster>
+			<boss occ="5045">弑杀BOSS</boss>
+			<boss occ="5050">妖姬BOSS（冰攻）</boss>
+			<boss occ="5055">暗女BOSS（火攻）</boss>
+			<boss occ="5060">魔将BOSS（毒攻）</boss>
+			<boss occ="5105">烈妖BOSS（火攻）</boss>
+			<boss occ="5110">鬼帅BOSS（毒攻）</boss>
+		</layer>
+		<layer name="70级">
+			<!--本层的怪物和boss-->
+			<monster occ="5061">轻步兵(8)</monster>
+			<monster occ="5062">轻步卒(10)</monster>
+			<monster occ="5063">弓箭兵(10)</monster>
+			<monster occ="5064">弓箭卒(12)</monster>
+			<monster occ="5066">木械兵(12)</monster>
+			<monster occ="5067">木械卒（冰攻）(12)</monster>
+			<monster occ="5068">铁牛兵(12)</monster>
+			<monster occ="5069">铁牛卒(14)</monster>
+			<monster occ="5071">弩兵(14)</monster>
+			<monster occ="5072">弩卒（火攻）(14)</monster>
+			<monster occ="5073">虎豹骑(14)</monster>
+			<monster occ="5074">虎豹卒(14)</monster>
+			<monster occ="5076">巨象兵(16)</monster>
+			<monster occ="5077">巨象卒（毒攻）(16)</monster>
+			<monster occ="5078">人马兵(18)</monster>
+			<monster occ="5079">人马卒(20)</monster>
+			<monster occ="5111">神射兵(14)</monster>
+			<monster occ="5112">神射卒（火攻）(14)</monster>
+			<monster occ="5113">暴兽骑(14)</monster>
+			<monster occ="5114">暴兽卒(16)</monster>
+			<monster occ="5116">魔象兵(16)</monster>
+			<monster occ="5117">魔象卒（毒攻）(16)</monster>
+			<monster occ="5118">半兽兵(18)</monster>
+			<monster occ="5119">半兽卒(20)</monster>
+			<boss occ="5065">弑杀BOSS</boss>
+			<boss occ="5070">妖姬BOSS（冰攻）</boss>
+			<boss occ="5075">暗女BOSS（火攻）</boss>
+			<boss occ="5080">魔将BOSS（毒攻）</boss>
+			<boss occ="5115">烈妖BOSS（火攻）</boss>
+			<boss occ="5120">鬼帅BOSS（毒攻）</boss>
+		</layer>
+	</copy>
+	<copy name="水镜仙乡" entryid="200101">
+		<!--野外-->
+		<layer name="1-9级">
+			<monster occ="1001">紫尾狐</monster>
+			<monster occ="1003">仙灵芝</monster>
+			<monster occ="1008">邪族小妖</monster>
+		</layer>
+	</copy>
+	<copy name="巨鹿" entryid="200201">
+		<!--野外-->
+		<layer name="10-19级">
+			<monster occ="1011">黄巾喽啰</monster>
+			<monster occ="1054">水灵妖</monster>
+			<monster occ="1013">黄巾魔兵</monster>
+		</layer>
+	</copy>
+	<copy name="桃园村" entryid="200401">
+		<!--野外-->
+		<layer name="20-29级">
+			<monster occ="1014">桃园野猪</monster>
+			<monster occ="1016">十年桃妖</monster>
+			<monster occ="1018">千年桃精</monster>
+			<monster occ="1007">董卓密探</monster>
+			<monster occ="1006">仙女蝶</monster>
+			<monster occ="1017">百年桃怪</monster>
+		</layer>
+	</copy>
+	<copy name="长安郊外" entryid="200501">
+		<!--野外-->
+		<layer name="30-39级">
+			<monster occ="1015">大王野猪</monster>
+			<monster occ="1019">军马俑</monster>
+			<monster occ="1021">战袍武士俑</monster>
+			<monster occ="1023">粘土傀儡</monster>
+			<monster occ="1024">熔岩傀儡</monster>
+			<monster occ="1025">黑石傀儡</monster>
+			<monster occ="1009">邪族傀儡</monster>
+			<monster occ="1005">地狱犬</monster>
+		</layer>
+	</copy>
+	<copy name="大荒漠" entryid="200901">
+		<!--野外-->
+		<layer name="36-39级">
+			<monster occ="1060">狗头兵</monster>
+			<monster occ="1061">木械兵</monster>
+			<monster occ="1062">人马兵</monster>
+			<monster occ="1063">巨象兵</monster>
+			<monster occ="1064">刀车兵</monster>
+			<monster occ="1065">重骑兵</monster>
+			<monster occ="1066">弩兵</monster>
+			<monster occ="1067">盾兵</monster>
+			<monster occ="1068">虎豹骑</monster>
+		</layer>
+	</copy>
+	<copy name="隆中" entryid="200601">
+		<!--野外-->
+		<layer name="39-49级">
+			<monster occ="1026">冰灵</monster>
+			<monster occ="1027">冰玄女</monster>
+			<monster occ="1028">冽冰女王</monster>
+			<monster occ="1029">雪怪人</monster>
+			<monster occ="1030">雪战士</monster>
+			<monster occ="1031">天机木人</monster>
+			<monster occ="1032">撼地流牛</monster>
+			<monster occ="1033">玄奇木马</monster>
+		</layer>
+	</copy>
+	<copy name="长坂坡" entryid="200701">
+		<!--野外-->
+		<layer name="50-59级">
+			<monster occ="1034">巨剑兵</monster>
+			<monster occ="1037">山林猪人</monster>
+			<monster occ="1038">鬼女</monster>
+			<monster occ="1039">仙鬼女</monster>
+			<monster occ="1035">巨锤兵</monster>
+			<monster occ="1036">巨斧兵</monster>
+			<monster occ="1040">烈豹骑</monster>
+			<monster occ="1041">霜豹骑</monster>
+			<monster occ="1043">天眼魔兵</monster>
+		</layer>
+	</copy>
+	<copy name="赤壁" entryid="200801">
+		<!--野外-->
+		<layer name="60-80级">
+			<monster occ="1044">边境卫兵</monster>
+			<monster occ="1045">皇宫禁军</monster>
+			<monster occ="1046">娜迦小妖</monster>
+			<monster occ="1047">娜迦海妖</monster>
+			<monster occ="1048">娜迦海王</monster>
+			<monster occ="1049">巨弓兵</monster>
+			<monster occ="1049">巨弓兵</monster>
+			<monster occ="1050">巨炮兵</monster>
+			<monster occ="1051">云怪</monster>
+			<monster occ="1052">风精</monster>
+			<monster occ="1055">东吴都尉</monster>
+			<monster occ="1056">东吴校尉</monster>
+			<monster occ="1057">东吴军祭酒</monster>
+			<monster occ="1058">东吴偏将军</monster>
+			<monster occ="1059">东吴中郎将</monster>
+		</layer>
+	</copy>
+	<copy name="建邺(未开放，忽略)">
+		<!--野外-->
+		<layer name="81-89级">
+			<monster occ="1060">狗头兵</monster>
+			<monster occ="1061">木械兵</monster>
+			<monster occ="1062">人马兵</monster>
+			<monster occ="1063">巨象兵</monster>
+			<monster occ="1064">刀车兵</monster>
+			<monster occ="1065">重骑兵</monster>
+			<monster occ="1066">弩兵</monster>
+			<monster occ="1067">盾兵</monster>
+			<monster occ="1068">虎豹骑</monster>
+		</layer>
+	</copy>
+	<copy name="野外特殊精英怪">
+		<!--野外-->
+		<layer name="野外特殊精英怪">
+			<monster occ="1503">荒漠幽魂</monster>
+			<monster occ="1504">隆中幽魂</monster>
+			<monster occ="1505">长板幽魂</monster>
+			<monster occ="1506">赤壁幽魂</monster>
+		</layer>
+	</copy>
+	<copy name="野外游荡boss">
+		<!--野外-->
+		<layer name="野外游荡boss">
+			<monster occ="1500">铁归藏</monster>
+			<monster occ="1501">银归藏</monster>
+			<monster occ="1502">金归藏</monster>
+		</layer>
+	</copy>
+</copy_conf>

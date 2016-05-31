@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="10" name="Nâng Cấp Linh Dực">
+    <show_time>2016-04-08 11:11:00</show_time>
+    <hide_time>2016-04-11 23:59:59</hide_time>
+    <start_time>2016-04-08 11:11:00</start_time>
+    <end_time>2016-04-11 23:59:59</end_time>
+    <info><![CDATA[Tăng Cấp Linh Dực đạt tới mốc sẽ nhận quà]]></info>
+    <reward id="1" type="1" param="3">
+      <item itemId="30118000124" number="50" bind="0"/>
+      <item currency="4" number="100"/>
+    </reward>
+    <reward id="2" type="1" param="5">
+      <item itemId="30118000134" number="150" bind="0"/>
+      <item currency="4" number="200"/>
+    </reward>
+    <reward id="3" type="1" param="7">
+      <item itemId="30118000134" number="300" bind="0"/>
+      <item currency="4" number="500"/>
+    </reward>
+  </activity>
+</config>

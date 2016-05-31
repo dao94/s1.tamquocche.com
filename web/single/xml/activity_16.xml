@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="16" name="Điểm Tiêu Phí Đổi">
+    <show_time>2016-04-08 00:00:00</show_time>
+    <hide_time>2016-04-11 23:59:59</hide_time>
+    <start_time>2016-04-08 00:00:00</start_time>
+    <end_time>2016-04-11 23:59:59</end_time>
+    <info><![CDATA[Tiêu 1 xu nhận 1 điểm, đủ điểm có thể đổi đc các phần quà]]></info>
+    <reward id="1" total_limit="9999" need="5499" alone_limit="1" occ="0">
+      <item itemId="22100000094" number="1" bind="0"/>
+    </reward>
+    <reward id="2" total_limit="9999" need="1499" alone_limit="1" occ="0">
+      <item itemId="22100000084" number="1" bind="0"/>
+    </reward>
+    <reward id="3" total_limit="9999" need="499" alone_limit="1" occ="0">
+      <item itemId="22100000074" number="1" bind="0"/>
+    </reward>
+    <reward id="4" total_limit="9999" need="599" alone_limit="1" occ="0">
+      <item itemId="30103050074" number="1" bind="0"/>
+    </reward>
+    <reward id="5" total_limit="9999" need="999" alone_limit="1" occ="0">
+      <item itemId="30103050084" number="1" bind="0"/>
+    </reward>
+    <reward id="6" total_limit="9999" need="299" alone_limit="1" occ="0">
+      <item itemId="30103050064" number="1" bind="0"/>
+    </reward>
+    <reward id="7" total_limit="9999" need="299" alone_limit="1" occ="0">
+      <item itemId="10109040015" number="10" bind="0"/>
+    </reward>
+    <reward id="8" total_limit="9999" need="159" alone_limit="1" occ="0">
+      <item itemId="10109020013" number="20" bind="0"/>
+    </reward>
+    <reward id="9" total_limit="9999" need="219" alone_limit="1" occ="0">
+      <item itemId="10112000055" number="15" bind="0"/>
+    </reward>
+    <reward id="10" total_limit="9999" need="1499" alone_limit="1" occ="0">
+      <item itemId="21200000044" number="1" bind="0"/>
+    </reward>
+    <reward id="11" total_limit="9999" need="1199" alone_limit="1" occ="0">
+      <item itemId="30136000024" number="1" bind="0"/>
+    </reward>
+    <reward id="12" total_limit="9999" need="1199" alone_limit="1" occ="0">
+      <item itemId="30136000014" number="1" bind="0"/>
+    </reward>
+    <reward id="13" total_limit="9999" need="1199" alone_limit="1" occ="0">
+      <item itemId="30136000034" number="1" bind="0"/>
+    </reward>
+  </activity>
+</config>

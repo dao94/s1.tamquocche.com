@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><{t}>boss流水<{/t}></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+	<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+	<script language="javascript" src="../../public/js/jquery.js"></script>
+	<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+	<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+	<label><{t}>团队ID<{/t}>：
+	<input type="text" name="team_id" class="input-medium" maxlength="60" value="<{$conditions['team_id']}>">
+	</label>
+	<label><{t}>boss名称<{/t}>：
+	<input type="text" name="entry_name" class="input-medium" maxlength="32" value="<{$conditions['entry_name']}>">
+	</label>
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<div id="nav" style="display:none;">
+	<ul class="nav nav-tabs" style="margin-bottom:10px;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>&char_id=<{$conditions['char_id']}>&from=<{$conditions['from']}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+
+<div class="pagination pagination-right" style="margin:0;"><ul><{$page}></ul></div>
+<{if $conditions['action']=='enter'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>团队ID<{/t}></th>
+		<th><{t}>团队成员<{/t}></th>
+		<th><{t}>boss名称<{/t}></th>
+		<th><{t}>副本名称<{/t}></th>
+		<th><{t}>地图名称<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+		<td><{$row['team_id']}></td>
+		<td><{$row['groupName']}></td>
+		<td><{$row['boss_name']}></td>
+		<td><{$row['entry_name']}></td>
+		<td><{$row['map_name']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<{/if}>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+</body>
+</html>

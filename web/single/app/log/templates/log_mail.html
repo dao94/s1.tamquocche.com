@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>邮件流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<style type="text/css">
+#type_list .span2{
+	width:122px;
+	height:20px;
+	line-height:20px;
+	overflow:hidden;
+}
+</style>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript">
+$(function($){
+	$('a[rel="popover"]').mouseover(function(){
+		var content=$('#content_'+this.id).html();
+		$(this).popover({placement:'right',html:true,content:content}).popover('show');
+		$(this).next('.popover').mouseover();
+	}).mouseout(function(){
+		$('.popover').hide();
+	});
+	$('.popover').live('mouseover',function(){
+		$('.popover').hide();
+		$(this).show();
+	}).live('mouseout',function(){
+		$(this).hide();
+	});
+});
+</script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+	<label style="margin-left:5px;"><{t}>发送时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<label style="margin-left:5px;"><{t}>类型<{/t}>：</label>
+	<select name="type" class="input-small">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $mail_type_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['type']===$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+	<button class="btn btn-primary" id="btn_search"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+</form>
+
+<{if $data}>
+<div class="pagination pagination-right" style="margin:0;"><ul><{$page}></ul></div>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>发送者<{/t}></th>
+		<th><{t}>接受者<{/t}></th>
+		<th><{t}>类型<{/t}></th>
+		<th><{t}>标题(鼠标经过看内容)<{/t}></th>
+		<th><{t}>货币<{/t}></th>
+		<th><{t}>附件<{/t}></th>
+		<th><{t}>发送时间<{/t}></th>
+		<th><{t}>提取时间<{/t}></th>
+		<th><{t}>Xóa时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $key=>$row}>
+	<tr>
+		<td><{if $row['type']==2}><a href="../gm/player.php?id=<{$row['sender_id']}>" target="_parent"><{$row['sender_name']}></a><{else}><{$row['sender_name']}><{/if}></td>
+		<td><a href="../gm/player.php?id=<{$row['receive_id']}>" target="_parent"><{$row['receive_name']}></a></td>
+		<td><span class="badge <{if $row['type']==1}>badge-info<{else if $row['io']==3}>badge-important<{/if}>"><{$mail_type_conf[$row['type']]}></span></td>
+		<td>
+			<div align="center"><a href="javascript:;" id="<{$key}>" rel="popover" data-placement="right" data-title='<{t}>邮件内容<{/t}>'><{$row['title']}></a></div>
+			<div class="hide span3 text-left" id="content_<{$key}>" ><{$row['content']}></div>
+		</td>
+		<td>
+		<{if $row['gold']}>
+			<{t}>铜币<{/t}>：<{$row['gold']}>
+		<{/if}>
+		<{if $row['gift_gold']}>
+			<{t}>铜券<{/t}>：<{$row['gift_gold']}>
+		<{/if}>
+		<{if $row['jade']}>
+			<{t}>元宝<{/t}>：<{$row['jade']}>
+		<{/if}>
+		<{if $row['gift_jade']}>
+			<{t}>礼券<{/t}>：<{$row['gift_jade']}>
+		<{/if}>
+		<{if !$row['gold'] && !$row['gift_gold'] && !$row['jade'] && !$row['gift_jade']}>--<{/if}>
+		</td>
+		<td>
+		<ul class="inline" style="width:250px; margin:0; padding:0; line-height:26px;">
+		<{foreach $row['accessory'] as $item}>
+			<li><code><{t}><{$item['itemId']}><{/t}>*<{$item['number']}></code></li>
+		<{/foreach}>
+		</ul>
+		</td>
+		<td><{$row['send_time']}></td>
+		<td><{$row['receive_time']}></td>
+		<td><{$row['delete_time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+<{/if}>
+</body>
+</html>

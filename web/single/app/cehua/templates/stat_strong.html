@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>强化部位分析<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function(){
+	$('.time_type').click(function(){
+		$('#start_date').val($(this).attr('start-date'));
+		$('#end_date').val($(this).attr('end-date'));
+		$('#action').val();
+		$('#type').val($(this).attr('name'));
+		$('#btn_search').click();
+	});
+
+	$('.strong').toggle(function(){
+		$('.'+this.name).fadeIn();
+	},function(){
+		$('.'+this.name).hide();
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $conditions['action']==$key}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<form class="well well-small form-search">
+	<div class="btn-group">
+<{foreach $time_type as $type=>$item}>
+	<button class="btn time_type <{if $type==$conditions['type']}>btn-inverse<{/if}>" type="button"
+name="<{$type}>" start-date="<{$item[1]}>" end-date="<{$item[2]}>"><{$item[0]}></button>
+<{/foreach}>
+	</div>
+	<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+    <input type="hidden" id="type" name="type">
+    <input type="hidden" id="action" name="action" value="<{$conditions['action']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+</form>
+<{if $conditions['action']=='all'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th></th>
+		<{for $foo=1 to 12}>
+		<td class="strong1 hide"><{t}>凡<{/t}><{$foo}></td>
+	  <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong1"><{t}>凡火<{/t}></a></th>
+        <{for $foo=1 to 12}>
+		<td class="strong2 hide"><{t}>灵<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong2"><{t}>灵火<{/t}></a></th>
+        <{for $foo=1 to 12}>
+		<td class="strong3 hide"><{t}>仙<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong3"><{t}>仙火<{/t}></a></th>
+        <{for $foo=1 to 12}>
+		<td class="strong4 hide"><{t}>神<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong4"><{t}>神火<{/t}></a></th>
+        <{for $foo=1 to 12}>
+		<td class="strong5 hide"><{t}>圣<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong5"><{t}>圣火<{/t}></a></th>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td rowspan="2"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+        <td><{t}>数量<{/t}></td>
+        <{for $foo=1 to 12}>
+		<td class="strong1 hide"><{$row['strong1_remark'][$foo]|default:0}></td>
+	  	<{/for}>
+		<td><{$row['strong1']}></td>
+        <{for $foo=1 to 12}>
+		<td class="strong2 hide"><{$row['strong2_remark'][$foo]|default:0}></td>
+	  	<{/for}>
+		<td><{$row['strong2']}></td>
+        <{for $foo=1 to 12}>
+		<td class="strong3 hide"><{$row['strong3_remark'][$foo]|default:0}></td>
+	  	<{/for}>
+		<td><{$row['strong3']}></td>
+        <{for $foo=1 to 12}>
+		<td class="strong4 hide"><{$row['strong4_remark'][$foo]|default:0}></td>
+	  	<{/for}>
+        <td><{$row['strong4']}></td>
+        <{for $foo=1 to 12}>
+		<td class="strong5 hide"><{$row['strong5_remark'][$foo]|default:0}></td>
+	  	<{/for}>
+        <td><{$row['strong5']}></td>
+		</td></td>
+	</tr>
+    <tr>
+    	<td><{t}>比例<{/t}></td>
+        <{for $foo=1 to 12}>
+		<td class="strong1 hide"><{if $row['strong1']&&isset($row['strong1_remark'][$foo])}><{round($row['strong1_remark'][$foo]/$row['strong1'],4)*100}><{else}>0<{/if}>%</td>
+	  	<{/for}>
+        <td><{round($row['strong1']/$row['total_strong'],4)*100}>%</td>
+
+        <{for $foo=1 to 12}>
+        <td class="strong2 hide"><{if $row['strong2']&&isset($row['strong2_remark'][$foo])}><{round($row['strong2_remark'][$foo]/$row['strong2'],4)*100}><{else}>0<{/if}>%</td>
+	  	<{/for}>
+        <td><{round($row['strong2']/$row['total_strong'],4)*100}>%</td>
+
+        <{for $foo=1 to 12}>
+        <td class="strong3 hide"><{if $row['strong3']&&isset($row['strong3_remark'][$foo])}><{round($row['strong3_remark'][$foo]/$row['strong3'],4)*100}><{else}>0<{/if}>%</td>
+	  	<{/for}>
+        <td><{round($row['strong3']/$row['total_strong'],4)*100}>%</td>
+
+        <{for $foo=1 to 12}>
+        <td class="strong4 hide"><{if $row['strong4']&&isset($row['strong4_remark'][$foo])}><{round($row['strong4_remark'][$foo]/$row['strong4'],4)*100}><{else}>0<{/if}>%</td>
+	  	<{/for}>
+        <td><{round($row['strong4']/$row['total_strong'],4)*100}>%</td>
+
+        <{for $foo=1 to 12}>
+        <td class="strong5 hide"><{if $row['strong5']&&isset($row['strong5_remark'][$foo])}><{round($row['strong5_remark'][$foo]/$row['strong5'],4)*100}><{else}>0<{/if}>%</td>
+	  	<{/for}>
+        <td><{round($row['strong5']/$row['total_strong'],4)*100}>%</td>
+    </tr>
+	<{/foreach}>
+</tbody>
+</table>
+<{else if $conditions['action']=='detail'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th>部位</th>
+		<th></th>
+		<{for $foo=1 to 10}>
+		<td class="strong4 hide"><{t}>等级<{/t}><{$foo}></td>
+	    <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong4"><{t}>1-10等级<{/t}></a></th>
+		<{for $foo=11 to 20}>
+		<td class="strong5 hide"><{t}>等级<{/t}><{$foo}></td>
+	    <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong5"><{t}>11-20等级<{/t}></a></th>
+
+		<{for $foo=21 to 30}>
+		<td class="strong6 hide"><{t}>等级<{/t}><{$foo}></td>
+	    <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong6"><{t}>21-30等级<{/t}></a></th>
+
+		<{for $foo=31 to 40}>
+		<td class="strong7 hide"><{t}>等级<{/t}><{$foo}></td>
+	    <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong7"><{t}>31-40等级<{/t}></a></th>
+
+		<{for $foo=41 to 50}>
+		<td class="strong8 hide"><{t}>等级<{/t}><{$foo}></td>
+	    <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong8"><{t}>41-50等级<{/t}></a></th>
+
+		<{for $foo=51 to 60}>
+		<td class="strong9 hide"><{t}>等级<{/t}><{$foo}></td>
+	    <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong9"><{t}>51-60等级<{/t}></a></th>
+
+		<{for $foo=61 to 70}>
+		<td class="strong10 hide"><{t}>等级<{/t}><{$foo}></td>
+	    <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong10"><{t}>61-70等级<{/t}></a></th>
+
+		<{for $foo=1 to 10}>
+		<td class="strong1 hide"><{t}>凡火<{/t}><{$foo}></td>
+	    <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong1"><{t}>凡火<{/t}></a></th>
+        <{for $foo=1 to 10}>
+		<td class="strong2 hide"><{t}>灵火<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong2"><{t}>灵火<{/t}></a></th>
+        <{for $foo=1 to 10}>
+		<td class="strong3 hide"><{t}>仙火<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong3"><{t}>仙火<{/t}></a></th>
+		<{for $foo=1 to 10}>
+		<td class="strong11 hide"><{t}>神火<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong11"><{t}>神火<{/t}></a></th>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $row}>
+		<{for $part=1 to 6}>  <!-- 部位 -->
+		<tr>
+			<{if $part==1}>
+			<td rowspan="6"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+			<{/if}>
+			<td><{$part_conf[$part]}></td>
+			<td><{t}>人数<{/t}></td>
+			<{$count_fan=0}><{$count_ling=0}><{$count_xian=0}><{$count_shen=0}>
+			<{$count_level1=0}><{$count_level2=0}><{$count_level3=0}><{$count_level4=0}><{$count_level5=0}><{$count_level6=0}><{$count_level7=0}>
+			<{for $level=1 to 10}>  <!-- 等级 -->
+				<{$count_level1=$count_level1+$row['strong_level1_remark'][$part][$level]|default:0}>
+				<td class="strong4 hide"><{$row['strong_level1_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_level1}></td>
+	   		 <{for $level=11 to 20}>  <!-- 等级 -->
+	   		 	<{$count_level2=$count_level2+$row['strong_level2_remark'][$part][$level]|default:0}>
+				<td class="strong5 hide"><{$row['strong_level2_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_level2}></td>
+	   		 <{for $level=21 to 30}>  <!-- 等级 -->
+	   		 	<{$count_level3=$count_level3+$row['strong_level3_remark'][$part][$level]|default:0}>
+				<td class="strong6 hide"><{$row['strong_level3_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_level3}></td>
+	   		 <{for $level=31 to 40}>  <!-- 等级 -->
+	   		 	<{$count_level4=$count_level4+$row['strong_level4_remark'][$part][$level]|default:0}>
+				<td class="strong7 hide"><{$row['strong_level4_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_level4}></td>
+	   		 <{for $level=41 to 50}>  <!-- 等级 -->
+	   		 	<{$count_level5=$count_level5+$row['strong_level5_remark'][$part][$level]|default:0}>
+				<td class="strong8 hide"><{$row['strong_level5_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_level5}></td>
+	   		 <{for $level=51 to 60}>  <!-- 等级 -->
+	   		 	<{$count_level6=$count_level6+$row['strong_level6_remark'][$part][$level]|default:0}>
+				<td class="strong9 hide"><{$row['strong_level6_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_level6}></td>
+	   		 <{for $level=61 to 70}>  <!-- 等级 -->
+	   		 	<{$count_level7=$count_level7+$row['strong_level7_remark'][$part][$level]|default:0}>
+				<td class="strong10 hide"><{$row['strong_level7_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_level7}></td>
+			<{for $level=1 to 10}>  <!-- 凡火 -->
+				<{$count_fan=$count_fan+$row['strong_fan_remark'][$part][$level]|default:0}>
+				<td class="strong1 hide"><{$row['strong_fan_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_fan}></td>
+	   		 <{for $level=11 to 20}>  <!-- 灵火 -->
+	   		 	<{$count_ling=$count_ling+$row['strong_ling_remark'][$part][$level]|default:0}>
+				<td class="strong2 hide"><{$row['strong_ling_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_ling}></td>
+	   		 <{for $level=21 to 30}>  <!-- 仙火 -->
+	   		 	<{$count_xian=$count_xian+$row['strong_xian_remark'][$part][$level]|default:0}>
+				<td class="strong3 hide"><{$row['strong_xian_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_xian}></td>
+	   		 <{for $level=31 to 40}>  <!-- 神火 -->
+	   		 	<{$count_shen=$count_shen+$row['strong_shen_remark'][$part][$level]|default:0}>
+				<td class="strong11 hide"><{$row['strong_shen_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_shen}></td>
+	   	</tr>
+
+	    <{/for}>
+	<{/foreach}>
+</tbody>
+</table>
+
+<{/if}>
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

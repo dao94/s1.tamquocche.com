@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html ng-app>
+<head>
+<title><{t}>商城监控<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/angular.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/lwjsback.js.php"></script>
+<script language="javascript">
+$(function($){
+	$('#search').click();
+});
+function Ctrl($scope,$http) {
+	$scope.datas = [];
+	$scope.order = '-char_num1';
+	$scope.inner = 0;
+	$scope.field = 'date';
+	$scope.sum_money = [];
+	$scope.t_field = [];
+	$scope.minmax = [];
+	$scope.template = '';
+	$scope.mall_type = {
+		'1' : { name: '<{t}>商城<{/t}>', checked:true},
+		'2' : { name: 'NPC<{t}>购买<{/t}>', checked:false},
+		'3' : { name: '<{t}>限时限购<{/t}>', checked:false}
+	};
+	$scope.money_type = {
+		'1' : { name: '<{t}>铜币<{/t}>', checked:false},
+		'2' : { name: '<{t}>铜券<{/t}>', checked:false},
+		'3' : { name: '<{t}>元宝<{/t}>', checked:true},
+		'4' : { name: '<{t}>礼券<{/t}>', checked:false},
+		'5' : { name: '<{t}>优先礼券其次元宝<{/t}>', checked:false},
+		'6' : { name: '<{t}>优先铜券其次铜币<{/t}>', checked:false},
+		'7' : { name: '<{t}>真气<{/t}>', checked:false},
+		'8' : { name: '<{t}>功勋<{/t}>', checked:false},
+		'9' : { name: '<{t}>帮贡<{/t}>', checked:false}
+	};
+	$scope.search = function(){
+		var start = $('[name="start"]').val(),
+		end = $('[name="end"]').val(),
+		item_info = $('[name="item_info"]').val();
+		var postData = {
+			action:'ajax',
+			inner:$scope.inner,
+			start:start,
+			end:end,
+			field:$scope.field,
+			mall_type:$scope.mall_type,
+			money_type:$scope.money_type,
+			item_info:item_info
+		};
+		$http.post('?action=ajax',postData).success(function(data){
+			if(data.status=='ok'){
+					$scope.datas = data.data;
+					if(data.cols==0){
+							$scope.template = '';
+					}else{
+							$scope.template = '?action=tpl&cols='+data.cols;
+					}
+					$scope.sum_money = data.sum_money;
+					$scope.t_field = data.t_field;
+					$scope.minmax = data.minmax;
+			}else{
+					alert(data.info);
+			} 
+		});
+	}
+}
+</script>
+</head>
+<body ng-controller="Ctrl">
+<form action="?" method="post" class="well form-inline">
+	<{t}>道具<{/t}>：<input type="text" class="span2" name="item_info" onkeyup="lwjsback.itemSearch.searchItem(this)">
+	<{t}>用户类型<{/t}>：
+	<select class="span1" style="width: 100px;" name="inner" ng-model="inner">
+		<option value="1"><{t}>内部用户<{/t}></option>
+		<option value="0"><{t}>外部用户<{/t}></option>
+		<option value="2"><{t}>内部+外部<{/t}></option>
+	</select>
+	<{t}>统计类型<{/t}>： 
+	<select class="span1" name="field" ng-model="field">
+		<option value="date"><{t}>日<{/t}></option>
+		<option value="week"><{t}>周<{/t}></option>
+		<option value="month"><{t}>月<{/t}></option>
+	</select>
+	<{t}>时间<{/t}>：
+	<div class="input-append">
+		<input type="text" name="start" class="input-small" value="<{$yesterday|default:''}>" onclick="WdatePicker({dateFmt:'yyyyMMdd',maxDate:'%y-%M-{%d-1}'})">
+		<span class="add-on"><i class="icon-time"></i></span>
+	</div>
+	<i class="icon-minus"></i>
+	<div class="input-append">
+		<input type="text" name="end" class="input-small" value="<{$yesterday|default:''}>" onclick="WdatePicker({dateFmt:'yyyyMMdd',maxDate:'%y-%M-{%d-1}'})">
+		<span class="add-on"><i class="icon-time"></i></span>
+	</div>
+	<div style="margin-top:5px;">
+		<{t}>商城<{/t}>：
+		<span ng-repeat="mall in mall_type"><label><input type="checkbox" ng-model="mall.checked" style="margin-left:5px;"> {{mall.name}}</label></span>
+	</div>
+	<div>
+		<{t}>货币<{/t}>： <span ng-repeat="money in money_type"><label><input type="checkbox" ng-model="money.checked" style="margin-left:5px;"> {{money.name}}</label></span>
+	<input type="hidden" name="action" value="search">
+	<button type="button" id="search" class="btn btn-primary" ng-click="search()"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+	</div>
+</form>
+<div ng-include src="template"></div>
+</body>
+</html>

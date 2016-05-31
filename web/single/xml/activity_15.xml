@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="15" name="Tăng Cảnh Giới">
+    <show_time>2016-04-08 11:31:03</show_time>
+    <hide_time>2016-04-11 23:59:59</hide_time>
+    <start_time>2016-04-08 11:31:03</start_time>
+    <end_time>2016-04-11 23:59:59</end_time>
+    <info><![CDATA[Tăng cảnh giới cho pet đạt tới mốc sẽ nhận được quà]]></info>
+    <reward id="1" type="1" jingjie="2" chong="1">
+      <item id="30101000014" number="10" bind="0"/>
+      <money type="2" num="100000"/>
+    </reward>
+    <reward id="2" type="1" jingjie="2" chong="3">
+      <item id="30101000014" number="20" bind="0"/>
+      <money type="2" num="200000"/>
+    </reward>
+    <reward id="4" type="1" jingjie="2" chong="7">
+      <item id="30101000015" number="20" bind="0"/>
+      <money type="2" num="200000"/>
+    </reward>
+    <reward id="5" type="1" jingjie="2" chong="10">
+      <item id="30110000034" number="20" bind="0"/>
+      <item id="30101000022" number="5" bind="0"/>
+    </reward>
+    <reward id="6" type="1" jingjie="3" chong="1">
+      <item id="30110000034" number="20" bind="0"/>
+      <item id="30101000015" number="20" bind="0"/>
+    </reward>
+    <reward id="7" type="1" jingjie="3" chong="3">
+      <item id="30110000034" number="30" bind="0"/>
+      <item id="30101000015" number="20" bind="0"/>
+    </reward>
+    <reward id="8" type="1" jingjie="3" chong="5">
+      <item id="30101000015" number="30" bind="0"/>
+      <item id="30110000034" number="40" bind="0"/>
+    </reward>
+    <reward id="10" type="1" jingjie="3" chong="10">
+      <item id="30110000044" number="50" bind="0"/>
+      <money type="4" num="500"/>
+    </reward>
+    <reward id="3" type="1" jingjie="2" chong="5">
+      <item id="30101000014" number="30" bind="0"/>
+      <money type="2" num="200000"/>
+    </reward>
+    <reward id="9" type="1" jingjie="3" chong="7">
+      <item id="30110000034" number="30" bind="0"/>
+      <item id="30110000044" number="20" bind="0"/>
+    </reward>
+  </activity>
+</config>

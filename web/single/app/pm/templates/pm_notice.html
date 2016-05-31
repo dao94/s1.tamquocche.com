@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/kindeditor/kindeditor.js"></script>
+<script lang="javascript">
+var notice_editor;
+KindEditor.ready(function(K) {
+	notice_editor = K.create('.notice_editor',{
+		themeType:'diy',
+		items : ['source', '|', 'undo', 'redo', '|', 'fontsize', 'forecolor','bold','link', 'unlink','underline'],
+		fontSizeTable : ['9', '10', '12', '14', '16', '18', '24', '32'],
+		filterMode : true,
+		newlineTag:'br',
+		htmlTags : {
+			font : ['id', 'class', 'color', 'size', 'face', '.background-color'],
+			div : [
+				'id', 'class', 'align', '.border', '.margin', '.padding', '.text-align', '.color',
+				'.background-color', '.font-size', '.font-family', '.font-weight', '.background',
+				'.font-style', '.text-decoration', '.vertical-align', '.margin-left'
+			],
+			a : ['id', 'class', 'href', 'target', 'name'],
+			img : ['id', 'class', 'src', 'width', 'height', 'border', 'alt', 'title', 'align', '.width', '.height', '.border'],
+			'p,ol,ul,li,blockquote,h1,h2,h3,h4,h5,h6' : [
+				'id', 'class', 'align', '.text-align', '.color', '.background-color', '.font-size', '.font-family', '.background',
+				'.font-weight', '.font-style', '.text-decoration', '.vertical-align', '.text-indent', '.margin-left'
+			],
+			pre : ['id', 'class'],
+			hr : ['id', 'class', '.page-break-after'],
+			'br,tbody,tr,b,sub,sup,em,i,u,strike,s,del' : ['id', 'class'],
+		},
+		afterBlur:function(){
+			this.sync();
+		},
+	});
+});
+
+$(function(){
+	//保存更新公告
+	$('#btn_update_notice').click(function(){
+		var btn_text=$(this).text();
+		$.ajax({
+			url:'?action=save',
+			type:'POST',
+			data:$('#update_notice').serializeArray(),
+			dataType:'json',
+			beforeSend:function(){
+				$('#btn_update_notice').attr('disabled',true).text('<{t}>正在Sửa中<{/t}>...');
+			},
+			success:function(msg){
+				alert(msg.info);
+			},
+			complete:function(){
+				$('#btn_update_notice').attr('disabled',false).text(btn_text);
+			},
+		});
+	});
+})
+</script>
+</head>
+<body>
+<div id="nav">
+<ul class="nav nav-tabs">
+	<{foreach $action_conf as $key=>$item}>
+	<li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+	<{/foreach}>
+</ul>
+</div>
+
+<div style="margin-left:20px;">
+	<span class="badge badge-important">特别注意：使用超链接 href="event:reload_game" (reload_game:图片ID)</span>
+</div>
+
+<{if $conditions['action']==1}>
+<form action="?action=save" id="update_notice" method="post">
+<{foreach $data as $sub_notice=>$row}>
+<dl class="dl-horizontal">
+	<dt><{t}>标题<{/t}></dt>
+	<dd style="margin-bottom:15px;"><span class="badge badge-inverse"><{$row['title']}></span></dd>
+	<dt><{t}>内容<{/t}></dt>
+	<dd>
+		<textarea class="notice_editor" id="content_<{$sub_notice}>" name="content[<{$sub_notice}>]" style="width: 300px; height: 300px"><{$row['content']}></textarea>
+	</dd>
+</dl>
+<{/foreach}>
+<dl class="dl-horizontal">
+	<dt></dt>
+	<dd>
+		<button type="button" class="btn btn-primary" id="btn_update_notice"><{t}>保存配置<{/t}></button>
+		<button type="button" class="btn" onClick="javascript:window.location='?action=<{$conditions['action']}>'"><{t}>还原配置<{/t}></button>
+	</dd>
+</dl>
+<input type="hidden" name="notice_id" value="<{$conditions['action']}>">
+</form>
+
+<{/if}>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript">
+$(document).ready(function(){
+	$("#agent").change(function(){
+		var	agent	=	$(this).val();
+		$.ajax({
+			url:'?',
+			type:'POST',
+			data:{action:'get_server_list',agent:agent},
+			dataType:'json',
+			success:function(msg){
+				if(msg.status=='ok'){
+					var li	=	'';
+					$.each(msg.data,function(i){
+						li	+=	'<li style="float:left; width:38px;"> <input <{if $smarty.const.SERVER_ID eq "'+msg.data[i]+'"}>class="current_server" disabled="disabled" <{else}>style="width:36px; padding:1px;" class="btn btn-small" onclick="jump(this)"<{/if}> type="button" value="'+msg.data[i]+'" > </li>';
+					});
+					$('#sid ul').html(li);
+				}else{
+					//alert(msg.info);
+					window.top.location='?';
+				}
+			}
+		})
+	});
+
+	setTimeout(function(){
+		$.get('update.php');
+		$.get('update.php?action=agent');
+		$.get('update.php?action=lianyun');
+	},5000);
+});
+function jump(obj){
+	var agent	=	$('#agent').val();
+	var sid		=	$(obj).val();
+	$.ajax({
+		type:'POST',
+		url:'?',
+		data:{'action':'jump','agent':agent,'sid':sid},
+		success:function(res){
+			if(res.status=='ok'){
+				var current=$(window.parent.frames['menu'].document).find('#current').val();
+				window.parent.location.href='http://'+res.data.domain+'/'+res.data.serverType+'/app/public/check_login.php?action=jump&agent='+res.data.agent+'&sid='+res.data.sid+'&code='+res.data.code+'&account='+res.data.account+'&isSave='+res.data.isSave+'&sign='+res.data.sign+'&time='+res.data.time+'&current='+current;
+			}else{
+				alert(res.info);
+				if (typeof(res.data) == 'undefined') {
+					window.top.location.href='?';
+				}else{
+					window.top.location.href='http://'+res.data.domain+'/'+res.data.serverType;
+				}
+			}
+		},
+		dataType:'json'
+		});
+}
+</script>
+</head>
+<body>
+<div class="navbar-inner" style="padding:0 0 0 10px;height:60px;overflow:hidden;">
+<div class="container-fluid row-fluid" style="padding:0;">
+	<div class="row-fluid">
+		<div class="span3" style="padding:0; margin:0;">
+			<div style="font-size:18px; height:28px;font-weight:bold; color:#77778A;margin-top:2px;">
+				<div style="float:left;height:22px; margin-top:4px;"><{t}>乱舞江山<{/t}>：<{$smarty.const.SERVER_AGENT}>_<{$smarty.const.SERVER_ID}></div>
+				<div style="width:105px;float:right;height:26px;"><{html_options style="width:100px;" name="agents" id="agent" values=$agents_list output=$agents_list selected="<{$smarty.const.SERVER_AGENT}>"}></div>
+			</div>
+
+			<div style="height:26px;float:none; clear:both; margin-top:2px;">
+				<div class="btn-group" style="height:26px;margin:0;float:left;">
+					<a href="change_pwd.php" target="main" class="btn btn-small"><{t}>Sửa密码<{/t}></a>
+					<a href="#" onClick="window.parent.location.href='logout.php'" class="btn btn-small"><{t}>安全退出<{/t}></a>
+				</div>
+				<div style="height:22px;font-weight:bold; color:#77778A; float:right; width:175px;overflow:hidden; text-align:right; margin-top:4px;"><{$user_account}></div>
+			</div>
+		</div>
+		<div id="sid" class="span9" style="float:right;">
+			<ul class="unstyled row-fluid" style="height:60px;overflow-y:auto;margin-bottom: 0px;">
+			<{foreach $agent_server_list as $sid=>$item}>
+			<li style="float:left;width:38px;">
+				<input type="button" style="width:36px;padding:1px;" class="btn btn-small <{if $item[1]>$smarty.now}>btn-success<{/if}>" <{if $sid eq $smarty.const.SERVER_ID}> disabled="disabled" <{else}> onclick="jump(this)" <{/if}> value="<{$sid}>"></li>
+			<{/foreach}>
+		</ul>
+		</div>
+	</div>
+</div>
+</div>
+</body>
+</html>

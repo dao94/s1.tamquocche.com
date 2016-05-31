@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+ <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/lwjsback.js.php"></script>
+<script lang="javascript">
+var tab1_callback = function(res){
+		var html = '';
+		for(var i in res.data.data){
+				var io = res.data.data[i]['io']==1?'<{t}>新增<{/t}>':'<{t}>减少<{/t}>';
+				html += '<tr>'+
+						'<td>'+res.data.data[i]['sort']+'</td>'+
+						'<td>'+res.data.data[i]['char_id']+'</td>'+
+						'<td>'+res.data.data[i]['char_name']+'</td>'+
+						'<td>'+io+'</td>'+
+						'<td>'+res.data.data[i]['sm']+'</td>'+
+						'</tr>';
+		}
+		$('#tab1_tbody').html(html);
+		$('#tab1_page').html(res.data.page);
+}
+$(document).ready(function(){
+		$('#tab1_btn').click(function(){
+				var money_type = $('#tab1 [name="money_type"]').val(),
+				io = $('#tab1 [name="io"]:checked').val(),
+				char_info = $.trim($('#tab1 [name="char_info"]').val()),
+				start = $.trim($('#tab1 [name="start"]').val()),
+				end = $.trim($('#tab1 [name="end"]').val());
+				if(start==''||end==''){
+						$('#tab1_ajax_result').html('<{t}>请选择开始结束日期<{/t}>');
+						return;
+				}
+				$.ajax({
+						url:'?',
+						type:'post',
+						data:{type:'log',callback:'tab1_callback',money_type:money_type,io:io,char_info:char_info,start:start,end:end},
+						dataType:'json',
+						success:tab1_callback
+				})
+		})
+})
+</script>
+</head>
+<body>
+<div class="tabbable">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#tab1" data-toggle="tab"><{t}>货币更新流水<{/t}></a></li>
+		<li><a href="#tab2" data-toggle="tab"><{t}>玩家货币排行<{/t}></a></li>
+	</ul>
+<div class="tab-content">
+<div class="tab-pane active" id="tab1">
+<form class="well form-inline">
+	<{t}>货币<{/t}>： 
+	<select name="money_type" class="span1">
+		<option value="1">铜币</option>
+		<option value="2">铜券</option>
+		<option value="3">元宝</option>
+		<option value="4">礼券</option>
+	</select>
+	<{t}>类型<{/t}>： 
+	<select name="io" class="span1">
+		<option value="1"><{t}>新增<{/t}></option>
+		<option value="1"><{t}>减少<{/t}></option>
+	</select> 
+	<{t}>角色<{/t}>：
+	<input type="text" name="char_info" class="span2">
+	<{t}>日期<{/t}>：<input type="text" name="start" class="span2" onclick="WdatePicker()">
+	<i class="icon-minus"></i> 
+	<input type="text" name="end" class="span2" onclick="WdatePicker()">
+	<button class="btn btn-primary" type="button" id="tab1_btn"><{t}>搜索<{/t}></button>
+	<span class="label label-warning" id="tab1_ajax_result"></span>
+</form>
+<table class="table table-bordered table-condensed table-hover table-striped">
+	<thead>
+		<tr>
+			<th><{t}>排行<{/t}></th>
+			<th><{t}>玩家<{/t}>ID</th>
+			<th><{t}>角色名<{/t}></th>
+			<th><{t}>更新类型<{/t}></th>
+			<th><{t}>货币数<{/t}></th>
+		</tr>
+	</thead>
+	<tbody id="tab1_tbody"></tbody>
+</table>
+<div class="pagination pagination-centered" id="tab1_page"></div>
+</div>
+
+<div class="tab-pane" id="tab2">
+<form class="well form-inline">
+	<{t}>货币<{/t}>： 
+	<select name="money_type" class="span1">
+		<option value="1">铜币</option>
+		<option value="1">铜币</option>
+		<option value="1">铜币</option>
+	</select> 
+	<{t}>角色<{/t}>：
+	<input type="text" class="span2">
+	<button class="btn btn-primary" type="button"><{t}>搜索<{/t}></button>
+</form>
+<table class="table table-bordered table-condensed table-hover table-striped">
+	<thead>
+		<tr>
+			<th><{t}>排行<{/t}></th>
+			<th><{t}>货币数量<{/t}></th>
+			<th><{t}>玩家账号<{/t}></th>
+			<th><{t}>玩家角色名<{/t}></th>
+			<th><{t}>玩家登陆<{/t}>IP</th>
+			<th><{t}>玩家注册时间<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>1</td>
+			<td>2</td>
+			<td>3</td>
+			<td>4</td>
+			<td>5</td>
+			<td>6</td>
+		</tr>
+	</tbody>
+</table>
+</div>
+</div>
+</div>
+</body>
+</html>

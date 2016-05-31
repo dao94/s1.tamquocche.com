@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>名将流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+
+<style type="text/css">
+.span2{
+	width:122px;
+	height:20px;
+	line-height:20px;
+	overflow:hidden;
+}
+</style>
+
+<script language="javascript">
+$(function($){
+	//项目类型多选择
+	$('#btn_type').toggle(function(){
+		$('#type_list').fadeIn();
+	},function(){
+		$('#type_list').fadeOut();
+	});
+
+	$('#cb_all').click(function(){
+		$('.type').attr('checked',this.checked);
+	});
+
+	$('.btn_selected').click(function(){
+		$("input[name='type[]'][value='"+this.value+"']").attr('checked',false);
+		$('#btn_search').click();
+	});
+
+	<{if $conditions['type']}>
+		$('#type_list').fadeIn();
+	<{/if}>
+
+});
+</script>
+
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" id="char_id" name="char_id" class="input-small" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+
+	<label style="margin-left:5px;"><{t}>兵符名称<{/t}>：
+	<input class="input-small" placeholder="<{t}>输入兵符名称<{/t}>" type="text" id="sign_name" name="sign_name" value="<{$conditions['sign_name']}>" maxlength="32">
+	</label>
+
+	<button id="btn_type" type="button" class="btn btn-link"><{t}>项目类型<{/t}></button>
+
+   <label style="margin-left:5px;"><{t}>品质<{/t}>：
+	<select name="colour" class="input-small">
+		<option value=""><{t}>全部...<{/t}></option>
+	<{foreach $colour_conf as $key=>$item}>
+		<option value="<{$key}>"  <{if $conditions['colour']===$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	</label>
+
+	<label style="margin-left:5px;"><{t}>操作<{/t}>：
+	<select name="io" class="input-small">
+		<option value=""><{t}>全部...<{/t}></option>
+	<{foreach $io_conf as $key=>$item}>
+		<option value="<{$key}>"  <{if $conditions['io']===$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	</label>
+
+
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+
+
+<!-- 项目类型 -->
+<{if $conditions['type']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['type'] as $item}>
+		<button class="btn btn-mini btn_selected" type="button" value="<{$item}>"><{$type_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $type_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="type[]" value="<{$key}>" class="type" <{if in_array($key,$conditions['type'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<div id="nav">
+	<ul class="nav nav-tabs" style="margin-bottom:10px;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>&char_id=<{$conditions['char_id']}>&from=<{$conditions['from']}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+
+<div class="pagination pagination-right" style="margin:0;"><{$page}></div>
+<{if $conditions['action']=='audience'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th >角色名</th>
+		<th >兵符名称</th>
+		<th >品质</th>
+		<th >操作</th>
+		<th >项目</th>
+		<th >剩余</th>
+		<th >时间</th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td>
+		<a href="../gm/player.php?id=<{$row['char_id']}>" target="_parent"><{$row['char_name']}></a>
+		</td>
+		<td><{$row['sign_name']}></td>
+		<td><{$colour_conf[$row['quality']]|default:$row['quality']}></td>
+		<td><span class="badge <{if $row['io']==1}>badge-important<{else if $row['io']==2}>badge-info<{/if}>"><{$io_conf[$row['io']]|default:$row['io']}></span></td>
+		<td><{$type_conf[$row['type']]|default:$row['type']}></td>
+		<td><{$row['remain']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+<{else}>
+<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据!<{/t}></td></font></tr>
+<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='sign'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th>角色名</th>
+		<th>兵符名称</th>
+		<th>宠物名称</th>
+		<th>品质</th>
+		<th>操作</th>
+		<th>项目</th>
+		<th>剩余</th>
+		<th>等级</th>
+		<th>当前经验</th>
+		<th>时间</th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $k=>$row}>
+<tr>
+	<td><a href="../gm/player.php?id=<{$row['char_id']}>" target="_parent"><{$row['char_name']}></a></td>
+	<td><{$row['sign_name']}></td>
+	<td><{$row['pet_name']}></td>
+	<td><{$colour_conf[$row['quality']]|default:$row['quality']}></td>
+	<td><span class="badge <{if $row['io']==1}>badge-important<{else if $row['io']==2}>badge-info<{else if $row['io']==3}><{/if}>"><{$io_conf[$row['io']]|default:$row['io']}></span></td>
+	<td><{$type_conf[$row['type']]|default:$row['type']}></td>
+	<td><{$row['remain']}></td>
+	<td><{$row['level']}></td>
+	<td><{$row['exp']}></td>
+	<td><{$row['time']}></td>
+</tr>
+<{/foreach}>
+<{else}>
+<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+<{/if}>
+</tbody>
+</table>
+<{/if}>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+</body>
+</html>

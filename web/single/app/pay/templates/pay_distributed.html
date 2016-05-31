@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>充值分布<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+<div class="tabbable">
+	<ul class="nav nav-tabs">
+		<li <{if $action=='total'&&$first==''}>class="active"<{/if}>><a href="?action=total"><{t}>总分布<{/t}></a></li>
+		<li <{if $action=='week'}>class="active"<{/if}>><a href="?action=week"><{t}>周充值分布<{/t}></a></li>
+		<li <{if $action=='total'&&$first==1}>class="active"<{/if}>><a href="?action=total&first=1"><{t}>首充分布<{/t}></a></li>
+		<li <{if $action=='first_level'}>class="active"<{/if}>><a href="?action=first_level"><{t}>首充等级<{/t}></a></li>
+	</ul>
+</div>
+
+<{if $action eq 'total'}>
+<div style="margin-bottom:5px;">
+	<span style="margin-left:10px;"><{t}>首日<{/t}>》</span>
+	<span><{t}>充值人数/注册数<{/t}>：<b><{if $total_first['reg_count']}><{round($total_first['pay_count']/$total_first['reg_count']*100,2)}><{else}>0<{/if}>%</span></b>
+	<span style="margin-left:10px;"><{t}>	充值金额/注册数<{/t}>：<b><{if $total_first['reg_count']}><{round($total_first['gold_count']/10/$total_first['reg_count'],2)}><{else}>0<{/if}></span></b>
+</div>
+
+<div style="margin-bottom:10px;">
+	<span style="margin-left:10px;"><{t}>汇总<{/t}>》</span>
+	<span><{t}>充值人数/注册数<{/t}>：<b><{if $register eq 0}>0<{else}><{round($payer/$register*100,2)}>%<{/if}></span></b>
+	<span style="margin-left:10px;"><{t}>充值金额/注册数<{/t}>：<b><{if $register eq 0}>0<{else}><{round($sum_gold/10/$register,2)}><{/if}></span></b>
+	<span style="margin-left:10px;"><{t}>充值用户/活跃用户<{/t}>：<b><{if $aliver eq 0}>0<{else}><{round($payer/$aliver*100,2)}>%<{/if}></span></b>
+</div>
+<{if $action=='total' && $first==1}>
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+   		 <li <{if $conditions['action_first']==$key}>class="active"<{/if}>><a href="?action=<{$action}>&action_first=<{$key}>&first=<{$first}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<{/if}>
+<form action="?" class="well well-small form-search">
+	<{t}>充值时间<{/t}>：<input type="text" name="start_date" class="input-small" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input type="text" name="end_date" class="input-small" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+	<input type="hidden" name="action" value="<{$action}>" />
+	<input type="hidden" name="action_first" value="<{$action_first}>" />
+	<input type="hidden" name="first" value="<{$first}>" />
+	<div class="btn-group" style="margin-left:20px;">
+	<{foreach $time_type as $type=>$item}>
+		<button type="button"  onClick="javascript:window.location='?action=<{$action}>&action_first=<{$action_first}>&first=<{$first}>&start_date=<{$item[1]}>&end_date=<{$item[2]}>&type=<{$type}>'" class="btn <{if $type==$conditions['type']}>btn-inverse<{/if}>"><{$item[0]}></button>
+	<{/foreach}>
+	</div>
+</form>
+<{if $action=='total' && $first==1}>
+	<{if $conditions['action_first']=='all_player'}>
+		<table class="table table-hover table-bordered table-condensed">
+			<thead>
+				<tr style="background-color:#D9EDF7">
+					<th colspan="2"><{t}>充值金额<{/t}></th>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<th>
+						<{if $key==0}>
+							<{$val/10}>
+						<{else}>
+							[<{$val/10}>,<{if isset($pay_range_conf[$key+1])}><{$pay_range_conf[$key+1]/10}><{else}>+∞<{/if}>)
+						<{/if}>
+					</th>
+					<{/foreach}>
+				</tr>
+
+				<tr style="background-color:#FCF8E3">
+					<th rowspan="2"><{t}>汇总<{/t}></th>
+					<th><{t}>人数<{/t}></th>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{$data[$val]|default:0}></td>
+					<{/foreach}>
+				</tr>
+				<tr style="background-color:#FCF8E3">
+					<th><{t}>比例<{/t}></th>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{if $payer&&isset($data[$val])}><{round($data[$val]/$payer*100,2)}><{else}>0<{/if}>%</td>
+					<{/foreach}>
+				</tr>
+			</thead>
+
+			<{if !empty($day_data)}>
+			<tbody>
+			<{foreach $day_data as $date=>$row}>
+				<tr>
+					<td rowspan="2"><{$date}>(<{t}>周<{/t}><{$row['week']}>)</td>
+					<td><{t}>人数<{/t}></td>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{$row['distributed'][$val]|default:0}></td>
+					<{/foreach}>
+				</tr>
+				<tr>
+					<td><{t}>比例<{/t}></td>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{if $row['count']&&isset($row['distributed'][$val])}><{round($row['distributed'][$val]/$row['count']*100,2)}><{else}>0<{/if}>%</td>
+					<{/foreach}>
+				</tr>
+			<{/foreach}>
+			</tbody>
+			<{/if}>
+		</table>
+	<{else if $conditions['action_first']=='new_player'}>
+		<table class="table table-hover table-bordered table-condensed">
+			<thead>
+				<tr style="background-color:#D9EDF7">
+					<th colspan="2"><{t}>充值金额<{/t}></th>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<th>
+						<{if $key==0}>
+							<{$val/10}>
+						<{else}>
+							[<{$val/10}>,<{if isset($pay_range_conf[$key+1])}><{$pay_range_conf[$key+1]/10}><{else}>+∞<{/if}>)
+						<{/if}>
+					</th>
+					<{/foreach}>
+				</tr>
+
+				<tr style="background-color:#FCF8E3">
+					<th rowspan="2"><{t}>汇总<{/t}></th>
+					<th><{t}>人数<{/t}></th>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{$data[$val]|default:0}></td>
+					<{/foreach}>
+				</tr>
+				<tr style="background-color:#FCF8E3">
+					<th><{t}>比例<{/t}></th>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{if $payer&&isset($data[$val])}><{round($data[$val]/$payer*100,2)}><{else}>0<{/if}>%</td>
+					<{/foreach}>
+				</tr>
+			</thead>
+
+			<{if !empty($day_data)}>
+			<tbody>
+			<{foreach $day_data as $date=>$row}>
+				<tr>
+					<td rowspan="2"><{$date}>(<{t}>周<{/t}><{$row['week']}>)</td>
+					<td><{t}>人数<{/t}></td>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{$row['distributed'][$val]|default:0}></td>
+					<{/foreach}>
+				</tr>
+				<tr>
+					<td><{t}>比例<{/t}></td>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{if $row['count']&&isset($row['distributed'][$val])}><{round($row['distributed'][$val]/$row['count']*100,2)}><{else}>0<{/if}>%</td>
+					<{/foreach}>
+				</tr>
+			<{/foreach}>
+			</tbody>
+			<{/if}>
+		</table>
+	<{else if $conditions['action_first']=='old_player'}>
+		<table class="table table-hover table-bordered table-condensed">
+			<thead>
+				<tr style="background-color:#D9EDF7">
+					<th colspan="2"><{t}>充值金额<{/t}></th>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<th>
+						<{if $key==0}>
+							<{$val/10}>
+						<{else}>
+							[<{$val/10}>,<{if isset($pay_range_conf[$key+1])}><{$pay_range_conf[$key+1]/10}><{else}>+∞<{/if}>)
+						<{/if}>
+					</th>
+					<{/foreach}>
+				</tr>
+
+				<tr style="background-color:#FCF8E3">
+					<th rowspan="2"><{t}>汇总<{/t}></th>
+					<th><{t}>人数<{/t}></th>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{$data[$val]|default:0}></td>
+					<{/foreach}>
+				</tr>
+				<tr style="background-color:#FCF8E3">
+					<th><{t}>比例<{/t}></th>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{if $payer&&isset($data[$val])}><{round($data[$val]/$payer*100,2)}><{else}>0<{/if}>%</td>
+					<{/foreach}>
+				</tr>
+			</thead>
+
+			<{if !empty($day_data)}>
+			<tbody>
+			<{foreach $day_data as $date=>$row}>
+				<tr>
+					<td rowspan="2"><{$date}>(<{t}>周<{/t}><{$row['week']}>)</td>
+					<td><{t}>人数<{/t}></td>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{$row['distributed'][$val]|default:0}></td>
+					<{/foreach}>
+				</tr>
+				<tr>
+					<td><{t}>比例<{/t}></td>
+					<{foreach $pay_range_conf as $key=>$val}>
+					<td><{if $row['count']&&isset($row['distributed'][$val])}><{round($row['distributed'][$val]/$row['count']*100,2)}><{else}>0<{/if}>%</td>
+					<{/foreach}>
+				</tr>
+			<{/foreach}>
+			</tbody>
+			<{/if}>
+		</table>
+	<{/if}>
+<{else}>
+<table class="table table-hover table-bordered table-condensed">
+	<thead>
+		<tr style="background-color:#D9EDF7">
+			<th colspan="2"><{t}>充值金额<{/t}></th>
+			<{foreach $pay_range_conf as $key=>$val}>
+			<th>
+				<{if $key==0}>
+					<{$val/10}>
+				<{else}>
+					[<{$val/10}>,<{if isset($pay_range_conf[$key+1])}><{$pay_range_conf[$key+1]/10}><{else}>+∞<{/if}>)
+				<{/if}>
+			</th>
+			<{/foreach}>
+		</tr>
+
+		<tr style="background-color:#FCF8E3">
+			<th rowspan="2"><{t}>汇总<{/t}></th>
+			<th><{t}>人数<{/t}></th>
+			<{foreach $pay_range_conf as $key=>$val}>
+			<td><{$data[$val]|default:0}></td>
+			<{/foreach}>
+		</tr>
+		<tr style="background-color:#FCF8E3">
+			<th><{t}>比例<{/t}></th>
+			<{foreach $pay_range_conf as $key=>$val}>
+			<td><{if $payer&&isset($data[$val])}><{round($data[$val]/$payer*100,2)}><{else}>0<{/if}>%</td>
+			<{/foreach}>
+		</tr>
+	</thead>
+
+	<{if !empty($day_data)}>
+	<tbody>
+	<{foreach $day_data as $date=>$row}>
+		<tr>
+			<td rowspan="2"><{$date}>(<{t}>周<{/t}><{$row['week']}>)</td>
+			<td><{t}>人数<{/t}></td>
+			<{foreach $pay_range_conf as $key=>$val}>
+			<td><{$row['distributed'][$val]|default:0}></td>
+			<{/foreach}>
+		</tr>
+		<tr>
+			<td><{t}>比例<{/t}></td>
+			<{foreach $pay_range_conf as $key=>$val}>
+			<td><{if $row['count']&&isset($row['distributed'][$val])}><{round($row['distributed'][$val]/$row['count']*100,2)}><{else}>0<{/if}>%</td>
+			<{/foreach}>
+		</tr>
+	<{/foreach}>
+	</tbody>
+	<{/if}>
+</table>
+<{/if}>
+<div class="pagination pagination-centered"><{$page|default:''}></div>
+
+<{elseif $action=='week'}>
+<div style="margin-left:10px;line-height:30px;">
+	<ol>
+		<li><{t}>每个充值区间显示的是，截止到 第n周的周日，累计充值额在该充值区间的玩家数。<{/t}></li>
+		<li><{t}>周开始日期：除了开服头一周为开服当天外，其他周均为周一日期。<{/t}></li>
+	</ol>
+</div>
+
+<table class="table table-striped table-bordered table-condensed">
+	<thead>
+	<tr>
+		<th><{t}>开服周数<{/t}></th>
+		<th><{t}>周开始日期<{/t}></th>
+		<th><{t}>未充值用户<{/t}></th>
+		<th><{t}>总充值用户<{/t}></th>
+		<th>(0,100]</th>
+		<th>(100,200]</th>
+		<th>(200,500]</th>
+		<th>(500,1000]</th>
+		<th>(1000,2000]</th>
+		<th>(2000,5000]</th>
+		<th>(5000,10000]</th>
+		<th>(10000,20000]</th>
+		<th>(20000,50000]</th>
+		<th>(50000,+∞)</th>
+	</tr>
+	</thead>
+<{while $week_r = $query->fetch_assoc()}>
+	<tr>
+		<td><{$week_r['week']}></td>
+		<td><{$week_r['week_start']}></td>
+		<td><{$week_r['unpayer']}>(<{round($week_r['unpayer']/($week_r['unpayer']+$week_r['payer'])*100,2)}>%)</td>
+		<td><{$week_r['payer']}>(<{round($week_r['payer']/($week_r['unpayer']+$week_r['payer'])*100,2)}>%)</td>
+		<td><{$week_r['gt0']}>(<{round($week_r['gt0']/$week_r['payer']*100,2)}>%)</td>
+		<td><{$week_r['gt100']}>(<{round($week_r['gt100']/$week_r['payer']*100,2)}>%)</td>
+		<td><{$week_r['gt200']}>(<{round($week_r['gt200']/$week_r['payer']*100,2)}>%)</td>
+		<td><{$week_r['gt500']}>(<{round($week_r['gt500']/$week_r['payer']*100,2)}>%)</td>
+		<td><{$week_r['gt1000']}>(<{round($week_r['gt1000']/$week_r['payer']*100,2)}>%)</td>
+		<td><{$week_r['gt2000']}>(<{round($week_r['gt2000']/$week_r['payer']*100,2)}>%)</td>
+		<td><{$week_r['gt5000']}>(<{round($week_r['gt5000']/$week_r['payer']*100,2)}>%)</td>
+		<td><{$week_r['gt10000']}>(<{round($week_r['gt10000']/$week_r['payer']*100,2)}>%)</td>
+		<td><{$week_r['gt20000']}>(<{round($week_r['gt20000']/$week_r['payer']*100,2)}>%)</td>
+		<td><{$week_r['gt50000']}>(<{round($week_r['gt50000']/$week_r['payer']*100,2)}>%)</td>
+	</tr>
+<{/while}>
+</table>
+
+<{elseif $action=='first_level'}>
+<form action="?" class="well well-small form-search">
+	<{t}>充值时间<{/t}>：<input type="text" name="start_date" class="input-small" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input type="text" name="end_date" class="input-small" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+
+	<div class="btn-group" style="margin-left:20px;">
+	<{foreach $time_type as $type=>$item}>
+		<button type="button"  onClick="javascript:window.location='?action=<{$action}>&start_date=<{$item[1]}>&end_date=<{$item[2]}>&type=<{$type}>'" class="btn <{if $type==$conditions['type']}>btn-inverse<{/if}>"><{$item[0]}></button>
+	<{/foreach}>
+	</div>
+	<input type="hidden" name="action" value="<{$action}>">
+	<input type="hidden" name="type" value="<{$conditions['type']}>">
+</form>
+
+<table class="table table-striped table-bordered table-condensed">
+	<tr>
+		<th><{t}>首充等级<{/t}></th>
+		<th><{t}>人数<{/t}></th>
+		<th><{t}>总金额(元宝)<{/t}></th>
+		<th><{t}>人均金额(元宝)<{/t}></th>
+	</tr>
+	<{foreach $data as $row}>
+	<tr>
+		<td><{$row['level']}></td>
+		<td><{$row['count']}></td>
+		<td><{$row['gold']}></td>
+		<td><{intval($row['gold']/$row['count'])}></td>
+	</tr>
+	<{/foreach}>
+</table>
+<div class="pagination pagination-centered"><{$page|default:''}></div>
+<{/if}>
+</body>
+</html>

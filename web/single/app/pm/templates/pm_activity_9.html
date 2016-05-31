@@ -1,0 +1,417 @@
+<!--世界杯活动-->
+<{if $tpl=='set'}>
+<script language="javascript">
+$(function($){
+	$('select[name="world_reward_type"]').live('change',function(){
+		$(this).find('option[value="'+this.value+'"]').attr('selected',true);
+		$(this).find('option[value!="'+this.value+'"]').attr('selected',false);
+	});
+
+	$('select[name="reward_type"]').live('change',function(){
+		$(this).find('option[value="'+this.value+'"]').attr('selected',true);
+		$(this).find('option[value!="'+this.value+'"]').attr('selected',false);
+		$(this).parents('table').find('.items').hide();
+		var reward_item=this.value>0 ? 1 : 0;
+		$(this).parents('table').find('.items_'+reward_item).fadeIn();
+	});
+});
+function strtotime(date){
+	if(date==''||typeof(date)=='undefined'){
+		return false;
+	}
+	var arr=date.replace(/:/g,'-').replace(/ /g,'-').split('-');
+	var time=(new Date(Date.UTC(arr[0],arr[1]-1,arr[2],arr[3]-8,arr[4],arr[5])).getTime())/1000;
+	return isNaN(time) ? false : time;
+}
+function getParam(){
+	var quiz=[],schedule=[],index_list=[],check_result=true;
+	//比赛赛程
+	$('#schedule').find('.sub_item').each(function(i, element) {
+		var index=parseInt($(element).find('[name="index"]').val()),
+			time=$(element).find('[name="time"]').val(),
+			item_a=$.trim($(element).find('[name="item_a"]').val()),
+			item_b=$.trim($(element).find('[name="item_b"]').val()),
+			win=parseInt($(element).find('[name="win"]').val());
+			if(isNaN(index)||index<0){
+				$(element).find('[name="index"]').focus();
+				alert('<{t}>场次必须为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if($.inArray(index,index_list)!=-1){
+				$(element).find('[name="index"]').focus();
+				alert('<{t}>场次不能重复<{/t}>');
+				check_result=false;
+				return false;
+			}else if(time==''){
+				$(element).find('[name="time"]').focus();
+				alert('<{t}>比赛时间不能为空<{/t}>');
+				check_result=false;
+				return false;
+			}else if(item_a==''||item_a==item_b){
+				alert(item_a+'<{t}>队伍不能自伤残杀<{/t}>');
+				check_result=false;
+				return false;
+			}else if(isNaN(win)||win<0){
+				alert('<{t}>比赛结果类型错误<{/t}>');
+				check_result=false;
+				return false;
+			}
+			index_list.push(index);
+			time=strtotime(time);
+			schedule.push({index:index,win:win,time:time,group:{0:item_a,1:item_b}});
+	});
+	if(!check_result)	return false;
+
+	var other=[];
+	$('input[name="limit_level"]').each(function(index, element) {
+		var type=parseInt($(element).attr('id')),level=parseInt($(element).val());
+		if(isNaN(type)||type<0){
+			alert("<{t}>下注货币错误<{/t}>");
+			check_result=false;
+			return false;
+		}else if(isNaN(level)||level<0){
+			$(element).focus();
+			alert("<{t}>下注最低等级为正整数<{/t}>");
+			check_result=false;
+			return false;
+		}
+		other.push({moneyType:type,level:level});
+	});
+	if(!check_result)	return false;
+
+	var quiz_id_list=[];
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		$(control_group).each(function(b,control){
+			var quiz_id=parseInt($(control).find('[name="quiz_id"]').val())
+				bet_money_type=parseInt($(control).find('[name="bet_money_type"]').val()),
+				bet_money=parseInt($(control).find('[name="bet_money"]').val()),
+				recharge=parseInt($(control).find('[name="recharge"]').val());
+			if(isNaN(quiz_id)||quiz_id<1){
+				$(control).find('[name="quiz_id"]').focus();
+				alert('<{t}>竞猜ID必须为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if($.inArray(quiz_id,quiz_id_list)!=-1){
+				$(control).find('[name="quiz_id"]').focus();
+				alert('<{t}>竞猜ID不能重复<{/t}>');
+				check_result=false;
+				return false;
+			}else if(isNaN(bet_money_type)||bet_money_type<1){
+				alert('<{t}>下注金钱类型错误<{/t}>');
+				check_result=false;
+				return false;
+			}else if(isNaN(bet_money)||bet_money<1){
+				$(control).find('[name="bet_money"]').focus();
+				alert('<{t}>下注金钱必须为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if(isNaN(recharge)||recharge<0){
+				$(control).find('[name="recharge"]').focus();
+				alert('<{t}>最低日充值元宝数为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}
+			quiz_id_list.push(quiz_id);
+			if(!check_result)	return false;
+
+			var win_item_list=[],win_money_list=[],fail_item_list=[],fail_money_list=[];
+			$($(control).find('.controls')).each(function(c,controls){
+				var world_reward_type=parseInt($(controls).find('[name="world_reward_type"]').val()),
+						reward_type=parseInt($(controls).find('[name="reward_type"]').val());
+				switch(reward_type){
+					case 0:
+						//道具奖励
+						var item_val=$.trim($(controls).find('[name="item"]').val()).split('|');
+						var num=parseInt($.trim($(controls).find('[name="num"]').val()));
+						var bind=$(controls).find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+						var item_id=$.trim(item_val[0]);
+						if(item_id==''){
+							$(controls).find('[name="item"]').focus();
+							alert('<{t}>道具为必填项<{/t}>');
+							check_result=false;
+							return false;
+						}else if(isNaN(num)||num<1){
+							$(controls).find('[name="num"]').focus();
+							alert('<{t}>数量为必填,且是大于0的整字<{/t}>');
+							check_result=false;
+							return false;
+						}
+						if(world_reward_type==1){
+							win_item_list.push({itemId:item_id,number:num,bind:bind});
+						}else if(world_reward_type==2){
+							fail_item_list.push({itemId:item_id,number:num,bind:bind});
+						}
+						break;
+
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+						//金钱奖励
+						var num=parseInt($.trim($(controls).find('.items_1').find('[name="num"]').val()));
+						if(isNaN(num)||num<1){
+							$(controls).find('.items_1').find('[name="num"]').focus();
+							alert('<{t}>数量为必填,且是大于1的数字<{/t}>');
+							check_result=false;
+							return false;
+						}
+						if(world_reward_type==1){
+							win_money_list.push({money:num,type:reward_type});
+						}else if(world_reward_type==2){
+							fail_money_list.push({money:num,type:reward_type});
+						}
+						break;
+
+					default:
+						alert('<{t}>选择错误<{/t}>');
+						check_result=false;
+						return false;
+						break;
+				}
+			});
+			quiz.push({id:quiz_id,moneyType:bet_money_type,money:bet_money,itemList:win_item_list,moneyList:win_money_list,failItemList:fail_item_list,failMoneyList:fail_money_list,recharge:recharge});
+		});
+	});
+	var param={quiz:quiz,schedule:schedule,other:other};
+	return check_result ? param : check_result;
+}
+</script>
+<input type="hidden" name="is_xml" value="1"/>
+
+<div class="control-group">
+	<div class="control-label"><{t}>比赛赛程<{/t}></div>
+	<div class="controls form-search">
+		<table style="margin-bottom:5px;">
+			<tr>
+				<td>
+				<{* "设置"功能默认一个元素，"更新"根据数据展现 *}>
+				<{if isset($data['param']['schedule'])}>
+					<{$schedule_list=$data['param']['schedule']}>
+				<{else}>
+					<{$schedule_list=array(1)}>
+				<{/if}>
+				<ul class="unstyled" id="schedule" style="margin:0;">
+					<{foreach $schedule_list as $schedule}>
+					<li class="sub_item" style="margin-bottom:5px;">
+						<{t}>场次<{/t}>：
+						<input type="text" name="index" class="input-mini-mini" value="<{$schedule['index']|default:''}>" placeholder="<{t}>场次<{/t}>" maxlength="5">
+						<{t}>时间<{/t}>：
+						<input type="text" name="time" class="input-medium" value="<{$schedule['time']|date_format:'%Y-%m-%d %T'|default:''}>" placeholder="<{t}>比赛时间<{/t}>" onclick="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:00'})">
+						<{t}>A队<{/t}>
+						<select class="input-medium" name="item_a">
+						<{foreach $activity_config['world_cup_item'] as $key=>$value}>
+							<option value="<{$value}>" <{if isset($schedule['group'][0])&&$schedule['group'][0]==$value}>selected="selected"<{/if}>><{$value}></option>
+						<{/foreach}>
+						</select>
+						<{t}>B队<{/t}>
+						<select class="input-medium" name="item_b">
+						<{foreach $activity_config['world_cup_item'] as $key=>$value}>
+							<option value="<{$value}>" <{if isset($schedule['group'][1])&&$schedule['group'][1]==$value}>selected="selected"<{/if}>><{$value}></option>
+						<{/foreach}>
+						</select>
+						<{t}>结果<{/t}>：
+						<select class="input-small" name="win">
+							<{foreach $activity_config['world_cup_win'] as $key=>$value}>
+							<option value="<{$key}>" <{if isset($schedule['win'])&&$schedule['win']==$key}>selected="selected"<{/if}>><{$value}></option>
+						<{/foreach}>
+						</select>
+						<button type="button" class="btn btn-mini btn_add_item"><i class="icon-plus"></i></button>
+						<button type="button" class="btn btn-mini btn_del_item"><i class="icon-minus"></i></button>
+					</li>
+					<{/foreach}>
+				</ul>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label"></label>
+	<div class="controls">
+		<{foreach $activity_config['money_type'] as $key=>$item}>
+			<{if $key==1 || $key==3}>
+			<{$item}><{t}>下注最低等级<{/t}>：<input type="text" id="<{$key}>" name="limit_level" class="input-small" maxlength="3" placeholder="<{t}>正整数<{/t}>" value="<{if isset($data['param']['other'][0]['moneyType'])&&$data['param']['other'][0]['moneyType']==$key}><{$data['param']['other'][0]['level']}><{elseif isset($data['param']['other'][1]['moneyType'])&&$data['param']['other'][1]['moneyType']==$key}><{$data['param']['other'][1]['level']}><{/if}>"/>
+		<{/if}>
+		<{/foreach}>
+	</div>
+</div>
+
+
+<{* "设置"功能默认一个元素，"更新"根据数据展现 *}>
+<{if isset($data['param']['quiz'])}>
+	<{$quiz_list=$data['param']['quiz']}>
+<{else}>
+	<{$quiz_list=array(1)}>
+<{/if}>
+
+<{foreach $quiz_list as $quiz}>
+<div class="control-group">
+	<div class="control-label">
+		<button type="button" class="btn btn-mini btn-inverse btn_add_config"><i class="icon-plus icon-white"></i></button>
+		<button type="button" class="btn btn-mini btn-inverse btn_del_config"><i class="icon-minus icon-white"></i></button>
+		<{t}>竞猜奖励<{/t}>
+	</div>
+	<div style="margin-left:180px;" class="form-search">
+		<{t}>竞猜ID<{/t}>：
+		<input type="text" name="quiz_id" value="<{$quiz['id']|default:''}>" class="input-mini-mini" maxlength="5" placeholder="<{t}>正整数<{/t}>"/>
+		<{t}>下注金钱<{/t}>：
+		<select name="bet_money_type" class="input-small" >
+		<{foreach $activity_config['money_type'] as $key=>$item}>
+			<{if $key==1 || $key==3}>
+			<option value="<{$key}>" <{if isset($quiz['moneyType'])&&$quiz['moneyType']==$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/if}>
+		<{/foreach}>
+		</select>
+		<input type="text" name="bet_money" value="<{$quiz['money']|default:''}>" class="input-small" maxlength="12" placeholder="<{t}>正整数<{/t}>"/>
+		<{t}>最低日充值元宝数<{/t}>：
+		<input type="text" name="recharge" value="<{$quiz['recharge']|default:''}>" class="input-small" maxlength="8" placeholder="<{t}>正整数<{/t}>"/>
+	</div>
+
+	<{$win_item_list=array()}>
+	<{$win_money_list=array()}>
+	<{if isset($quiz['itemList'])}>
+		<{$win_item_list=$quiz['itemList']}>
+	<{/if}>
+	<{if isset($quiz['moneyList'])}>
+		<{$win_money_list=$quiz['moneyList']}>
+	<{/if}>
+	<{$win_list=array_merge($win_item_list,$win_money_list)}>
+
+	<{$fail_item_list=array()}>
+	<{$fail_money_list=array()}>
+	<{if isset($quiz['failItemList'])}>
+		<{$fail_item_list=$quiz['failItemList']}>
+	<{/if}>
+	<{if isset($quiz['failMoneyList'])}>
+		<{$fail_money_list=$quiz['failMoneyList']}>
+	<{/if}>
+	<{$fail_list=array_merge($fail_item_list,$fail_money_list)}>
+
+	<{$item_list=array()}>
+	<{if $win_list}>
+		<{$item_list[1]=$win_list}>
+	<{/if}>
+	<{if $fail_list}>
+		<{$item_list[2]=$fail_list}>
+	<{/if}>
+	<{if !$item_list}>
+		<{$item_list=array(1)}>
+	<{/if}>
+
+	<{foreach $item_list as $world_reward_type=>$items_arr}>
+	<{foreach $items_arr as $items}>
+	<div class="controls form-search" style="margin-bottom:5px; margin-top:5px;">
+		<table>
+			<tr>
+				<td valign="top">
+					<select name="world_reward_type" class="input-small" >
+					<{foreach $activity_config['world_reward_type'] as $key=>$item}>
+						<option value="<{$key}>" <{if is_array($items)&&$world_reward_type==$key}>selected="selected"<{/if}>><{$item}></option>
+					<{/foreach}>
+					</select>
+				</td>
+				<td valign="top">
+					<select name="reward_type" class="input-small" >
+					<{foreach $activity_config['money_type'] as $key=>$item}>
+						<option value="<{$key}>" <{if isset($items['type'])&&$items['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+					<{/foreach}>
+					</select>
+				</td>
+				<td class="items items_0 <{if empty($items['itemId'])&&$items>2}>hide<{/if}>">
+				<ul class="unstyled" style="margin:0;">
+					<li class="sub_item">
+						<{t}>道具<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($items['itemId'])}><{$items['itemId']}>|<{t}><{$items['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$items['number']|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+						<label><input type="checkbox" name="bind" <{if isset($items['bind'])&&$items['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+					</li>
+				</ul>
+				</td>
+				<td class="items items_1 <{if empty($items['money'])}>hide<{/if}>">
+					<{t}>数量<{/t}>：<input type="text" class="input-small" name="num" maxlength="8" value="<{$items['money']|default:''}>" placeholder="<{t}>正整数<{/t}>">
+				</td>
+				<td valign="top">
+					<button type="button" class="btn btn-small btn-primary btn_add_items"><i class="icon-plus icon-white"></i></button>
+					<button type="button" class="btn btn-small btn-primary btn_del_items"><i class="icon-minus icon-white"></i></button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<{/foreach}>
+	<{/foreach}>
+</div>
+<{/foreach}>
+
+<{else if $tpl=='show'}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+		<{foreach $row['param']['other'] as $other}>
+			<{$activity_config['money_type'][$other['moneyType']]}><{t}>下注最低等级<{/t}>：<{$other['level']}>
+		<{/foreach}>
+	<{foreach $row['param']['schedule'] as $schedule}>
+		<div>
+			<{t}>场次<{/t}>：<{$schedule['index']}>
+			<{t}>比赛时间<{/t}>：<{$schedule['time']|date_format:'%Y-%m-%d %T'}>
+			<{t}>队伍<{/t}>：<{$schedule['group'][0]}>VS<{$schedule['group'][1]}>
+			<{t}>结果<{/t}>：<{$activity_config['world_cup_win'][$schedule['win']]}>
+		</div>
+	<{/foreach}>
+	<{if !empty($row['param']['quiz'])}>
+		<ul class="unstyled" style="margin-top:10px;">
+			<{foreach $row['param']['quiz'] as $items}>
+				<li>
+					<{t}>奖励ID<{/t}>：<{$items['id']}>
+					<{t}>下注<{/t}><{$activity_config['money_type'][$items['moneyType']]}>：<{$items['money']}>
+					<{t}>最低日充值元宝数<{/t}>：<{$items['recharge']}>
+				</li>
+				<{if !empty($items['itemList'])}>
+					<{foreach $items['itemList'] as $item}>
+					<li>
+						<{t}>奖励道具<{/t}>：<{t}><{$item['itemId']}><{/t}>(<{if $item['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+						<{t}>数量<{/t}>：<{$item['number']}>
+					</li>
+					<{/foreach}>
+				<{/if}>
+
+				<{if !empty($items['moneyList'])}>
+					<{foreach $items['moneyList'] as $item}>
+						<li>
+							<{t}>奖励<{/t}><{$activity_config['money_type'][$item['type']]}>：<{t}><{$item['money']}><{/t}>
+						</li>
+					<{/foreach}>
+				<{/if}>
+
+				<{if !empty($items['failItemList'])}>
+					<{foreach $items['failItemList'] as $item}>
+					<li>
+						<{t}>补偿道具<{/t}>：<{t}><{$item['itemId']}><{/t}>(<{if $item['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+						<{t}>数量<{/t}>：<{$item['number']}>
+					</li>
+					<{/foreach}>
+				<{/if}>
+
+				<{if !empty($items['failMoneyList'])}>
+					<{foreach $items['failMoneyList'] as $item}>
+						<li>
+							<{t}>补偿<{/t}><{$activity_config['money_type'][$item['type']]}>：<{t}><{$item['money']}><{/t}>
+						</li>
+					<{/foreach}>
+				<{/if}>
+
+				<li><hr style="margin:5px 0"/></li>
+
+			<{/foreach}>
+		</ul>
+		<{/if}>
+	</dd>
+</dl>
+
+<{/if}>

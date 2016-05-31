@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="19" name="夥伴裝備升階">
+    <show_time>2014-12-27 00:00:00</show_time>
+    <hide_time>2014-12-28 23:59:59</hide_time>
+    <start_time>2014-12-27 00:00:00</start_time>
+    <end_time>2014-12-28 23:59:59</end_time>
+    <info><![CDATA[活動期間，只要玩家的任意夥伴的裝備提升到一定的階數，就可以免費獲得系統獎勵的大禮哦~<br />
+注：只有在活動期間內升階才能獲得獎勵哦~獎勵都只能領取一次<br />]]></info>
+    <reward id="1" type="1" level="3" time="1">
+      <item id="30110200012" number="2" bind="0"/>
+    </reward>
+    <reward id="2" type="1" level="6" time="1">
+      <item id="30110200012" number="5" bind="0"/>
+      <item id="30110300012" number="2" bind="0"/>
+    </reward>
+    <reward id="3" type="1" level="9" time="1">
+      <item id="30110200012" number="10" bind="0"/>
+      <item id="30110300012" number="3" bind="0"/>
+    </reward>
+    <reward id="4" type="1" level="13" time="1">
+      <item id="30110200023" number="3" bind="0"/>
+      <item id="30110300023" number="1" bind="0"/>
+    </reward>
+    <reward id="5" type="1" level="16" time="1">
+      <item id="30110200023" number="4" bind="0"/>
+      <item id="30110300023" number="2" bind="0"/>
+    </reward>
+    <reward id="6" type="1" level="19" time="1">
+      <item id="30110200023" number="7" bind="0"/>
+      <item id="30110300023" number="3" bind="0"/>
+    </reward>
+    <reward id="7" type="1" level="23" time="1">
+      <item id="30110200034" number="5" bind="0"/>
+      <item id="30110300034" number="2" bind="0"/>
+    </reward>
+    <reward id="8" type="1" level="26" time="1">
+      <item id="30110200034" number="8" bind="0"/>
+      <item id="30110300034" number="2" bind="0"/>
+    </reward>
+    <reward id="9" type="1" level="29" time="1">
+      <item id="30110200034" number="12" bind="0"/>
+      <item id="30110300034" number="3" bind="0"/>
+    </reward>
+    <reward id="10" type="1" level="33" time="1">
+      <item id="30110200045" number="5" bind="0"/>
+      <item id="30110300045" number="2" bind="0"/>
+    </reward>
+    <reward id="11" type="1" level="36" time="1">
+      <item id="30110200045" number="8" bind="0"/>
+      <item id="30110300045" number="2" bind="0"/>
+    </reward>
+    <reward id="12" type="1" level="39" time="1">
+      <item id="30110200045" number="12" bind="0"/>
+      <item id="30110300045" number="3" bind="0"/>
+    </reward>
+  </activity>
+</config>

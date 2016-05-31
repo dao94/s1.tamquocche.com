@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script lang="javascript">
+$(document).ready(function(){
+	//热更新
+	$('#tab1_set').click(function(){
+			var id = $('#tab1 [name="id"]:checked').val(),
+			idx = $('#tab1 [name="idx"]').val(),
+			files = [],
+			host = $('#tab1 [name="host"]').val();
+			$('[name="files"]').each(function(i){
+					var file = $.trim($(this).val());
+					if(file.length>0){
+							files[i] = file;
+							i++;
+					}
+			})
+			if(files.length<1){
+					$('#tab1_ajax').html('<{t}>请输入热更新文件列表<{/t}>');
+					return;
+			}
+			var phprpc_client = new PHPRPC_Client('../interface/server_api.php', ['hot_update']);
+			phprpc_client.hot_update({host:host,id:id,idx:idx,files:files}, function (result, args, output, warning) {
+					$('#tab1_ajax').html(result.info);
+			}, true);
+	});
+	//日志
+	$('#tab1_log').click(function(){
+		var id='';
+		var host='';
+		var phprpc_client = new PHPRPC_Client('../interface/server_api.php',['flush_print']);
+		phprpc_client.flush_print({id:id,host:host},function(result,args,output,warning){
+			$('#tab1_ajax_log').html(result.info);
+		},true);
+	});
+	//防止刷bug
+	$('#tab2_set').click(function(){
+			var type= $('#tab2 [name="type"]:checked').val(),
+			flag = $('#tab2 [name="flag"]:checked').val(),
+			host = $('#tab2 [name="host"]').val(),
+			src = [];
+			$('#tab2 [name="src"]:checked').each(function(i){
+					src[i] = $(this).val();
+			})
+			if(src.length<1||type==''){
+					$('#tab2_ajax').html('<{t}>请选择产出渠道<{/t}>');
+					return;
+			}
+			var phprpc_client = new PHPRPC_Client('../interface/server_api.php', ['avoid_ctrl']);
+			phprpc_client.avoid_ctrl({host:host,src:src,type:type,flag:flag}, function (result, args, output, warning) {
+					$('#tab2_ajax').html(result.info);
+			}, true);
+	});
+	$('#tab2 [name="type"]').change(function(){
+			var type = $(this).val(),
+			type_conf = {1:'money',2:'item',3:'exp'};
+			var phprpc_client = new PHPRPC_Client('../interface/server_api.php', ['get_log']);
+			phprpc_client.get_log({type:type_conf[type]},
+			function (result, args, output, warning) {
+					if(result.status=='ok'){
+							input = '';
+							for(log in result.data){
+									input += '<input type="checkbox" name="src" value="'+log+'" id="src_'+log+'"> <label for="src_'+log+'">'+result.data[log]+'</label>&nbsp;&nbsp;';
+							}
+							$('#src_list').html(input);
+					}else{
+							$('#src_list').html(result.info);
+					}
+			}, true);
+	});
+	//玩家称号成就自动完成
+	$('#tab3_set').click(function(){
+			var char_type= $('#tab3 [name="char_type"]:checked').val(),
+			player = $('#tab3 [name="char_player"]').val(),
+			host = $('#tab3 [name="host"]').val(),
+			title = [],
+			achieve = [];
+			$('#tab3 [name="title"]:checked').each(function(i){
+					title[i] = $(this).val();
+			})
+			$('#tab3 [name="achieve"]:checked').each(function(i){
+					achieve[i] = $(this).val();
+			})
+			if(title.length==0&&achieve.length==0){
+					$('#tab3_ajax').html('<{t}>请选择至少选择一个称号或者成就<{/t}>');
+					return;
+			}
+			var phprpc_client = new PHPRPC_Client('../interface/server_api.php', ['auto_title']);
+			phprpc_client.auto_title({host:host,char_type:char_type,player:player,title:title,achieve:achieve}, function (result, args, output, warning) {
+					if(result.status=='error'&&result.info=='playernotexits'){
+							var player_check = '';
+							for(var key in result.data){
+									player_check += key + ': ';
+									player_check += result.data[key]===null?'not exist':'exist';
+									player_check += "\n";
+							}
+							$('#tab3 [name="char_player_check"]').show().html(player_check);
+					}else{
+							$('#tab3_ajax').html(result.info);
+							$('#tab3 [name="char_player"]').val('');
+							$('#tab3 [name="host"]').val('');
+					}
+			}, true);
+	});
+
+	//条件发放记录查询
+	$('a[href="#tab4"]').click(function(){
+		$.post('?action=log_line',tab4_callback,'json');
+	});
+
+	//开启线路
+	$('.btn_set_line').live('click',function(){
+			var type=this.name,
+				line=$(this).attr('line'),
+				opt=$(this).attr('opt');
+			$.post('?action=set_line',{type:type,line:line,opt:opt},function(msg){
+				if(msg.status!=1){
+					alert(msg.info);
+				}else{
+					$('a[href="#tab4"]').click();
+				}
+			},'json');
+	});
+});
+
+function f_del(obj){
+$(obj).parent('li').detach();
+}
+function f_add(obj){
+$(obj).parent().append('<li style="margin-top: 5px;"><input type="text" name="files" class="span3"> <a href="#" class="btn btn-small" onclick="f_del(this)">-</a></li>');
+}
+
+var tab4_callback = function(msg){
+	var type_conf={1:'user',2:'gate'};
+	var status_conf={0:'<span class="badge badge-info"><{t}>隐藏<{/t}></span>',1:'<{t}>开启<{/t}>'};
+	$('#tab4_body').empty();
+	$(msg.data).each(function(i,obj){
+		var tr_id='tr_'+obj.id;
+		$('#tab4_body').append('<tr id="'+tr_id+'"></tr>');
+		$('#'+tr_id).append('<td>'+type_conf[obj.type]+'</td>');
+		$('#'+tr_id).append('<td>'+obj.line+'</td>');
+		$('#'+tr_id).append('<td>'+obj.count+'</td>');
+		$('#'+tr_id).append('<td>'+status_conf[obj.status]+'</td>');
+		$('#'+tr_id).append('<td>'+obj.time+'</td>');
+		$('#'+tr_id).append('<td><button class="btn btn-small btn-inverse btn_set_line" name="'+obj.type+'" line="'+obj.line+'" opt="1"><{t}>开启<{/t}></button> <button class="btn btn-small btn-info btn_set_line" name="'+obj.type+'" line="'+obj.line+'" opt="0"><{t}>隐藏<{/t}></button></td>');
+	});
+};
+
+</script>
+</head>
+<body>
+<div class="tabbable">
+<ul class="nav nav-tabs">
+		<li class="active"><a href="#tab1" data-toggle="tab"><{t}>热更新<{/t}></a></li>
+		<li><a href="#tab2" data-toggle="tab"><{t}>防刷控制<{/t}></a></li>
+		<li><a href="#tab3" data-toggle="tab"><{t}>成就称号完成<{/t}></a></li>
+		<li><a href="#tab4" data-toggle="tab"><{t}>线路控制<{/t}></a></li>
+</ul>
+<div class="tab-content">
+		<div class="row tab-pane active" id="tab1">
+				<dl class="dl-horizontal">
+						<dt>IP:PORT</dt>
+						<dd><input type="text" name="host" placeholder="<{t}>仅限内网使用<{/t}>"></dd>
+						<dt><{t}>服务器<{/t}>ID</dt>
+						<dd class="form-inline">
+								<input name="id" type="radio" value="11" id="net_number_11" checked="checked"><label for="net_number_11">LOGIN</label>
+								<input name="id" type="radio" value="21" id="net_number_21"><label for="net_number_21">GATE</label>
+								<input name="id" type="radio" value="31" id="net_number_31"><label for="net_number_31">MAP</label>
+								<input name="id" type="radio" value="41" id="net_number_41"><label for="net_number_41">USER</label>
+								<input name="id" type="radio" value="51" id="net_number_51"><label for="net_number_51">COMMON</label>
+								<input name="id" type="radio" value="52" id="net_number_52"><label for="net_number_52">COMMON_SLAVE</label>
+								<input name="id" type="radio" value="61" id="net_number_61"><label for="net_number_61">GM</label>
+								<input name="id" type="radio" value="71" id="net_number_71"><label for="net_number_71">CHAT</label>
+						</dd>
+						<dt><{t}>服务器编号<{/t}></dt>
+						<dd><input type="text" class="span1" value="0" name="idx"></dd>
+						<dt><{t}>热更新文件<{/t}></dt>
+						<dd>
+								<ul class="unstyled form-inline">
+										<li style="margin-top: 5px;"><input type="text" name="files" class="span3"> <a href="#" class="btn btn-small" onclick="f_add(this)">+</a></li>
+								</ul>
+						</dd>
+						<dd><input type="button" id="tab1_set" class="btn btn-primary" value="<{t}>更新<{/t}>">              <span id="tab1_ajax" class="badge badge-warning"></span></dd>
+						<br />
+						<dd><input type="button" id="tab1_log" class="btn btn-primary" value="<{t}>日志<{/t}>">              <span id="tab1_ajax_log" class="badge badge-warning"></span></dd>
+				</dl>
+		</div>
+		<div class="row tab-pane" id="tab2">
+				<dl class="dl-horizontal">
+						<dt>IP:PORT</dt>
+						<dd><input type="text" name="host" placeholder="<{t}>仅限内网使用<{/t}>"></dd>
+						<dt><{t}>产出<{/t}></dt>
+						<dd class="form-inline"><input type="radio" value="1" name="type" id="tab2_money"><label for="tab2_money"><{t}>货币<{/t}></label><input type="radio" value="2" name="type" id="tab2_item"><label for="tab2_item"><{t}>道具<{/t}></label><input type="radio" value="3" name="type" id="tab2_exp"><label for="tab2_exp"><{t}>经验<{/t}></label></dd>
+						<dt><{t}>产出渠道<{/t}></dt>
+						<dd class="form-inline" id="src_list">&nbsp;
+
+						</dd>
+						<dt><{t}>开关<{/t}></dt>
+						<dd class="form-inline"><input type="radio" value="2" name="flag" id="tab2_switch2" checked="checked"><label for="tab2_switch2"><{t}>关<{/t}></label><input type="radio" value="1" name="flag" id="tab2_switch1"><label for="tab2_switch1"><{t}>开<{/t}></label></dd>
+						<dd><input type="button" id="tab2_set" class="btn btn-primary" value="<{t}>设置<{/t}>">              <span id="tab2_ajax" class="badge badge-warning"></span></dd>
+				</dl>
+		</div>
+		<div class="row tab-pane" id="tab3">
+				<dl class="dl-horizontal">
+						<dt>IP:PORT</dt>
+						<dd><input type="text" name="host" placeholder="<{t}>仅限内网使用<{/t}>"></dd>
+						<dt><{t}>玩家列表<{/t}></dt>
+						<dd><span class="label label-info"><{t}>玩家列表用Enter键分割，支持excel格式，请保证玩家在线<{/t}></span></dd>
+						<dd class="form-inline"><input type="radio" name="char_type" value="3" id="char_type_3" checked="checked"><label for="char_type_3"><{t}>角色名<{/t}></label><input type="radio" name="char_type" value="1" id="char_type_1"><label for="char_type_1"><{t}>角色id<{/t}></label><input type="radio" name="char_type" value="2" id="char_type_2"><label for="char_type_2"><{t}>账号<{/t}></label></dd>
+						<dd><textarea id="char_player" name="char_player" style=" height: 100px; resize: none" class="scroll_t"></textarea>  <textarea name="char_player_check" style=" height: 100px; resize: none; display: none;" id="char_player_check" class="scroll_t"></textarea></dd>
+						<dt><{t}>称号列表<{/t}></dt>
+						<dd class="form-inline" id="title_list">
+								<{foreach $title_conf as $id=>$name}>
+								<input type="checkbox" name="title" value="<{$id}>" id="title_<{$id}>"> <label for="title_<{$id}>"><{$name}></label>&nbsp;&nbsp;
+								<{/foreach}>
+						</dd>
+						<dt><{t}>成就列表<{/t}></dt>
+						<dd class="form-inline" id="achieve_list">
+								<{foreach $achieve_conf as $id=>$name}>
+								<input type="checkbox" name="achieve" value="<{$id}>" id="achieve_<{$id}>"> <label for="achieve_<{$id}>"><{$name}></label>&nbsp;&nbsp;
+								<{/foreach}>
+						</dd>
+						<dd><input type="button" id="tab3_set" class="btn btn-primary" value="<{t}>完成<{/t}>">              <span id="tab3_ajax" class="badge badge-warning"></span></dd>
+				</dl>
+		</div>
+
+	<div class="row tab-pane" id="tab4" style="margin:0;">
+	<table class="table table-bordered table-hover">
+	<thead>
+		<tr>
+			<th><{t}>类型<{/t}></th>
+			<th><{t}>线路<{/t}></th>
+			<th><{t}>人数<{/t}></th>
+			<th><{t}>当前状态<{/t}></th>
+			<th><{t}>时间<{/t}></th>
+			<th><{t}>操作<{/t}></th>
+		</tr>
+	</thead>
+	<tbody id="tab4_body"></tbody>
+	</table>
+	</div>
+
+</div>
+</div>
+</body>
+</html>

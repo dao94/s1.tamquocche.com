@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>道具流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<style type="text/css">
+#type_list .span2{
+	width:122px;
+	height:20px;
+	line-height:20px;
+	overflow:hidden;
+}
+</style>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript">
+$(function($){
+	$('#item_name').typeahead({
+		items:200,
+		minLength:1,
+		source: function(value, process) {
+			var client = new PHPRPC_Client('http://<{$smarty.const.CENTER_DOMAIN}>/center/app/interface/item_info.php', ['search']);
+			client.search(value,'<{$smarty.session.__single_LANG}>', function (result, args, output, warning) {
+				result=jQuery.parseJSON(result);
+				var data=new Array();
+				var length=result.length;
+				length==0 ? $("input[name='item_id']").val('') : '';
+				$(result).each(function(i,obj){
+					data.push(obj[1]+"-"+obj[0]);
+					length==1 ? $("input[name='item_id']").val(obj[0]) : '';
+				});
+				var reg=new RegExp("^[0-9]*$");
+				reg.test(value) ? $("input[name='item_id']").val(value) : '';
+				process(data);
+			});
+		},
+		updater:function(data){
+			var arr=data.split('-');
+			$("input[name='item_id']").val(arr[1]);
+			return arr[0];
+		},
+	});
+
+	$('#item_name').blur(function(){
+		this.value=='' ? $("input[name='item_id']").val('') : '';
+	}).next().click(function(){
+		$(this).prevAll(':input').keyup();
+	});
+
+	$('#btn_type').toggle(function(){
+		$('#type_list').fadeIn();
+	},function(){
+		$('#type_list').fadeOut();
+	});
+
+	$('#cb_all').click(function(){
+		$('.type').attr('checked',this.checked);
+	});
+
+	$('.btn_selected').click(function(){
+		$("input[name='type[]'][value='"+this.value+"']").attr('checked',false);
+		$('#btn_search').click();
+	});
+
+	<{if $conditions['type']}>
+		$('#type_list').fadeIn();
+	<{/if}>
+	
+	<{if $is_restore}>
+	$('#all_cb').click(function(){
+		$('.cb').attr('checked',this.checked);	
+	});
+	$('#btn_restore').click(function(){
+		var reason=$.trim($('#reason').val()),count=$('.cb:checked').length;
+		if(count==0){
+			alert('<{t}>请勾选恢复选项<{/t}>');
+			return false;	
+		}
+		if(!reason){
+			alert('<{t}>原因不能为空<{/t}>');
+			$('#reason').focus();
+			return false;
+		}
+		if(!confirm('<{t}>您确认要恢复以上物品吗？<{/t}>'))	return false;
+		var id=[];
+		$('.cb:checked').each(function(index, element) {
+			id.push(element.value);
+		});
+		$.ajax({
+			url:'log_restore.php?action=item',
+			type:'POST',
+			data:{char_id:"<{$conditions['char_id']}>",reason:reason,id:id},
+			dataType:'json',
+			beforeSend: function(){
+				$('#btn_restore').attr('disabled',true);
+				$('#reason').attr('disabled',true);
+			},
+			success: function(msg){
+				alert(msg.info);
+				if(msg.status==1){
+					$('#reason').val('');
+					$(':checked').attr('checked',false);
+				}
+			},
+			complete: function(){
+				$('#btn_restore').attr('disabled',false);
+				$('#reason').attr('disabled',false);
+			}
+		});
+	});
+	<{/if}>
+});
+</script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	<input type="text" name="uuid" class="input-mini" maxlength="20" value="<{$conditions['uuid']}>">
+	</label>
+	<label  <{if $conditions['uuid']!=''}>class="hide"<{/if}> style="margin-left:5px;"><{t}>道具<{/t}>：
+	<div class="input-append">
+		<input id="item_name" class="input-medium" placeholder="<{t}>请输入道具名称<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="<{t}><{$conditions['item_id']}><{/t}>"><span class="add-on"><i class="icon-search"></i></span>
+	</div>
+	</label>
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-medium" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-medium" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<label style="margin-left:5px;"><{t}>操作<{/t}>：</label>
+	<select name="io" class="input-small">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $item_io_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['io']===$key}>selected="selected"<{/if}>><{$item}><{t}>背包<{/t}></option>
+		<{/foreach}>
+	</select>
+	<button id="btn_type" type="button" class="btn btn-link"><{t}>项目类型<{/t}></button>
+	<button class="btn btn-primary" id="btn_search"><i class="icon-search icon-white"></i><{t}>搜 索<{/t}></button>
+<{if $conditions['type']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['type'] as $item}>
+		<button class="btn btn-mini btn_selected" type="button" value="<{$item}>"><{$item_type_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $item_type_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="type[]" value="<{$key}>" class="type" <{if in_array($key,$conditions['type'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+<input type="hidden" name="item_id"  value="<{$conditions['item_id']}>">
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+</form>
+
+<{if $data}>
+<div class="pagination pagination-right" style="margin:0;"><ul><{$page}></ul></div>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<{if $is_restore}>
+		<th style="width:20px;"></th>
+		<{/if}>
+		<th><{t}>道具(默认是绑定)<{/t}></th>
+		<th><{t}>操作<{/t}></th>
+		<th><{t}>项目<{/t}></th>
+		<th><{t}>数目<{/t}></th>
+		<th><{t}>剩余<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<{if $is_restore}>
+		<td><input type="checkbox" class="cb" value="<{$row['id']}>"></td>
+		<{/if}>
+		<{if $row['daoju']==1}>
+		  <td><{t}><{$row['item_id']}><{/t}><{if $row['bind']==1}><span class="label"><{t}>非绑定<{/t}></span><{/if}></td>
+		<{else}>
+		   <td><a href="../log/log_item.php?char_id=<{$row['char_id']}>&uuid=<{$row['uuid']}>&from=info" ><{t}><{$row['item_id']}><{/t}><{if $row['bind']==1}><span class="label"><{t}>非绑定<{/t}></span><{/if}></a></td>
+		<{/if}>
+		<td>
+			<span class="badge <{if $row['io']==1}>badge-important<{else if $row['io']==2}>badge-info<{/if}>"><{$item_io_conf[$row['io']]}><{$bag_conf[$row['bag_id']]|default:$row['bag_id']}></span></td>
+		<td><{$item_type_conf[$row['type']]|default:$row['type']}></td>
+		<td><{$row['item_num']}></td>
+		<td><{$row['left_num']}></td>
+		<td><{$row['level']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+<{if $is_restore}>
+<tfoot>
+<tr>
+	<td colspan="10" style="text-align:left" class="form-search">
+		<label><input type="checkbox" id="all_cb"> <{t}>全选<{/t}></label>
+		<{t}>原因<{/t}>：<input type="text" id="reason" class="input-large" placeholder="<{t}>请输入恢复道具的原因<{/t}>">
+		<button type="button" class="btn btn-primary" id="btn_restore"><i class="icon-ok icon-white"></i><{t}>批量恢复<{/t}></button>
+	</td>
+</tr>
+</tfoot>
+<{/if}>
+</table>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+<{/if}>
+</body>
+</html>

@@ -1,0 +1,8 @@
+transit_data.php --task=pay_order
+transit_data.php --task=online
+stat_others.php --task=allow_player
+transit_data.php --task=reward_verify
+transit_data.php --task=player_question
+transit_data.php --task=pay_verify
+transit_data.php --task=server_open_count
+transit_data.php --task=update_data

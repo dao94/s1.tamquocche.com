@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <script language="javascript" src="../../public/js/jquery.js"></script>
+        <script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+		<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+
+    </head>
+    <body>
+            <div class="row-fluid">
+                <div class="span12">
+                    <form class="well form-inline" action="?" method="get">
+                        <{t}>日志类型<{/t}>：<select name="type">
+                            <option value="action" <{if $type eq 'action'}>selected="selected"<{/if}>><{t}>操作日志<{/t}></option>
+                            <option value="mysql" <{if $type eq 'mysql'}>selected="selected"<{/if}>><{t}>数据库日志<{/t}></option>
+                        </select>
+                        <{t}>关键字<{/t}>：<input type="text" name="keyword" class="span2" value="<{$keyword}>" />
+						<label for="start"><{t}>日期<{/t}>：</label>
+						<div class="input-append">
+							<input type="text" id="start" name="date_start" class="input-medium" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyyMMdd'})" value="<{$date_start|default:''}>" placeholder="<{t}>日期<{/t}>"/>
+							<span class="add-on"><i class="icon-time"></i></span>
+						</div>
+						 <i class="icon-minus"></i>
+						<div class="input-append">
+							<input type="text" id="end" name="date_end" class="input-medium" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyyMMdd'})" value="<{$date_end|default:''}>" placeholder="<{t}>日期<{/t}>"/>
+							<span class="add-on"><i class="icon-time"></i></span>
+						</div>
+                        <button type="submit" class="btn btn-primary"><{t}>搜索<{/t}></button>
+                        <a href="?type=<{$type}>&keyword=<{$keyword}>&action=output&date_start=<{$date_start}>&date_end=<{$date_end}>" class="btn btn-primary"><{t}>导出<{/t}></a>
+                    </form> <!-- 行内表单 --> 
+                    <table class="table table-striped table-bordered table-condensed">
+                        <thead>
+                            <tr>
+                                <{if $type eq 'action'}>
+                                <th><{t}>账号<{/t}></th>
+                                <th><{t}>操作节点<{/t}></th>
+                                <th class="word-break"><{t}>路径<{/t}></th>
+                                <th class="word-break"><{t}>参数<{/t}></th>
+                                <th>IP</th>
+                                <th><{t}>时间<{/t}></th>
+								<{elseif $type eq 'mysql'}>
+                                <th><{t}>库名<{/t}></th>
+                                <th>SQL</th>
+                                <th><{t}>时间<{/t}></th>
+                                <{/if}>
+                            </tr>
+                        </thead>
+                        <tbody>
+						<{if $type eq 'action'}>								
+									<{foreach $data as $row}>
+										<tr>
+											<td style="width:100px; word-wrap:break-word; word-break:break-all;">
+												<{$row[1]|default:''}>
+											</td>
+											<td style="width:100px; word-wrap:break-word; word-break:break-all;">
+												<{$row[6]|default:''}>
+											</td>
+											<td style="width:100px; word-wrap:break-word; word-break:break-all;">
+												<{$row[2]|default:''}>
+											</td>
+											<td style="width:100px; word-wrap:break-word; word-break:break-all;">
+												<{$row[3]|default:''}>
+											</td>
+											<td style="width:100px; word-wrap:break-word; word-break:break-all;">
+												<{$row[4]|default:''}>
+											</td>
+											<td style="width:100px; word-wrap:break-word; word-break:break-all;">
+												<{$row[5]|default:''}>
+											</td>
+										</tr>
+									<{/foreach}>
+								<{elseif $type eq 'mysql'}>
+									<{$adlogfor}>
+								<{/if}>
+						</tbody>
+                    </table>
+                    <div class="pagination pagination-centered">
+                        <{$page}>
+                    </div><!-- 分页 -->
+                </div>
+            </div>
+    </body>
+</html>

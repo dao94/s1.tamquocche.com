@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="23" name="武魂祭煉升階">
+    <show_time>2014-12-30 00:00:00</show_time>
+    <hide_time>2014-12-31 23:59:59</hide_time>
+    <start_time>2014-12-30 00:00:00</start_time>
+    <end_time>2014-12-31 23:59:59</end_time>
+    <info><![CDATA[活動期間，只要玩家的武魂祭煉提升到一定的階數，就可以免費獲得系統獎勵的大禮哦~<br />
+注：只有在活動期間內升階才能獲得獎勵哦~<br />]]></info>
+    <reward id="1" type="1" step="1">
+      <item id="30132000234" number="7" bind="0"/>
+    </reward>
+    <reward id="2" type="1" step="2">
+      <item id="30132000234" number="14" bind="0"/>
+    </reward>
+    <reward id="3" type="1" step="3">
+      <item id="30132000234" number="35" bind="0"/>
+    </reward>
+    <reward id="4" type="1" step="4">
+      <item id="30132000234" number="50" bind="0"/>
+    </reward>
+    <reward id="5" type="1" step="5">
+      <item id="30132000234" number="135" bind="0"/>
+    </reward>
+    <reward id="6" type="1" step="6">
+      <item id="30132000234" number="200" bind="0"/>
+      <item id="30132000013" number="60" bind="0"/>
+    </reward>
+    <reward id="7" type="1" step="7">
+      <item id="30132000234" number="300" bind="0"/>
+      <item id="30132000013" number="100" bind="0"/>
+    </reward>
+    <reward id="8" type="1" step="8">
+      <item id="30132000234" number="450" bind="0"/>
+      <item id="30132000013" number="150" bind="0"/>
+    </reward>
+    <reward id="9" type="1" step="9">
+      <item id="30132000234" number="550" bind="0"/>
+      <item id="30132000013" number="250" bind="0"/>
+    </reward>
+    <reward id="10" type="1" step="10">
+      <item id="30132000013" number="400" bind="0"/>
+      <item id="30132000134" number="10" bind="0"/>
+    </reward>
+  </activity>
+</config>

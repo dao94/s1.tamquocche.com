@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>玩家建议<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<style type="text/css">
+.reply_table th,.reply_table td{
+	text-align:left;
+	vertical-align: middle;
+}
+</style>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript" src="../../public/js/lwjs.typeahead.js"></script>
+<script language="javascript">
+$(document).ready(function(){
+	$('#btn_select_lianyun').toggle(function(){
+			$('#lianyun_list').fadeIn();
+		},function(){
+			$('#lianyun_list').hide();
+	});
+	$('#all_lianyun').click(function(){
+		$(this).attr('checked',this.checked);
+		$('.lianyun').attr('checked',this.checked);
+	});
+	$('.btn_reply').toggle(function(){
+		$('#reply_'+this.name).fadeIn();
+	},function(){
+		$('#reply_'+this.name).hide();
+	});
+	$('.btn-cancel').live('click',function(){
+		$('button[name="'+this.value+'"]').click();
+	});
+	$('.btn-submit').click(function(){
+		var data=$('#form_'+this.value).serialize();
+		$.post('?action=reply',data,function(msg){
+			if(msg.status==1){
+				var trId='#list_'+msg.data.id;
+				var formId='#form_'+msg.data.id;
+				var content="<{t}>历史回复<{/t}>："+$(formId+' textarea').val();
+				content+="<span style='color:#99B399;'>【<{t}>时间<{/t}>："+msg.data.time+"】</span>"
+				$(formId+' .content').before('<tr><th>'+content+'</th></tr>');
+				//$(trId+' td:eq(1)').html(msg.data.status);
+				//$(trId+' td:eq(7)').html(msg.data.content);
+				//$(trId+' td:eq(8)').html(msg.data.replyer);
+				$('button[name="'+msg.data.id+'"]').click();
+			}else{
+				alert(msg.info);
+			}
+		},'JSON');
+	}).ajaxStart(function(){
+		$(this).attr('disabled',true);	
+	}).ajaxComplete(function(){
+		$(this).attr('disabled',false);		
+	});
+	
+	$('a[rel="popover"]').mouseover(function(){
+		$(this).popover({placement:'right',html:true}).popover('show');
+		$(this).next('.popover').mouseover();
+	}).mouseout(function(){
+		$('.popover').hide();
+	});
+	$('.popover').live('mouseover',function(){
+		$('.popover').hide();
+		$(this).show();
+	}).live('mouseout',function(){
+		$(this).hide();	
+	});
+});
+</script>
+</head>
+
+<body>
+<form class="well form-search" method="post" action="">
+	<label><{t}>玩家ID<{/t}>：<input class="input-mini" placeholder="<{t}>玩家ID<{/t}>..." maxlength="20" id="char_id" name="char_id" type="text" <{if $conditions['char_id']}>value="<{$conditions['char_id']}>"<{/if}>></label>
+	<label style="margin-left:5px;"><{t}>角色名<{/t}>：
+	<div class="input-append">
+		<input name="name" class="input-small" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead"  type="text" maxlength="16" value="<{$conditions['char_name']}>"><span class="add-on"><i class="icon-search"></i></span>   
+	</div>
+	</label>
+	<label style="margin-left:5px;"><{t}>账号<{/t}>：
+	<div class="input-append">
+	<input  name="account" class="input-small" placeholder="<{t}>请输入账号<{/t}>..." data-provide="typeahead" type="text" maxlength="32" value="<{$conditions['account']}>"><span class="add-on"><i class="icon-search"></i></span>
+	</div>
+	</label>
+	<!--
+	<label style="margin-left:5px;"><{t}>回复人<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>请输入回复人<{/t}>..." data-provide="typeahead" name="replyer" id="replyer_search_box" type="text" <{if $conditions['replyer']}>value="<{$conditions['replyer']}>"<{/if}>>
+	
+	<label style="margin-left:5px;"><{t}>关键词<{/t}>：</label>
+	<input class="input-medium" placeholder="<{t}>请输入关键词<{/t}>..." data-provide="typeahead" name="keyword" type="text" maxlength="20" value="<{$conditions['keyword']}>">
+	
+	<hr style="margin:5px 0">
+	-->
+	<label><{t}>提交时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>"> <i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	
+	<!--<label style="margin-left:5px;"><{t}>充值金额<{/t}>：</label>
+	<input class="input-mini-mini" placeholder="<{t}>最低<{/t}>" type="text" maxlength="7" name="min_pay" value="<{$conditions['min_pay']}>"/> <i class="icon-minus"></i> 
+	<input class="input-mini-mini" placeholder="<{t}>最高<{/t}>" type="text" maxlength="7" name="max_pay" value="<{$conditions['max_pay']}>"/>-->
+	<!--
+	<label style="margin-left:5px;"><{t}>状态<{/t}>： </label>  
+	<select class="input-small" id="status" name="status">
+		<option value="" selected="selected"><{t}>请选择...<{/t}></option>
+		<{foreach $status_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['status']==$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select> 
+	-->
+	<label style="margin-left:5px;"><{t}>类型<{/t}>：</label>
+	<select class="input-small" id="type" name="type">
+		<option value="" selected="selected"><{t}>请选择...<{/t}></option>
+		<{foreach $type_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+	<!--
+	<{if !empty($check_list) }>
+	<button type="button" id="btn_select_lianyun" class="btn btn-link"><{t}>选择联运<{/t}></button>
+	<{/if}>
+	-->
+	<button type="submit" class="btn btn-primary" style="margin-left:5px;"><{t}>查 询<{/t}></button>
+	<a href="?action=output&type=<{$conditions['type']}>&date_start=<{$conditions['start_date']}>&date_end=<{$conditions['end_date']}>&char_id=<{$conditions['char_id']}>&char_name=<{$conditions['char_name']}>&account=<{$conditions['account']}>" class="btn btn-primary"><{t}>导出<{/t}></a>
+	<!--
+	<ul class="unstyled inline <{if empty($check)}>hide<{/if}>" id="lianyun_list">
+		<li><span class="label label-info"><input type="checkbox" id="all_lianyun"> <{t}>全选<{/t}></span></li>
+	<{foreach $check_list as $key => $value}>
+		<li class="input-small"><label><input type="checkbox" name="lid[]" class="lianyun" value="<{$key}>" title="<{$key}>" <{if $value==1}>checked<{/if}>> <{$key}></label></li>
+	<{/foreach}>
+	</ul>
+	-->
+</form>
+
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>类型<{/t}></th>
+		<!--
+		<th><{t}>状态<{/t}></th>
+		-->
+		<th><{t}>玩家ID<{/t}></th>
+		<th><{t}>账号<{/t}></th>
+		<th><{t}>角色名<{/t}></th>
+		<!--<th><{t}>充值金额<{/t}></th>-->
+		<th><{t}>标题<{/t}></th>
+		<th><{t}>内容<{/t}></th>
+		<th><{t}>提交时间<{/t}></th>
+		<!--
+		<th><{t}>回复内容<{/t}></th>
+		<th><{t}>回复人<{/t}></th>
+		-->
+		<th><{t}>操作<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $row}>
+	<tr id="list_<{$row['id']}>">
+		<td><{$row['type']}></td>
+		<!--
+		<td><span class="<{if $row['status']==2}>badge label-important<{elseif $row['status']==3}>badge<{/if}>"><{$row['status_name']}></span></td>
+		-->
+		<td><{$row['char_id']}></td>
+		<td><{$row['account']}></td>
+		<td><a href="player.php?id=<{$row['char_id']}>"><{$row['char_name']}></a></td>
+		<!--<td><{$row['pay']|default:0}></td>-->
+		<td style="text-align:left"><{$row['title']|truncate:15:'...'}></td>
+		<td style="text-align:left"><{$row['content']|truncate:30:'...'}></td>
+		<td><{$row['time']}></td>
+		<!--
+		<td style="text-align:left"><{$row['reply_content'][$row['reply_count']-1]['content']|truncate:10:'...'}></td>
+		<td><{$row['replyer']}></td>
+		-->
+		<td><button type="button" class="btn btn_reply" name="<{$row['id']}>"><i class="icon-envelope"></i><{t}>回复<{/t}></button></td>
+	</tr>
+	<tr class="hide" id="reply_<{$row['id']}>">
+		<td colspan="11" style="background-color:#116BA8;">
+			<form id="form_<{$row['id']}>" style=" margin-bottom:0px;">
+			<table class="table reply_table" style="margin-bottom:0px;">
+				<tr>
+					<th>
+						<span style="margin-left:0px;"><{t}>角色名<{/t}></span>：<{$row['char_name']}> 
+						<span style="margin-left:20px;"><{t}>类型<{/t}></span>：<{$row['type']}>
+						<span style="margin-left:20px;"><{t}>提交时间<{/t}></span>：<{$row['time']}>
+						<button type="button" value="<{$row['id']}>" class="btn btn-primary btn-cancel" style="float:right">取 消</button>
+					</th>
+				</tr>
+				<tr>
+					<th><{t}>标题<{/t}>：<{$row['title']}></th>
+				</tr>
+				<tr>
+					<th><{t}>内容<{/t}>：<{$row['content']}></th>
+				</tr>
+				<{if $row['reply_content']}>
+				<{foreach $row['reply_content'] as $item}>
+				<tr>
+					<th><{t}>历史回复<{/t}>：<{$item['content']}> <span style="color:#99B399;">【<{t}>时间：<{/t}><{$item['time']}>】</span></th>
+				</tr>
+				<{/foreach}>
+				<{/if}>
+				<tr class="content">
+					<th><{t}>回复内容<{/t}>：<textarea name="content" style="width:99%; height:80px;"></textarea></th>
+				</tr>
+				<!--
+				<tr>
+					<th>
+						<{foreach $status_conf as $key=>$item}>
+						<input name="status" type="radio" value="<{$key}>" <{if $key==1}>checked="checked"<{/if}>/> <{$item}> &nbsp;&nbsp;
+						<{/foreach}>
+					</th>
+				</tr>
+				-->
+				<tr>
+					<th><button class="btn btn-primary btn-submit" type="button" value="<{$row['id']}>">提 交</button> <button class="btn btn-primary btn-cancel" type="button" value="<{$row['id']}>">取 消</button></th>
+				</tr>
+			</table>
+			<input type="hidden" name="id" value="<{$row['id']}>"/>
+			</form>
+		</td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="11"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

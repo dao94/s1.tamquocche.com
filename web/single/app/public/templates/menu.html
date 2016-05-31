@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>menu</title>
+<style type="text/css">
+html{ overflow-x:hidden; overflow-y:auto;}
+body { margin: 0; padding: 0; width: 100%; font-size: 13px;font-family: "Tahoma", arial; }
+dl, ul, li, dt, dd { margin: 0; padding: 0; list-style-type: none; border: 0; }
+a:link, a:visited { text-decoration: none;color:#000 }
+a:hover, a:active { text-decoration: underline; }
+#menu { width: 140px; overflow: hidden;}
+#menu dl { background: #F5F5F5; }
+#menu dl dt { width: 107px; padding-left: 33px; height: 25px;line-height: 25px;  overflow: hidden; margin: 1px; cursor: pointer; background: url(../../public/images/menunewbg.gif) no-repeat;}
+#menu dl dd ul { margin:0px 0 0px 20px;}
+#menu dl dd ul li { height:14px; padding: 4px 0; background: url(../../public/images/arrow.gif) no-repeat left center; text-indent: 1em; }
+#menu dl dd ul li a.over { color: #f00; }
+li a.current{ font-size:13px; font-weight:bold; color:red;}
+</style>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){
+	$('dt').click(function(){
+		$(this).toggleClass('hidden');
+		$(this).next('dd').toggle();
+	});
+	$('li a').click(function(){
+		$('a.current').removeClass('current');
+		$(this).addClass('current');
+		$('#current').val(this.name);
+	});
+})
+</script>
+</head>
+<body>
+<input type="hidden" id="current" value="<{$current|default:''}>"/>
+<div id="menu">
+<dl style="margin:0;">
+<{foreach $role_menu as $man_key=>$man_val}>
+<{if $man_key neq 'index'}>
+	<{if $man_val['show'] eq 1}>
+		<dt class="show"><b><{t}><{$man_val['title']}><{/t}></b></dt>
+		<dd>
+		<ul>
+			<{foreach $man_val['childs'] as $sub_key=>$sub_val}>
+			<{if $sub_val['show'] eq 1}>
+			<li class="sub-menu"><a name="<{$man_key}>/<{$sub_key}>" href="../<{$man_key}>/<{$sub_key}>" target="main"><{t}><{$sub_val['title']}><{/t}></a></li>
+			<{/if}>
+			<{/foreach}>
+		</ul>
+		</dd>
+		<{/if}>
+	<{else}>
+		<a href="../index/index.php" target="main"><dt class="show"><b><{t}><{$man_val['title']}><{/t}></b></dt></a>
+	<{/if}>
+<{/foreach}>
+</dl>
+</div>
+</body>
+</html>

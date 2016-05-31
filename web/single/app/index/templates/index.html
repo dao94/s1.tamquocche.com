@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<style type="text/css">
+.dl-horizontal dt,.dl-horizontal dd{ line-height:22px;}
+</style>
+</head>
+<body>
+<h4><{t}>平台概况<{/t}></h4>
+<dl class="dl-horizontal">
+	<dt><{t}>平台名称<{/t}>：</dt>
+	<dd><{$smarty.const.SERVER_AGENT}></dd>
+	<dt><{t}>区名标题<{/t}>：</dt>
+	<dd><{$smarty.const.SERVER_TITLE}></dd>
+	<dt><{t}>所在区服<{/t}>：</dt>
+	<dd><{$smarty.const.SERVER_ID}></dd>
+	<dt><{t}>开服时间<{/t}>：</dt>
+	<dd><{$server_info['open_time']}></dd>
+	<dt><{t}>开服天数<{/t}>：</dt>
+	<dd><{$server_info['open_day']}></dd>
+	<dt><{t}>后台版本<{/t}>：</dt>
+	<dd><{$server_info['single_version']|default:"<{t}>未知版本<{/t}>"}></dd>
+	<dt><{t}>服务器版本<{/t}>：</dt>
+	<dd><{$server_info['server_version']|default:"<{t}>未知版本<{/t}>"}></dd>
+	<dt><{t}>客户端版本<{/t}>：</dt>
+	<dd><{$server_info['client_version']|default:"<{t}>未知版本<{/t}>"}></dd>
+	<dt><{t}>服务器时间<{/t}>：</dt>
+	<dd><{$server_info['now_time']}></dd>
+	<{if !empty($cdn_config)}>
+	<{foreach $cdn_config as $list}>
+	<dt><{t}>CDN资源地址<{/t}>：</dt>
+	<dd><{$list}></dd>
+	<{/foreach}>
+	<{/if}>
+</dl>
+</div>
+<div>
+<hr/>
+<h4><{t}>数值概况<{/t}></h4>
+<dl class="dl-horizontal">
+	<dt><{t}>总注册人数<{/t}>：</dt>
+	<dd><{number_format($data_info['register'])}></dd>
+	<dt><{t}>当前活跃人数<{/t}>：</dt>
+	<dd><{number_format($data_info['aliver'])}></dd>
+	<dt><{t}>当前在线人数<{/t}>：</dt>
+	<dd><{number_format($data_info['onliner'])}></dd>
+	<dt><{t}>总充值元宝<{/t}>：</dt>
+	<dd><{number_format($data_info['pay_gold'])}></dd>
+	<dt><{t}>总充值金额<{/t}>：</dt>
+	<dd><{number_format(round($data_info['pay_money']/100,2))}></dd>
+	<dt><{t}>总充值人数<{/t}>：</dt>
+	<dd><{number_format($data_info['pay_count'])}></dd>
+	<dt>ARPU：</dt>
+	<dd><{if $data_info['pay_count'] neq 0}>
+	<{number_format(round($data_info['pay_gold']/$data_info['pay_count']/10,2))}>
+	<{else}> 0 <{/if}></dd>
+	<dt><{t}>合服服务器<{/t}>：</dt>
+	<dd>
+		<{if empty($data_info['server_camp'])}>
+				<{$smarty.const.SERVER_ID}>
+		<{else}>
+			<{foreach $data_info['server_camp'] as $key=>$row}>
+				<{if $key!=0}>,<{/if}><{$row['serverId']}><{t}>服<{/t}>[<{$camp_conf[$row['camp']]|default:<{$row['camp']}>}>]
+			<{/foreach}>
+		<{/if}>
+	</dd>
+</dl>
+</div>
+</div>
+</body>
+</html>

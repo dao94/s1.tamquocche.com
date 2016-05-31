@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="11" name="裝備神化送好禮">
+    <show_time>2014-12-30 00:00:00</show_time>
+    <hide_time>2014-12-31 23:59:59</hide_time>
+    <start_time>2014-12-30 00:00:00</start_time>
+    <end_time>2014-12-31 23:59:59</end_time>
+    <info><![CDATA[活動期間，玩家的裝備神化升到一定的級別，都可以免費獲得系統送出的大禮一份哦。<br />
+僅限在活動期間內升到相應目標的玩家哦，活動開啟前已達成目標的無法獲得獎勵。<br />]]></info>
+    <reward id="1" type="1" param="1,4">
+      <item itemId="30102040023" number="2" bind="0"/>
+    </reward>
+    <reward id="2" type="1" param="1,5">
+      <item itemId="30102050064" number="1" bind="0"/>
+      <item itemId="30102050023" number="2" bind="0"/>
+    </reward>
+    <reward id="3" type="1" param="1,6">
+      <item itemId="30102050064" number="1" bind="0"/>
+      <item itemId="30102050023" number="1" bind="0"/>
+      <item itemId="30102030023" number="1" bind="0"/>
+    </reward>
+    <reward id="4" type="1" param="1,7">
+      <item itemId="30102050064" number="2" bind="0"/>
+      <item itemId="30102050034" number="1" bind="0"/>
+      <item itemId="30102040023" number="1" bind="0"/>
+    </reward>
+    <reward id="5" type="1" param="1,8">
+      <item itemId="30102050074" number="2" bind="0"/>
+      <item itemId="30102040034" number="1" bind="0"/>
+      <item itemId="30102030034" number="1" bind="0"/>
+    </reward>
+    <reward id="6" type="1" param="1,9">
+      <item itemId="30102050084" number="2" bind="0"/>
+      <item itemId="30102050034" number="2" bind="0"/>
+      <item itemId="30102040034" number="1" bind="0"/>
+      <item itemId="30102030034" number="1" bind="0"/>
+    </reward>
+    <reward id="7" type="1" param="1,10">
+      <item itemId="30102050094" number="2" bind="0"/>
+      <item itemId="30102050044" number="3" bind="0"/>
+      <item itemId="30102040044" number="3" bind="0"/>
+      <item itemId="30102030044" number="3" bind="0"/>
+    </reward>
+    <reward id="8" type="1" param="1,11">
+      <item itemId="30102050104" number="1" bind="0"/>
+      <item itemId="30102050094" number="3" bind="0"/>
+      <item itemId="30102050044" number="10" bind="0"/>
+      <item itemId="30102040044" number="10" bind="0"/>
+      <item itemId="30102030044" number="10" bind="0"/>
+    </reward>
+    <reward id="9" type="1" param="1,12">
+      <item itemId="30102050114" number="1" bind="0"/>
+      <item itemId="30102050104" number="3" bind="0"/>
+      <item itemId="30102050044" number="15" bind="0"/>
+      <item itemId="30102040044" number="15" bind="0"/>
+      <item itemId="30102030044" number="15" bind="0"/>
+    </reward>
+  </activity>
+</config>

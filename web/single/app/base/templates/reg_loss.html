@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>注册流失</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="../../public/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="../../public/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function($){
+	$("div[rel='tooltip']").tooltip('hide');
+});
+</script>
+</head>
+
+<body>
+<form class="accordion-group" style="padding-bottom:10px;">
+<div class="accordion-heading">
+	<span class="accordion-toggle" data-toggle="collapse" href="#collapse"><a href="javascript:;"><{t}>定义说明<{/t}></a></span>
+</div>
+<div id="collapse" class="accordion-body in collapse">
+	<div class="accordion-inner">
+	<ol>
+		<li><{t}>连接数：推广平台连接到游戏页面的数量（服务器响应的连接数）<{/t}></li>
+		<li><{t}>到达注册数：到达创建角色界面数量,即完成加载resource/LoginModule.swf<{/t}></li>
+		<li><{t}>注册数：创建角色的玩家数量<{/t}></li>
+		<li><{t}>进入游戏数：首次进入游戏的玩家数，即完成加载GameModule.swf<{/t}></li>
+		<li><{t}>加载注册页流失率=（连接数 - 到达注册数）÷连接数×100%<{/t}></li>
+		<li><{t}>创号页面流失率=（到达注册数 - 注册数）÷ 到达注册数×100%<{/t}></li>
+		<li><{t}>进入游戏流失率=（注册数 - 进入游戏数）÷注册数×100%<{/t}></li>
+		<li><{t}>创号流失率=（注册连接数 - 注册数）÷连接数×100%<{/t}></li>
+	</ol>
+	</div>
+</div>
+<div class="form-search">
+	<div class="btn-group">
+	<{foreach $time_conf as $key=>$item}>
+	<{if $key<=$conditions['today']}>
+		<button type="button" onClick="javascript:window.location= '?start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+	<{/if}>
+	<{/foreach}>
+	</div>
+
+	<label style="margin-left: 5px;"><{t}>时间<{/t}>：</label>
+<{if $conditions['action']=='day'}>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})"
+name="end_date" value="<{$conditions['end_date']}>">
+
+<{elseif $conditions['action']=='hour'}>
+	<input class="input-small" placeholder="<{t}>输入日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" name="date" value="<{$conditions['date']}>">
+	<button type="button" class="btn btn-inverse" style="float: right;" onClick="javascript:window.location='?action=day'"><{t}>返回按天统计<{/t}></button>
+<{/if}>
+	<button class="btn btn-primary" type="submit"><{t}>搜 索<{/t}></button>
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</div>
+</form>
+
+<table class="table table-bordered table-hover" style="margin-top: 10px;">
+<thead>
+	<tr>
+		<th rowspan="2" style="vertical-align: middle">
+		<{if $conditions['action']=='day'}>
+			<a href="?action=<{$conditions['action']}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>&sort=<{if $conditions['sort']==1}>0<{else}>1<{/if}>"><{t}>统计日期<{/t}></a>
+			<i class="<{if $conditions['sort']==1}>icon-arrow-up<{else}>icon-arrow-down<{/if}>"></i>
+		<{elseif $conditions['action']=='hour'}><{t}>时间<{/t}>
+		<{/if}>
+		</th>
+		<th rowspan="2" style="vertical-align: middle">
+			<div rel="tooltip" data-title="<{t}>连接数：推广平台连接到游戏页面的数量（服务器响应的连接数）<{/t}>"><{t}>连接数<{/t}></div>
+		</th>
+		<th colspan="6"><{t}>swf各项资源加载<{/t}></th>
+		<th colspan="4" class="loss"><{t}>各项流失率<{/t}></th>
+	</tr>
+	<tr>
+		<th><div rel="tooltip" data-title="<{t}>完成加载web页面(html,js,cssd等)<{/t}>"><{t}>web页面<{/t}></div></th>
+		<th><div rel="tooltip" data-title="<{t}>完成加载完成加载game_res/LoaderMain.swf<{/t}>">LoaderMain</div></th>
+		<th><div rel="tooltip" data-title="<{t}>完成加载resource/LoginModule.swf<{/t}>"><{t}>到达注册数<{/t}></div></th>
+		<th><div rel="tooltip" data-title="<{t}>创号完成，点击'进入游戏'<{/t}>"><{t}>注册数<{/t}></div></th>
+		<th><div rel="tooltip" data-title="<{t}>完成加载game_res/resource/Main.swf<{/t}>">Main.swf</div></th>
+		<th><div rel="tooltip" data-title="<{t}>完成加载GameModule.swf<{/t}>"><{t}>进入游戏数<{/t}></div></th>
+		<th><div rel="tooltip" data-title="<{t}>加载注册页流失率=（连接数 -到达注册数）÷注册连接数×100%<{/t}>"><{t}>加载注册页<{/t}></div></th>
+		<th><div rel="tooltip" data-title="<{t}>创号页面流失率=（到达注册数 - 注册数）÷到达注册数×100%<{/t}>"><{t}>创号页面<{/t}></div></th>
+		<th><div rel="tooltip" data-title="<{t}>进入游戏流失率=（注册数 -进入游戏数）÷注册数×100%<{/t}>"><{t}>进入游戏<{/t}></div>
+		</th>
+		<th><div rel="tooltip" data-title="<{t}>创号流失率=（连接数 -注册数）÷连接数×100%<{/t}>"><{t}>创号<{/t}></div></th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+
+	<tr class="success">
+    	<!-- 当前页统计 -->
+    	<td><b>当前页总计</b></td>
+    	<td><{$countContent}></td>
+		<td><{$countWeb}></td>
+		<td><{$countMain}></td>
+		<td><{$countDDLog}></td>
+		<td><{$countLog}></td>
+		<td><{$countMainSWF}></td>
+		<td><{$countEnterGames}></td>
+		<td><{$countLoader}>%</td>
+		<td><{$countIdPage}>%</td>
+		<td><{$countEnterGame}>%</td>
+		<td style="text-align: left;"><img src="../../public/images/baifenbi.gif" style="width:<{$row['character_loss']}>px;height:10px;"><{$countCreateId}>%</td>
+    </tr>
+
+<{foreach $data as $row}>
+	<tr>
+		<td>
+		<{if $conditions['action']=='day'}>
+			<a href="?action=hour&date=<{$row['date']}>"><{$row['date']}><{t}>(周<{/t}><{$row['week']}>)</a>
+		<{elseif $conditions['action']=='hour'}>
+			<{$row['hour']}>
+		<{/if}>
+		</td>
+		<td><{$row['account_count']}></td>
+		<td><{$row['loader_page']}></td>
+		<td><{$row['loader_main']}></td>
+		<td><{$row['loader_login']}></td>
+		<td><{$row['character_count']}></td>
+		<td><{$row['loader_resource']}></td>
+		<td><{$row['loader_game']}></td>
+		<td><{$row['loader_login_loss']}>%</td>
+		<td><{$row['character_page_loss']}>%</td>
+		<td><{$row['loader_game_loss']}>%</td>
+		<td style="text-align: left; background-color:#F5F5F5"><img src="../../public/images/baifenbi.gif" style="width:<{$row['character_loss']}>px;height:10px;"> <{$row['character_loss']}>%</td>
+	</tr>
+	<{/foreach}>
+<{else}>
+	<tr>
+		<td colspan="12"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+	</tr>
+<{/if}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page|default:''}></div>
+</body>
+</html>

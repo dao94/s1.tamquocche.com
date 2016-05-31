@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>竞技场流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+	<label for="fight_char_name"><{t}>对方角色名<{/t}>：</label>
+    <input class="input-small" placeholder="<{t}>输入对方角色名<{/t}>" type="text" id="fight_char_name" name="fight_char_name" value="<{$conditions['fight_char_name']}>" maxlength="32">
+
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<label style="margin-left:5px;"><{t}>结果<{/t}>：
+	<select name="status" class="input-small">
+		<option value=""><{t}>全部...<{/t}></option>
+	<{foreach $status_conf as $key=>$item}>
+		<option value="<{$key}>"  <{if $conditions['status']===$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	</label>
+	<button class="btn btn-primary" id="btn_search" style="margin-left:5px;"><i class="icon-search icon-white"></i> <{t}>搜索<{/t}></button>
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+</form>
+
+<div class="pagination pagination-right" style="margin:0;"><{$page}></div>
+<table class="table table-bordered table-hover" style="margin-top:5px;">
+<thead>
+	<tr>
+		<th colspan="5"><{t}>胜利方(等级是竞技场等级)<{/t}></th>
+		<th></th>
+		<th colspan="5"><{t}>失败方(等级是竞技场等级)<{/t}></th>
+		<th rowspan="2"><{t}>结果<{/t}></th>
+		<th rowspan="2"><{t}>时间<{/t}></th>
+	</tr>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>战斗力<{/t}></th>
+		<th><{t}>竞技点<{/t}></th>
+		<th><{t}>经验<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+		<th></th>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>战斗力<{/t}></th>
+		<th><{t}>竞技点<{/t}></th>
+		<th><{t}>经验<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td>
+			<a href="../gm/player.php?id=<{$row['winner_id']}>" target="_parent"><span <{if $conditions['char_id']==$row['winner_id']}> class="badge badge-inverse"<{/if}>><{$row['winner_name']}></span></a>
+		</td>
+		<td><{$row['winner_fight']}></td>
+		<td><{$row['winner_score']}></td>
+		<td><{$row['winner_exp']}></td>
+		<td><{$row['winner_level']}></td>
+		<td style="border-top:none"></td>
+		<td>
+			<a href="../gm/player.php?id=<{$row['loser_id']}>" target="_parent"><span <{if $conditions['char_id']==$row['loser_id']}> class="badge badge-inverse"<{/if}>><{$row['loser_name']}></span></a>
+		</td>
+		<td><{$row['loser_fight']}></td>
+		<td><{$row['loser_score']}></td>
+		<td><{$row['loser_exp']}></td>
+		<td><{$row['loser_level']}></td>
+		<td><{$status_conf[$row['status']]|default:$row['status']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

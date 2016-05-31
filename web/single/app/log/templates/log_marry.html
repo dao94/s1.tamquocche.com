@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>结婚流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-medium" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-medium" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+
+	<label style="margin-left:5px;"><{t}>类型<{/t}>:</label>
+	<select name="marry" class="input-small">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $marry_type_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['marry']===$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+	<label style="margin-left:5px;"><{t}>同心<{/t}>:</label>
+	<select name="ring" class="input-small">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $ring_type_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['ring']===$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+	<input type="hidden" name="from" value="<{$conditions['from']}>">
+</form>
+
+<{if $data}>
+<div class="pagination pagination-right" style="margin:0;"><ul><{$page}></ul></div>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+	    <th><{t}>角色id<{/t}></th>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>伴侣角色id<{/t}></th>
+		<th><{t}>伴侣角色名<{/t}></th>
+		<th><{t}>类型<{/t}></th>
+		<th><{t}>同心<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_id']}></td>
+		<td><a target="_parent" href="../gm/player.php?id=<{$row['char_id']}>"><{$row['char_name']}></a></td>
+		<td><{$row['lover_char_id']}></td>
+		<td><a target="_parent" href="../gm/player.php?id=<{$row['lover_char_id']}>"><{$row['lover_char_name']}></a></td>
+		<td><{$marry_type_conf[$row['marry_type']]|default:$row['marry_type']}></td>
+		<td><{$ring_type_conf[$row['ring_type']]|default:''}></td>
+		<td><{$row['time']|date_format:'%Y-%m-%d %H:%M:%S'}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+<{/if}>
+</body>
+</html>

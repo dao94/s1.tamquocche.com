@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>玩家登录<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript" src="../../public/js/lwjs.typeahead.js"></script>
+<script language="javascript">
+$(document).ready(function(){
+	
+	$('.login').click(function(){
+		$('#right_account').empty();
+		var form=$(this).parent('form');
+		$.post('?action=login',form.serialize(),function(msg){
+			if(msg.status!=1){
+				alert(msg.info);
+			}else if(msg.data!=''){
+				$('#right_account').html('<{t}>账号<{/t}>：'+msg.info).fadeIn();
+				$('#login').attr('action',msg.data).submit();
+			}
+		},'json');
+		return false;
+	});
+});
+</script>
+</head>
+
+<body>
+<div class="well">
+	<form class="form-search">
+	<label><{t}>角色名<{/t}>：
+	<div class="input-append">
+		<input name="name" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16"><span class="add-on"><i class="icon-search"></i></span>   
+	</div>
+	</label>
+	<button type="button" class="btn btn-primary login" style="margin-left:10px;"><{t}>登 陆<{/t}></button>
+	</form>
+	<hr style="margin:5px 0;"/>
+	<form class="form-search" style="margin-top:20px;">
+		<label><{t}>账号名<{/t}>：
+		<div class="input-append">
+		<input name="account" class="input-medium" placeholder="<{t}>请输入账号<{/t}>..." data-provide="typeahead" type="text" maxlength="32"><span class="add-on"><i class="icon-search"></i></span>
+		</div>
+		</label>
+		<label style="margin-left:5px;"><input type="checkbox" name="new" value="1" checked="checked"> <{t}>账号不存在则创建<{/t}><span style="font-weight:bold; color:red;"><{t}>测试账号<{/t}></span></label>
+		<button type="button" class="btn btn-primary login" style="margin-left:10px;"><{t}>登 陆<{/t}></button>
+		<span id="right_account" class="badge badge-inverse"></span>
+		<input type="hidden" name="sid">
+	</form>
+</div>
+</form>
+<form id="login" target="_blank" method="post" action="../../api/login.php?account=p1&sid=1&time=1372237928&sign=1daea1b934e6aa6ad2fadcdd19723cce&cm=1"></form>
+</body>
+</html>
+

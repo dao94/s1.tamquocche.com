@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>帮派查询<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<style type="text/css">
+li{
+	list-style:none;
+}
+</style>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript" src="../../public/js/lwjs.typeahead.js"></script>
+<script language="javascript">
+$(function($){
+	$('.log').click(function(){
+		$('.log').find('.btn').removeClass('btn-success');
+		$(this).find('.btn').addClass('btn-success');
+		if(this.href=='javascript:;'){
+			$('.div_box').hide();
+			$('#div_'+this.id).fadeIn();
+			$('#iframe_log').hide();
+		}else{
+			$('.div_box').hide();
+			$('#iframe_log').attr('src',this.href).fadeIn();
+		}
+		return false;
+	});
+
+	$('#iframe_log').load(function(){
+		var height=$(this).contents().find('body').height()+$(this).contents().find('#type_list').height();
+		$(this).height(height+30);
+	});
+});
+</script>
+</head>
+
+<body>
+<form class="well form-search" method="get" action="" style="margin-bottom:10px;">
+	<label><{t}>帮派ID<{/t}>：
+	<input name="id" class="input-xlarge" placeholder="<{t}>帮派ID<{/t}>..." maxlength="36" type="text" value="<{$conditions['id']}>"></label>
+	<label style="margin-left:5px;"><{t}>帮派名称<{/t}>：
+	<div class="input-append">
+		<input name="faction_name" class="input-medium" placeholder="<{t}>请输入帮派名称<{/t}>..." data-provide="typeahead" type="text" maxlength="20" value="<{$conditions['name']}>"><span class="add-on"><i class="icon-search"></i></span>
+	</div>
+	</label>
+
+	<button type="submit" class="btn btn-primary" style="margin-left:5px;"><{t}>查 询<{/t}></button>
+</form>
+
+<{if !empty($data)}>
+<div style="margin-bottom:5px;">
+	<a href="javascript:;" id="info" class="log"><button type="button" class="btn btn-small btn-success"><{t}>基本信息<{/t}></button></a>
+	<{foreach $log_conf as $key=>$item}>
+	<a href="<{$key}>?faction_id=<{$data['_id']}>&from=info" class="log"><button type="button" class="btn btn-small"><{$item}></button></a>
+<{/foreach}>
+</div>
+<{/if}>
+
+<{if $data}>
+<div id="iframe_loading" class="hide"><img src="../../public/images/loading2.gif"> <{t}>拼命加载数据中,请稍等...<{/t}></div>
+<iframe id="iframe_log" src="" class="hide" style="width:100%; height:200px;" frameborder="0" scrolling="auto" marginheight="0" marginwidth="0"></iframe>
+
+<div id="div_info" class="div_box">
+	<div align="right"><span class="label"><{t}>帮派ID<{/t}>：<{$data['_id']}></span></div>
+	<table class="table table-bordered table-hover">
+		<tr>
+			<td class="span2 text-right"><{t}>名称<{/t}>：</td>
+			<td><span class="badge badge-important"><{$data['name']}></span></td>
+			<td class="span2 text-right"><{t}>等级<{/t}>：</td>
+			<td><{$data['level']}></td>
+			<td class="span2 text-right"><{t}>阵营<{/t}>：</td>
+			<td><{$camp_conf[$data['camp']]}></td>
+			<td class="span2 text-right"><{t}>帮主<{/t}>：</td>
+			<td><a href="player.php?id=<{$data['presidentId']}>"><{$data['presidentName']}></a></td>
+			<td class="span2 text-right"><{t}>人数<{/t}>：</td>
+			<td><{$data['memberCount']}></td>
+		</tr>
+		<tr>
+			<td class="span2 text-right"><{t}>大厅<{/t}>：</td>
+			<td><{$data['lobby']}></td>
+			<td class="span2 text-right"><{t}>仓库<{/t}>：</td>
+			<td><{$data['storage']}></td>
+			<td class="span2 text-right"><{t}>研究所<{/t}>：</td>
+			<td><{$data['institute']}></td>
+			<td class="span2 text-right"><{t}>占星阁<{/t}>：</td>
+			<td><{$data['astrology']}></td>
+			<td class="span2 text-right"><{t}>聚义堂<{/t}>：</td>
+			<td><{$data['dogz']}></td>
+		</tr>
+		<tr>
+			<td class="span2 text-right"><{t}>资金<{/t}>：</td>
+			<td><{$data['resource'][0]|default:0}></td>
+			<td class="span2 text-right"><{t}>建材<{/t}>：</td>
+			<td><{$data['resource'][1]|default:0}></td>
+			<td class="span2 text-right"><{t}>科技<{/t}>：</td>
+			<td><{$data['resource'][2]|default:0}></td>
+			<td class="span2 text-right"><{t}>状态<{/t}>：</td>
+			<td><span class="badge <{if $data['state']==1}>badge-info<{elseif $data['state']==0}>badge-warning<{/if}>"}><{$faction_state_conf[$data['state']]}></span></td>
+			<td class="span2 text-right"><{t}>创建时间<{/t}>：</td>
+			<td><{$data['createTime']}></td>
+		</tr>
+		<tr>
+			<td class="span2 text-right"><{t}>技能<{/t}>：</td>
+			<td colspan="9" style="text-align:left">
+			<{foreach $data['skillList'] as $item}>
+				<span class="label label-info"><{$item}></span>
+			<{/foreach}>
+			</td>
+		</tr>
+		<tr>
+			<td class="span2 text-right"><{t}>公告<{/t}>：</td>
+			<td colspan="9" style="text-align:left"><{$data['announcement']}></td>
+		</tr>
+		<tfoot>
+		<tr>
+			<td class="span2 text-right"><{t}>成员<{/t}>：</td>
+			<td colspan="9" style="padding:0">
+
+
+				<table class="table table-bordered" style="margin:0; padding:0;">
+					<thead>
+						<tr>
+							<th><{t}>职位<{/t}></th>
+							<th><{t}>角色<{/t}></th>
+							<{if $data['state']!=0}>
+							<th><{t}>等级<{/t}></th>
+							<{/if}>
+							<th><{t}>当前帮贡<{/t}></th>
+							<th><{t}>历史贡献<{/t}></th>
+							<{if $data['state']!=0}>
+							<th><{t}>登陆信息<{/t}></th>
+							<{/if}>
+							<{if $data['state']==0}>
+							<th><{t}>解散时间<{/t}></th>
+							<{/if}>
+						</tr>
+					</thead>
+					<tbody>
+					<{foreach $data['memberList'] as $member}>
+						<tr>
+							<td><span <{if $member[1]==1}>class="badge badge-inverse"<{/if}>><{$faction_position_conf[$member[1]]}></span></td>
+							<td><a href="player.php?id=<{$member[0]}>"><{$member[4]}></a></td>
+							<{if $data['state']!=0}>
+							<td><{$member[5]}></td>
+							<{/if}>
+							<td><{$member[2]}></td>
+							<td><{$member[3]}></td>
+							<{if $data['state']!=0}>
+							<td><{if empty($member[6])}><span class="badge badge-info"><{t}>在线<{/t}></span><{else}><{$member[6]}><{/if}></td>
+							<{/if}>
+							<{if $data['state']==0}>
+							<{if $member[1]==1}><th><{$member[6]}></th><{else}><th></th><{/if}>
+							<{/if}>
+						</tr>
+					<{/foreach}>
+					</tbody>
+				</table>
+
+
+			</td>
+		</tr>
+		<tr>
+			<td class="span2 text-right"><{t}>权限<{/t}>：</td>
+			<td colspan="9" style="padding:0">
+				<table class="table table-bordered" style="margin:0; padding:0;">
+					<tbody>
+					<{foreach $data['authority'] as $key=>$items}>
+						<tr>
+							<td><{$faction_authority_conf[$key]}></td>
+							<td style="text-align:left">
+							<{foreach $items as $k=>$v}>
+								<span class="span1" <{if $v==1}>style="font-weight:bold"<{/if}>><input type="checkbox" disabled="disabled" <{if $v==1}>checked="checked"<{/if}>> <{$faction_position_conf[$k+2]}></span>
+							<{/foreach}>
+							</td>
+						</tr>
+					<{/foreach}>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		</tfoot>
+	</table>
+</div>
+
+<{elseif $conditions['id'] || $conditions['name']}>
+<div class="badge badge-inverse"><h5><{t}>暂无帮派相关信息，请稍后再查询<{/t}>...</h5></div>
+
+<{/if}>
+</body>
+</html>

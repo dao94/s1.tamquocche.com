@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>服务器进程<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="refresh" content="300">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $action==$key}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+
+<{if $action=='frame'}>
+<form action="?" method="get" class="well form-search">
+	<label><{t}>进程名字<{/t}>：</label>
+	<select name="server_id">
+		<option value=""><{t}>全部<{/t}>...</option>
+	<{foreach $server_type as $key=>$item}>
+		<option value="<{$key}>" <{if $server_id==$key}>selected="selected"<{/if}>>【<{$key}>】<{$item}></option>
+	<{/foreach}>
+	</select>
+	<label style="margin-left:5px;"><{t}>执行时长<{/t}>：</label>
+	<label><input id="min_time" name="min_time" class="input-mini" placeholder="<{t}>最低<{/t}>" type="text" maxlength="8" value="<{$conditions['min_time']}>"/></label>
+	<label><i class="icon-minus"></i></label>
+	<label><input id="max_time" name="max_time" class="input-mini" placeholder="<{t}>最高<{/t}>" type="text" maxlength="8" value="<{$conditions['max_time']}>"/></label>
+	
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<label><input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$open_time}>',dateFmt:'yyyy-MM-dd'})" name="start_date" value="<{$conditions['start_date']}>"></label>
+	<label><i class="icon-minus"></i></label>
+	<label><input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$open_time}>',dateFmt:'yyyy-MM-dd'})" name="end_date" value="<{$conditions['end_date']}>"></label>
+
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+	<input type="hidden" id="action" name="action" value="<{$action}>"/>
+</form>
+
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<{foreach $show_fields as $key=>$item}>
+		<th>
+			<a href="?action=<{$action}>&server_id=<{$conditions['server_id']}>&min_time=<{$conditions['min_time']}>&max_time=<{$conditions['max_time']}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>&field=<{$key}>&sort=<{if ($key==$conditions['field'] && $conditions['sort']==1)}>0<{else}>1<{/if}>"><{$item}></a>
+			<{if $key==$conditions['field']}>
+			<i class="<{if $conditions['sort']==1}>icon-arrow-up<{else}>icon-arrow-down<{/if}>"></i>
+			<{/if}>
+		</th>
+	<{/foreach}>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $row}>
+	<tr>
+		<td><{$row['server_id']}></td>
+		<td><{$server_type[$row['server_id']]|default:''}></td>
+		<td><{$row['server_index']}></td>
+		<td><{$row['frame']}></td>
+		<td><{$row['time']|date_format:'%Y-%m-%d %H:%M:%S'}></td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="<{count($show_fields)}>"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+
+<{elseif $action=='memory'}>
+<form action="" method="get">
+<div class="input-prepend input-append">
+	<span class="add-on"><{t}>进程名字<{/t}>：</span>
+	<select name="server_id">
+	<{foreach $server_type as $key=>$item}>
+		<option value="<{$key}>" <{if $server_id==$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	<span class="add-on"><{t}>日期<{/t}>：</span>
+	<input name="date" class="span2" id="appendedInputButton" type="text" placeholder="<{t}>选择日期<{/t}>" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$open_time}>',dateFmt:'yyyy-MM-dd'})" value="<{$date}>">
+	<button class="btn btn-primary" type="submit"><{t}>查询<{/t}></button>
+</div>
+<input type="hidden" name="action" value="<{$action}>">
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+<{foreach $data as $id=>$row}>
+	$.getJSON("?action=chart&type=<{$action}>&date=<{$date}>&server_id=<{$server_id}>&server_index=<{$row['server_index']}>", function(msg) {
+		if(msg.status!=1){
+			alert('<{t}>在线数据加载有误！<{/t}>');
+			return false;	
+		}
+		seriesChart('<{$id}>',msg.data);
+	});
+<{/foreach}>
+
+function seriesChart(id,data){
+	Highcharts.setOptions({
+		global : {
+			useUTC : false
+		}
+	});
+	chart = new Highcharts.StockChart({
+		chart: {
+			renderTo: 'container'+id,
+		},
+		rangeSelector: {
+			buttons: [{
+				count: 60,
+				type: 'minute',
+				text: '1<{t}>时<{/t}>'
+			},{
+				count: 180,
+				type: 'minute',
+				text: '3<{t}>时<{/t}>'
+			},{
+				count: 360,
+				type: 'minute',
+				text: '6<{t}>时<{/t}>'
+			},{
+				count: 720,
+				type: 'minute',
+				text: '12<{t}>时<{/t}>'
+			},{                
+				type: 'all',
+				text: '<{t}>全部<{/t}>'
+			}],
+			inputEnabled: false,
+			selected: 3
+		},
+		title : {
+			text : data.title
+		},
+		yAxis:{
+			
+		
+		},
+		tooltip: {
+			xDateFormat: '%Y-%m-%d %H:%M:%S',
+			shared: true,
+			valueDecimals:'0'
+		},
+		exporting: {
+			enabled: false
+		}, 
+		series: [{
+			id : 'dataseries'+id,
+			name : data.base.name,
+			data : data.data,
+		},{
+			type : 'flags',
+			data : data.info,
+			onSeries : 'dataseries'+id,
+			shape : 'circlepin'
+		}]
+	});
+}
+});
+</script>
+<div class="tab-pane well">
+<{if $data}>
+<{foreach $data as $key=>$row}>
+	<div id="container<{$key}>" style="height:300px;min-width:600px;text-align:center; margin-top:10px;">
+		<div style="padding-top:100px;"><h3><{t}>数据拼命加载中...<{/t}><img src="../../public/images/loading.gif"></h3></div>
+	</div>
+<{/foreach}>
+<{else}>
+	<div align="center"><h4><{t}>暂时搜索不到数据！<{/t}></h4></div>
+<{/if}>
+</div>
+<script type="text/javascript" src="../../public/js/highstock.js"></script>
+<script type="text/javascript" src="../../public/js/exporting.js"></script>
+
+<{else if $action=='rpc'}>
+<form action="?" method="get" class="well form-search">
+	<label><{t}>执行时长<{/t}>：</label>
+	<label><input id="min_time" name="min_time" class="input-mini" placeholder="<{t}>最低<{/t}>" type="text" maxlength="8" value="<{$conditions['min_time']}>"/></label>
+	<label><i class="icon-minus"></i></label>
+	<label><input id="max_time" name="max_time" class="input-mini" placeholder="<{t}>最高<{/t}>" type="text" maxlength="8" value="<{$conditions['max_time']}>"/></label>
+	
+	<label style="margin-left:10px;"><{t}>时间<{/t}>：</label>
+	<label><input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$open_time}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>"></label>
+	<label><i class="icon-minus"></i></label>
+	<label><input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$open_time}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>"></label>
+
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+	<input type="hidden" id="action" name="action" value="<{$action}>"/>
+</form>
+
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<{foreach $show_fields as $key=>$item}>
+		<th>
+			<a href="?action=<{$action}>&min_time=<{$conditions['min_time']}>&max_time=<{$conditions['max_time']}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>&field=<{$key}>&sort=<{if ($key==$conditions['field'] && $conditions['sort']==1)}>0<{else}>1<{/if}>"><{$item}></a>
+			<{if $key==$conditions['field']}>
+			<i class="<{if $conditions['sort']==1}>icon-arrow-up<{else}>icon-arrow-down<{/if}>"></i>
+			<{/if}>
+		</th>
+	<{/foreach}>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $row}>
+	<tr>
+		<td><{$row['rpc_name']|default:'--'}></td>
+		<td><{$row['rpc_oper']}></td>
+		<td><{$row['rpc_cmd']}></td>
+		<td><{$row['use_time']}></td>
+		<td><{$row['time']|date_format:'%Y-%m-%d %H:%M:%S'}></td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="<{count($show_fields)}>"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+
+<{else if $action=='mongodb'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th>ID</th>
+		<th><{t}>内容<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $row}>
+	<tr>
+		<td><{$row['id']}></td>
+		<td style="text-align:left"><{$row['content']|default:''}></td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="2"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+<{/if}>
+</body>
+</html>

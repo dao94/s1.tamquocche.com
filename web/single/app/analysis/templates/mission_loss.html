@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>任务流失<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<div class="accordion-group">
+<div class="accordion-heading"><span class="accordion-toggle"
+	data-toggle="collapse" href="#collapse"> <a href="#"><{t}>定义说明<{/t}></a>
+</span></div>
+<div id="collapse" class="accordion-body in collapse">
+<div class="accordion-inner">
+<ol>
+	<li><{t}>任务接受率：接任务数÷完成上一任务完成的玩家数×100%<{/t}></li>
+	<li><{t}>任务完成率：完成任务数÷接任务人数×100%<{/t}></li>
+	<li><{t}>任务流失人数：2天未登录的玩家且任务未完成的人数<{/t}></li>
+	<li><{t}>任务流失率：任务流失人数÷接任务人数×100%<{/t}></li>
+</ol>
+</div>
+</div>
+</div>
+
+<form class="well form-search" style="margin: 10px 0;">
+	<label><{t}>日期<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" name="date" value="<{$conditions['date']}>">
+	<label style="margin-left: 10px;"><{t}>任务名称<{/t}>：</label>
+	<label><input class="input-medium" placeholder="<{t}>输入任务名称<{/t}>" type="text" data-provide="typeahead" id="name" name="name" maxlength="20" value="<{$conditions['name']}>"></span></label>
+	<label style="margin-left: 10px;"><{t}>任务类型：<{/t}></label> 
+	<select name="type" class="input-small">
+	<{foreach $mission_type_conf as $key=>$item}>
+	<option value="<{$key}>" <{if $conditions['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜索<{/t}></button>
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<button onClick="javascript:window.location= '?date=<{$key}>';" class="btn <{if $conditions['date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/foreach}>
+</div>
+
+<table class="table table-bordered table-hover table-striped" style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th><{t}>序号<{/t}></th>
+			<th><{t}>任务ID<{/t}></th>
+			<th><{t}>名称<{/t}></th>
+			<th><{t}>类型<{/t}></th>
+			<th><{t}>接任务数<{/t}></th>
+			<th><{t}>任务接受率<{/t}></th>
+			<th><{t}>进行中流失<{/t}></th>
+			<th><{t}>可交状态流失<{/t}></th>
+			<th><{t}>完成任务数<{/t}></th>
+			<th><{t}>任务完成率<{/t}></th>
+			<th><{t}>平均完成时间<{/t}></th>
+			<th><{t}>任务流失人数<{/t}></th>
+			<th><{t}>任务流失率<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+	<{if $data}>
+	<{foreach $data as $row}>
+		<tr>
+			<td><{$row['num']}></td>
+			<td><{$row['mid']}></td>
+			<td><{$row['name']}></td>
+			<td><{$mission_type_conf[$row['type']]}></td>
+			<td><{$row['receive']}></td>
+			<td><{$row['receive_ratio']}>%</td>
+			<td><{$row['receive_loss']}></td>
+			<td><{$row['allow_complete_loss']}></td>
+			<td><{$row['complete']}></td>
+			<td><{$row['complete_ratio']}>%</td>
+			<td><{$row['avg_hour']|default:'00'}>:<{$row['avg_minute']|default:'00'}>:<{$row['avg_second']|default:'00'}></td>
+			<td><{$row['loss']}></td>
+			<td><{$row['loss_ratio']}>%</td>
+		</tr>
+	<{/foreach}>
+	<{else}>
+		<tr>
+			<td colspan="13"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+		</tr>
+	<{/if}>
+	</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

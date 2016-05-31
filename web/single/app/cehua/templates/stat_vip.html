@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>超值vip<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function(){
+	$('.time_type').click(function(){
+		$('#start_date').val($(this).attr('start-date'));
+		$('#end_date').val($(this).attr('end-date'));
+		$('#btn_search').click();
+	});
+	$('.btn_search').click(function(){
+		var start_date=$('#start_date').val();
+		var end_date=$('#end_date').val();
+		alert(start_date);
+		return false;
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well well-small form-search">
+	<div class="accordion-heading">
+	 	<span class="accordion-toggle" data-toggle="collapse" href="#collapse">
+				<a href="javascript:;"><{t}>定义说明<{/t}></a>
+		</span>
+	</div>
+	<div id="collapse" class="accordion-body in collapse">
+		<div class="accordion-inner">
+			<ol>
+				<li><{t}>数量：截至当天为止，该计划累计被购买的次数。<{/t}></li>
+				<li><{t}>比例：该计划被购买次数占总购买次数的百分比。<{/t}></li>
+			</ol>
+		</div>
+	</div>
+	<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+</form>
+
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th></th>
+		<th><{t}>超值vip<{/t}></th>
+		<{foreach $items_conf as $item}>
+			<th><{t}><{$item}><{/t}></th>
+		<{/foreach}>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $key=>$row}>
+		<tr>
+			<td rowspan="2"><{$key}></td>
+			<td><{t}>数量<{/t}></td>
+			<td><{$row['vip']|default:0}></td>
+			<{foreach $items_conf as $key=>$item}>
+				<td><{$row[$key]|default:0}></td>
+			<{/foreach}>
+	   	</tr>
+	   	<tr>
+	   		<td><{t}>比例<{/t}></td>
+	   		<td>--</td>
+	   		<{foreach $items_conf as $key=>$item}>
+				<td><{if (isset($row['vip'])&&$row['vip']) && (isset($row[$key])&&$row[$key])}><{round($row[$key]/$row['vip'],4)*100}><{else}>0<{/if}>%</td>
+			<{/foreach}>
+	   	</tr>
+
+	<{/foreach}>
+</tbody>
+</table>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>活动设置<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+</head>
+<body>
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<{if $conditions['action']=='list'}>
+<script language="javascript">
+var activity_type_config={
+<{foreach $activity_config['activity_type'] as $key=>$item}>
+	<{$key}>:'<{$item}>',
+<{/foreach}>
+};
+$(function($){
+	$('#check_all').click(function(){
+		$('.cb').attr('checked',this.checked);
+	});
+
+	$('#btn_delete').click(function(){
+		var count=$('.cb:checked').length,id=new Array();
+		if(count==0){
+			alert('<{t}>请选择Xóa选项<{/t}>');
+			return false;
+		}else if(!confirm('<{t}>确定要Xóa选中项？<{/t}>')){
+			return false;
+		}
+		$('.cb:checked').each(function(i,obj){
+			id.push(obj.value);
+		});
+		$.post('?action=delete',{id:id},function(msg){
+			if(msg.status==1){
+				return window.location.href = window.location.href;
+			}else{
+				alert(msg.info);
+			}
+		},'json');
+	});
+
+	$('#btn_export').click(function(){
+		var count=$('.cb:checked').length,id=new Array();
+		if(count==0){
+			alert('<{t}>请选择要导出的选项<{/t}>');
+			return false;
+		}
+		var id='';
+		$('.cb:checked').each(function(i,obj){
+			id+=obj.value+',';
+		});
+		window.location='?action=export&id='+id;
+	});
+
+	$('a[rel="popover"]').mouseover(function(){
+		$(this).popover({placement:'right',html:true}).popover('show');
+		$(this).next('.popover').mouseover();
+	}).mouseout(function(){
+		$('.popover').hide();
+	});
+	$('.popover').live('mouseover',function(){
+		$('.popover').hide();
+		$(this).show();
+	}).live('mouseout',function(){
+		$(this).hide();
+	});
+
+	$('.param_content').click(function(){
+		$(this).colorbox({inline:true,fixed:true,width:'700px', height:'460px'});
+	});
+
+	$('button').ajaxStart(function(){
+		$(this).attr('disabled',true);
+	}).ajaxStop(function(){
+		$(this).attr('disabled',false);
+	});
+});
+</script>
+
+<form action="?action=<{$conditions['action']}>" method="get" class="well well-small form-search" style="margin-bottom:10px;">
+	<{t}>活动类型<{/t}>：
+	<select name="type" class="input-small">
+		<option value=""><{t}>所有<{/t}>...</option>
+	<{foreach $activity_config['activity_type'] as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['type']==$key}>selected<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	GMER：<input type="text" name="gmer" class="input-medium" maxlength="50" value="<{$conditions['gmer']}>" placeholder="<{t}>GM账号<{/t}>">
+	<{t}>每页显示<{/t}>：
+	<select name="list_rows" class="input-mini">
+	<{foreach $list_rows_conf as $key=>$item}>
+		<option value="<{$item}>" <{if $item==$conditions['list_rows']}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	<button type="submit" class="btn btn-primary"><i class="icon-search icon-white"></i>搜索</button>
+</form>
+
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th width="18"><input type="checkbox" id="check_all"></th>
+		<th><{t}>活动ID<{/t}></th>
+		<th><{t}>活动类型<{/t}></th>
+		<th><{t}>开始时间<{/t}></th>
+		<th><{t}>结束时间<{/t}></th>
+		<th><{t}>活动配置<{/t}></th>
+		<th>GMER</th>
+		<th><{t}>备注<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $key=>$row}>
+	<tr id="row_<{$row['id']}>">
+		<td><input type="checkbox" class="cb" value="<{$row['_id']}>" name="<{$row['type']}>"></td>
+		<td><{$row['_id']}></td>
+		<td><{$activity_config['activity_type'][$row['type']]|default:$row['type']}></td>
+		<td><{$row['start']}></td>
+		<td><{$row['over']}></td>
+		<td><a href="#param_content_<{$key}>" class="param_content"><i class="icon-search"></i><{t}>点击查看详细<{/t}></a></td>
+		<td><{$row['gmer']|default:''}></td>
+		<td><a href="?action=set_view&id=<{$row['_id']}>"><i class="icon-edit"></i><{t}>Sửa<{/t}></a></td>
+	</tr>
+	<!--活动配置明细-->
+	<tr class="hide">
+		<td colspan="8" id="param_content_<{$key}>">
+			<{$activity_tpl='pm_activity_'|cat:$row['type']|cat:'.html'}>
+			<{include file="$activity_tpl" tpl="show"}>
+		</td>
+	</tr>
+<{/foreach}>
+</tbody>
+<tfoot>
+	<tr>
+		<td colspan="13" style="text-align:left">
+			<button class="btn btn-primary" id="btn_export"><i class="icon-download-alt icon-white"></i><{t}>导出配置<{/t}></button>
+			<button class="btn btn-inverse pull-right" id="btn_delete"><i class="icon-remove icon-white"></i><{t}>Xóa活动<{/t}></button></td>
+	</tr>
+</tfoot>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+
+<{else if $conditions['action']=='set_view'}>
+<script language="javascript">
+$(function($){
+	//$(':selected').attr('selected',false);
+	//$(':disabled').attr('disabled',false);
+	var max_items=80;
+
+	$('.btn_add_config').live('click',function(){
+		if($('.btn_add_config').length>=max_items) 	return false;
+		var obj=$(this).parents('.control-group').clone();
+		obj.find('input').val('');
+		obj.find(':checkbox').attr('checked',false);
+		$(this).parents('.form-horizontal').append(obj);
+	});
+
+	$('.btn_del_config').live('click',function(){
+		if($('.btn_add_config').length==1) 	return false;
+		$(this).parents('.control-group').remove();
+	});
+
+	$('.btn_add_items').live('click',function(){
+		if($(this).parents('.control-group').find('.controls').length>=max_items) 	return false;
+		var obj=$(this).parents('.controls').clone();
+		obj.find('input').val('');
+		obj.find(':checkbox').attr('checked',false);
+		$(this).parents('.control-group').append(obj);
+	});
+
+	$('.btn_del_items').live('click',function(){
+		if($(this).parents('.control-group').find('.controls').length==1) 	return false;
+		$(this).parents('.controls').remove();
+	});
+
+	$('.btn_add_item').live('click',function(){
+		if($(this).parents('ul').find('.sub_item').length>=max_items) 	return false;
+		var obj=$(this).parents('ul li').clone();
+		obj.find('input').val('');
+		obj.find(':checkbox').attr('checked',false);
+		$(this).parents('ul').append(obj);
+	});
+
+	$('.btn_del_item').live('click',function(){
+		if($(this).parents('ul').find('li').length==1) 	return false;
+		$(this).parent('li').remove();
+	});
+
+	$('input[name="item"]').live('keydown',function(){
+		var separator='<i class="icon-star"></i>'
+		$(this).typeahead({
+			items:100,
+			minLength:2,
+			source:function(value,process){
+				var client = new PHPRPC_Client('http://<{$smarty.const.CENTER_DOMAIN}>/center/app/interface/item_info.php', ['search']);
+				client.search(value,'<{$smarty.session.__single_LANG}>', function (result,args,output,warning) {
+					var data=new Array();
+					result=jQuery.parseJSON(result);
+					$(result).each(function(i,obj){
+						data.push(obj[1]+separator+obj[0]);
+					});
+					process(data);
+				});
+			},
+			updater:function(data){
+				var arr=data.split(separator);
+				return arr[1]+'|'+arr[0];
+			},
+		});
+	});
+	$('.search_item').live('click',function(){
+		var obj=$(this).prevAll(':input');
+		var arr=obj.val().split('|');
+		if(typeof(arr[1])!='undefined' && arr[1]!=''){
+			obj.val(arr[1]);
+		}
+		$(this).prevAll(':input').keyup();
+	});
+
+
+	//提交数据
+	$('#btn_submit').click(function(){
+		var param=[],start_date=$.trim($('input[name="start_date"]').val()),end_date=$.trim($('input[name="end_date"]').val()),id=$('input[name="id"]').val(),xml_config='',is_xml=$.trim($('input[name="is_xml"]').val());
+		if(!start_date || !end_date || start_date>=end_date){
+			alert('<{t}>请正确选择Thời gian<{/t}>');
+			return false;
+		}
+
+		try{
+			if(typeof(eval(getXml))=='function' && is_xml==1){
+				xml_config=getXml();//生成xml配置
+			}
+		}catch(e){}
+		if(xml_config===false) return false;
+
+		param=getParam();//获取配置参数
+		if(param===false)	return false;
+		$.post('?action=set',{type:<{$type}>,id:id,start_date:start_date,end_date:end_date,is_xml:is_xml,xml_config:xml_config,param:param},function(msg){
+			alert(msg.info);
+			if(msg.status==1){
+				window.location='?type=<{$type}>';
+			}
+		},'json');
+	});
+
+	$('button').ajaxStart(function(){
+		$(this).attr('disabled',true);
+	}).ajaxStop(function(){
+		$(this).attr('disabled',false);
+	});
+});
+</script>
+<div class="form-horizontal">
+	<div class="control-group" style="margin-bottom:0;">
+		<label class="control-label"><{t}>活动类型<{/t}></label>
+		<div class="controls">
+			<ul class="unstyled inline">
+			<{foreach $activity_config['activity_type'] as $key=>$item}>
+				<li><label><input type="radio" name="type" value="<{$key}>" <{if $type==$key}>checked<{/if}> onClick="javascript:window.location='?action=<{$conditions['action']}>&type='+this.value"><{$item}></label></li>
+			<{/foreach}>
+			</ul>
+		</div>
+	</div>
+	<div class="control-group" style="margin-bottom:10px;">
+		<label class="control-label" for="start_date"><{t}>Thời gian<{/t}></label>
+		<div class="controls">
+			<input type="text" id="start_date" name="start_date" class="input-medium" value="<{$data['start']|default:''}>" placeholder="<{t}>活动开始时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d 00:00:00'})">
+			<i class="icon-minus"></i>
+			<input type="text"  name="end_date" class="input-medium" value="<{$data['over']|default:''}>" placeholder="<{t}>活动结束时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d 00:00:00'})">
+		</div>
+	</div>
+
+	<{include file="pm_activity_$type.html" tpl="set"}>
+
+</div>
+<input type="hidden" name="id" value="<{$data['_id']|default:''}>">
+<div style="margin:0 0 30px 180px">
+	<button type="button" id="btn_submit" class="btn btn-primary"><i class="icon-pencil icon-white"></i><{t}>保存<{/t}></button>
+</div>
+
+<{else if $conditions['action']=='load'}>
+<script language="javascript">
+$(function($){
+	$('#btn_load').click(function(){
+		var data=$('[name="data"]').val();
+		$.post('?action=load_data',{data:data},function(msg){
+			alert(msg.info);
+			if(msg.status==1){
+				window.location='?';
+			}
+		},'json');
+	}).ajaxStart(function(){
+   $(this).attr('disabled',true);
+	 $('[name="data"]').attr('readonly',true);
+	}).ajaxStop(function(){
+		$(this).attr('disabled',false);
+	 $('[name="data"]').attr('readonly',false);
+	});
+});
+</script>
+<div>
+	<div><{t}>将导出的活动配置内容粘贴到下面文本框：<{/t}></div>
+	<div>
+		<textarea style="width:90%; height:400px;" name="data"></textarea>
+	</div>
+	<div align="center"><button class="btn btn-primary" id="btn_load"><i class="icon-upload icon-white"></i><{t}>导入配置<{/t}></button></div>
+</div>
+
+<{/if}>
+</body>
+</html>

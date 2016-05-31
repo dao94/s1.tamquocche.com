@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>充值排行<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function($){
+	$('.pay_order').toggle(function(){
+		var char_id=this.name,
+			list=$('#order_'+char_id+' tbody').html();
+		$('#order_'+char_id).fadeIn();
+		if(list)	return false;
+		$.post('?type=order',{char_id:char_id},function(msg){
+			if(msg.status==1){
+				$(msg.data).each(function(i,obj){
+					var tr_id='tr_'+char_id+'_'+i;
+					$('#order_'+char_id+' tbody').append('<tr id="'+tr_id+'"></tr>');
+					$('#'+tr_id).append('<td>'+obj.char_name+'</td>');
+					$('#'+tr_id).append('<td>'+obj.level+'</td>');
+					$('#'+tr_id).append('<td>'+obj.money+'</td>');
+					$('#'+tr_id).append('<td>'+obj.gold+'</td>');
+					$('#'+tr_id).append('<td>'+obj.ts+'</td>');
+					$('#'+tr_id).append('<td>'+obj.order_id+'</td>');
+				});
+			}else{
+				alert(msg.info);	
+			}
+		},'json');
+	},function(){
+		$('#order_'+this.name).hide();
+	});
+});
+</script>
+</head>
+<body>
+<div class="tabbable">
+	<ul class="nav nav-tabs">
+		<li <{if $type eq 'total'}>class="active"<{/if}>><a href="?type=total"><{t}>充值玩家总排行<{/t}></a></li>
+		<li <{if $type eq 'single'}>class="active"<{/if}>><a href="?type=single"><{t}>单日玩家充值排行<{/t}></a></li>
+	</ul>
+</div>
+
+<{if $type eq 'total'}>
+<form class="well form-inline">
+	<input type="text" name="start" class="input-small" value="<{$start}>" onfocus="WdatePicker()" placeholder="<{t}>开始时间<{/t}>"> 
+	<i class="icon-minus"></i>  
+	<input type="text" name="end" class="input-small" value="<{$end}>" onfocus="WdatePicker()" placeholder="<{t}>结束时间<{/t}>">
+	<select name="char_type" class="span1">
+		<option value="0"><{t}>账号<{/t}></option>
+		<option value="1"><{t}>角色<{/t}></option>
+	</select>
+	<input type="text" name="char_info" value="<{$char_info}>">
+	<input type="hidden" name="type" value="total">
+	<button type="submit" class="btn btn-primary"><{t}>查询<{/t}></button>
+	<a href="?type=output" class="btn btn-primary"><{t}>导出<{/t}></a> 
+	<div style="margin-top:10px;">
+		<span>充值用户数：<b><{$pay_rank_data['c_payer']}></b></span>
+		<span style="margin-left:10px;"><{t}>充值用户5天未登录<{/t}>：<b><{$pay_rank_data['c_notloginpayer']}></b></span>
+		<span style="margin-left:10px;"><{t}>充值大于等于200用户数<{/t}>：<b><{$pay_rank_data['c_gt200payer']}></b></span>
+		<span style="margin-left:10px;"><{t}>充值大于等于200未登录数<{/t}>：<b><{$pay_rank_data['c_notlogingt200payer']}></b></span>
+	</div>
+</form>
+<table class="table table-bordered table-condensed table-hover">
+<thead>
+	<tr>
+		<th><{t}>排行<{/t}></th>
+		<th><{t}>账号<{/t}></th>
+		<th><{t}>角色<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+		<th><{t}>职业<{/t}></th>
+		<th><{t}>充值金额<{/t}></th>
+		<th><{t}>元宝总额<{/t}></th>
+		<th><{t}>剩余元宝<{/t}></th>
+		<th><{t}>充值次数<{/t}></th>
+		<th><{t}>最后充值时间<{/t}></th>
+		<th><{t}>未充值天数<{/t}></th>
+		<th><{t}>占总充值比<{/t}></th>
+		<th><{t}>报警<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $rankings as $ranking}>
+	<tr>
+		<td><{$ranking['rank']}></td>
+		<td><{$ranking['account']}></td>
+		<td><a href="../gm/player.php?id=<{$ranking['char_id']}>"><{$ranking['char_name']}></a></td>
+		<td><{$ranking['level']}></td>
+		<td><{$ranking['occ']}></td>
+		<td><a href="javascript:;" class="pay_order" name="<{$ranking['char_id']}>"><{$ranking['s_money']}></a></td>
+		<td><{$ranking['s_gold']}></td>
+		<td><{$ranking['l_gold']}></td>
+		<td><{$ranking['c_order']}></td>
+		<td><{$ranking['max_ts']|date_format:"%Y-%m-%d %T"}></td>
+		<td <{if $ranking['no_pay_days']>7}>bgcolor="#F89406"<{/if}>><{$ranking['no_pay_days']}></td>
+		<td><{round($ranking['s_gold']/$sum_gold*100,2)}>%</td>
+		<td><{if $ranking['no_login_days'] < 2}><span class="label label-info"><{t}>今昨登录<{/t}></span><{elseif $ranking['no_login_days']>=2 && $ranking['no_login_days'] <=7}><span class="label"><{$ranking['no_login_days']}><{t}>天未登录<{/t}></span><{else}><span class="label label-warning"><{$ranking['no_login_days']}><{t}>天未登录<{/t}></span><{/if}></td>
+	</tr>
+	<tr id="order_<{$ranking['char_id']}>" class="hide">
+		<td colspan="13" style="background-color:#116BA8;">
+			<table class="table" style="margin-bottom:0px;">
+			<thead>
+				<tr>
+					<th><{t}>角色名<{/t}></th>
+					<th><{t}>充值时等级<{/t}></th>
+					<th><{t}>金额<{/t}></th>
+					<th><{t}>元宝数<{/t}></th>
+					<th><{t}>充值时间<{/t}></th>
+					<th><{t}>订单号<{/t}></th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+			</table>
+		</td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+
+<{else}>
+<!--单日充值玩家排行--> 
+<form class="well form-inline">
+	<input type="text" class="input-small" name="day" value="<{$day}>" onfocus="WdatePicker()" placeholder="<{t}>请选择日期<{/t}>"> 
+	<input type="hidden" name="type" value="single">
+	<button type="submit" class="btn btn-primary"><{t}>查询<{/t}></button>
+</form>
+
+<table class="table table-striped table-bordered table-condensed">
+<thead>
+	<tr>
+		<th><{t}>排行<{/t}></th>
+		<th><{t}>账号<{/t}></th>
+		<th><{t}>角色<{/t}></th>
+		<th><{t}>当天充值元宝<{/t}></th>
+		<th><{t}>当天充值金额<{/t}></th>
+		<th><{t}>当天充值次数<{/t}></th>
+		<th><{t}>占当天总充值比<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{$i=1}>
+<{while $row = $rankings_query->fetch_assoc()}>
+	<tr>
+		<td><{$p_firstRow+($i++)}></td>
+		<td><{$row['account']}></td>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>"><{$row['char_name']}></a></td>
+		<td><{$row['s_gold']}></td>
+		<td><{$row['s_money']}></td>
+		<td><{$row['c_order']}></td>
+		<td><{round($row['s_gold']/$sum_gold*100,2)}>%</td>
+	</tr>
+<{/while}>
+</tbody>
+</table>
+<{/if}>
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

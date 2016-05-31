@@ -1,0 +1,394 @@
+<{if $row['type']==2}>
+<!--怪物掉落-->
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<{foreach $row['param'] as $params}>
+	<dt style="width:80px;"><{t}>掉落模式<{/t}></dt>
+	<dd style="margin-left:100px"><{$activity_config['fall_model'][$params['model']]|default:$occ}></dd>
+	<dt style="width:80px;"><{t}>怪物对象<{/t}></dt>
+	<dd style="margin-left:100px">
+		<ul class="unstyled inline">
+		<{foreach $params['occ'] as $occ}>
+			<li><{$monster_occ_list[trim($occ)]|default:$occ}></li>
+		<{/foreach}>
+		</ul>
+	</dd>
+	<dt style="width:80px;"><{t}>掉落配置<{/t}></dt>
+	<dd style="margin-left:100px">
+		<ul class="unstyled">
+		<{foreach $params['pack'] as $pack}>
+			<li>
+				<{$activity_config['fall_type'][$pack['type']]|default:$pack['type']}>：
+				<{t}>掉率<{/t}><span class="label label-important"><b><{$pack['per']}></b></span>
+			<{if $pack['type']==1}>
+				<{t}>道具<{/t}><span class="label label-important"><b><{t}><{$pack['item']['itemId']}><{/t}></b></span>
+				<{t}>数量<{/t}><span class="label label-important"><b><{$pack['item']['number']}></b></span>
+				<{if $pack['item']['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>
+			</li>
+			<{else if $pack['type']==2}>
+				<{$activity_config['money_type'][$pack['item']['type']]|default:$pack['item']['type']}>
+				<span class="label label-important"><b><{$pack['item']['money']}></b></span>
+			<{else if $pack['type']==3}>
+				<{t}>掉落个数<{/t}><span class="label label-important"><b><{$pack['count']}></b></span>
+				<{t}>掉落包<{/t}>：
+				<ol>
+				<{foreach $pack['item'] as $item}>
+					<li style="margin-top:3px;">
+						<{t}>道具<{/t}>:<{t}><{$item['item']['itemId']}><{/t}>
+						<{t}>数量<{/t}>:<{$item['item']['number']}>
+						<{t}>权重<{/t}>:<{$item['per']}>
+						<{if $item['item']['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>
+					</li>
+				<{/foreach}>
+				</ol>
+			</li>
+			<{/if}>
+			<li style="height:2px; line-height:2px; margin:5px 0;"><hr/></li>
+		<{/foreach}>
+		</ul>
+	</dd>
+	<hr/>
+	<{/foreach}>
+</dl>
+
+<{else if $row['type']==3}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><b><{$row['start']}></b> <{t}>至<{/t}> <b><{$row['over']}></b></dd>
+	<{if isset($row['param']['egg'])}>
+	<dt style="width:80px;"><{t}>砸蛋时间<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<b><{$row['param']['egg']['start']|date_format:'%Y-%m-%d %T'|default:''}></b>
+		<{t}>至<{/t}>
+		<b><{$row['param']['egg']['over']|date_format:'%Y-%m-%d %T'|default:''}></b></dd>
+	<dt style="width:80px;"><{t}>砸蛋奖励<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<{foreach $row['param']['egg']['pack'] as $pack}>
+		<table class="table table-bordered table-condensed table-hover">
+			<thead>
+				<tr>
+					<td colspan="6" style="background-color:#FCF8E3">
+						<b><{$activity_config['egg_type'][$pack['eggType']]|default:$pack['eggType']}></b>
+						<{t}>掉落个数<{/t}>：<{$pack['lost']}>
+						<{t}>个人上限<{/t}>：<{$pack['lost']}>
+						<{t}>获得积分<{/t}>：<{$pack['lost']}>
+					</td>
+				</tr>
+				<tr>
+					<th><{t}>道具/金钱<{/t}></th>
+					<th><{t}>非绑定<{/t}></th>
+					<th><{t}>数量<{/t}></th>
+					<th><{t}>掉率<{/t}></th>
+					<th><{t}>广播<{/t}></th>
+					<th><{t}>广播内容<{/t}></th>
+				</tr>
+			</thead>
+			<tbody>
+			<{foreach $pack['reward'] as $reward}>
+				<tr>
+					<td>
+						<{if isset($reward['item'])}>
+							<{t}><{$reward['item']['itemId']}><{/t}>
+						<{elseif isset($reward['money'])}>
+							<{$activity_config['money_type'][$reward['money']['type']]}>
+						<{/if}>
+					</td>
+					<td>
+						<{if isset($reward['item'])&&$reward['item']['bind']==1}>
+							<i class="icon-ok"></i>
+						<{/if}>
+					</td>
+					<td>
+						<{if isset($reward['item'])}>
+							<{$reward['item']['number']}>
+						<{elseif isset($reward['money'])}>
+							<{$reward['money']['money']}>
+						<{/if}>
+					</td>
+					<td><{$reward['per']}></td>
+					<td>
+						<{if isset($reward['bdc'])&&$reward['bdc']==1}>
+							<i class="icon-ok"></i>
+						<{/if}>
+					</td>
+					<td style="text-align:left">
+						<{if isset($reward['bdcStr'])}>
+							<{$reward['bdcStr']}>
+						<{/if}>
+					</td>
+				</tr>
+			<{/foreach}>
+			</tbody>
+			</table>
+		<{/foreach}>
+	</dd>
+	<{/if}>
+
+	<{if isset($row['param']['exchange'])}>
+	<dt style="width:80px;"><{t}>兑换时间<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<b><{$row['param']['exchange']['start']|date_format:'%Y-%m-%d %T'|default:''}></b>
+		<{t}>至<{/t}>
+		<b><{$row['param']['exchange']['over']|date_format:'%Y-%m-%d %T'|default:''}></b>
+	</dd>
+	<dt style="width:80px;"><{t}>兑换规则<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<ul class="unstyled">
+		<{foreach $row['param']['exchange']['pack'] as $pack}>
+			<li>
+				<{t}>支出<{$activity_config['money_type'][$pack['outMoney']['type']]|default:$pack['outMoney']['type']}><{/t}>：<{$pack['outMoney']['type']|default:0}>
+				<{t}>兑换积分<{/t}>：<{$pack['point']|default:0}>
+				<{t}>全服上限<{/t}>：<{$pack['total']|default:0}>
+				<{t}>个人上限<{/t}>：<{$pack['per']|default:0}>
+			</li>
+			<li>
+				<{t}>获得道具<{/t}>：<{t}><{$pack['inItem']['itemId']}><{/t}>(<{if $pack['inItem']['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>)
+				<{t}>数量<{/t}>：<{$pack['inItem']['number']}>
+				<hr />
+			</li>
+		<{/foreach}>
+		</ul>
+	</dd>
+	<{/if}>
+</dl>
+
+<{elseif $row['type']==5}>
+<!--充值活动-->
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<{foreach $row['param'] as $params}>
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+		<div>
+			<{t}>充值元宝<{/t}>：<b><{$params['cost']}></b> &nbsp;&nbsp;
+			<{t}>每人限购<{/t}>：<{$params['limit']}> &nbsp;&nbsp;
+			<{t}>序号<{/t}>：<{$params['index']}> &nbsp;&nbsp;
+			<{t}>限购类型<{/t}>：<{$activity_config['pay_limit_type'][$params['limitType']]}>
+		</div>
+		<ul class="unstyled">
+		<{if !empty($params['itemList'])}>
+			<{foreach $params['itemList'] as $item}>
+				<li>
+					<{t}>道具<{/t}>：<{t}><{$item['itemId']}><{/t}>(<{if $item['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+					<{t}>数量<{/t}>：<{$item['number']}></span>
+				</li>
+			<{/foreach}>
+		<{/if}>
+		<{if !empty($params['moneyList'])}>
+			<{foreach $params['moneyList'] as $item}>
+				<li>
+					<{t}><{$activity_config['money_type'][$item['type']]}><{/t}>：<{t}><{$item['money']}><{/t}>
+				</li>
+			<{/foreach}>
+		<{/if}>
+		</ul>
+	</dd>
+	<hr/>
+	<{/foreach}>
+</dl>
+
+<{elseif $row['type']==6}>
+<!--有福同享-->
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<span><{t}>最小充值人数<{/t}>：<{$row['param']['minCount']}></span>
+		<span style="margin-left:10px;"><{t}>最小充值人数<{/t}>：<{$row['param']['minCharge']}></span>
+	</dd>
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+	<{foreach $row['param']['rewardList'] as $reward_list}>
+		<div>
+			<{t}>序号<{/t}>：<{$reward_list['index']}>
+			<{t}>最小人数<{/t}>：<{$reward_list['min']}>
+			<{t}>最大人数<{/t}>：<{$reward_list['max']}>
+		</div>
+		<ul class="unstyled">
+		<{if !empty($reward_list['itemList'])}>
+			<{foreach $reward_list['itemList'] as $item}>
+				<li>
+					<{t}>道具<{/t}>：<{t}><{$item['itemId']}><{/t}>(<{if $item['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+					<{t}>数量<{/t}>：<{$item['number']}>
+				</li>
+			<{/foreach}>
+		<{/if}>
+		<{if !empty($reward_list['moneyList'])}>
+			<{foreach $reward_list['moneyList'] as $item}>
+				<li>
+					<{t}><{$activity_config['money_type'][$item['type']]}><{/t}>：<{t}><{$item['money']}><{/t}>
+				</li>
+			<{/foreach}>
+		<{/if}>
+		</ul>
+		<hr style="margin:2px 0 5px 0"/>
+	<{/foreach}>
+	</dd>
+</dl>
+
+<{elseif $row['type']==7}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"><{t}>显示时间<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['show_time']}> <i class="icon-minus"></i> <{$row['xml_config']['hide_time']}></dd>
+	<dt style="width:80px;"><{t}>活动名称<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['name']}></dd>
+	<dt style="width:80px;"><{t}>活动描述<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['info']}></dd>
+
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+	<{foreach $row['param'] as $params}>
+		<div>
+			<{t}>兑换ID<{/t}>：<{$params['id']}>
+			<{t}>兑换个人次数限制<{/t}>：<params['limit']}>
+			<{t}>全服兑换次数限制<{/t}>：<params['total']}>
+			<{t}>职业限制<{/t}>：<{$activity_config['occ_type'][$params['occ']]}>
+		</div>
+		<ul class="unstyled" style="margin-top:10px;">
+
+			<{$aim_item_list=array()}>
+			<{$aim_money_list=array()}>
+			<{if isset($params['aim']['item'])}>
+				<{$aim_item_list=$params['aim']['item']}>
+			<{/if}>
+			<{if isset($params['aim']['money'])}>
+				<{$aim_money_list=$params['aim']['money']}>
+			<{/if}>
+			<{$aim_list=array_merge($aim_item_list,$aim_money_list)}>
+
+			<{$need_item_list=array()}>
+			<{$need_money_list=array()}>
+			<{if isset($params['need']['item'])}>
+				<{$need_item_list=$params['need']['item']}>
+			<{/if}>
+			<{if isset($params['need']['money'])}>
+				<{$need_money_list=$params['need']['money']}>
+			<{/if}>
+			<{$need_list=array_merge($need_item_list,$need_money_list)}>
+
+			<{$item_list=array()}>
+			<{if $aim_list}>
+				<{$item_list[1]=$aim_list}>
+			<{/if}>
+			<{if $need_list}>
+				<{$item_list[2]=$need_list}>
+			<{/if}>
+
+			<{foreach $item_list as $exchange_type=>$items}>
+				<li><{$activity_config['exchange_type'][$exchange_type]}></li>
+				<li>
+					<ul>
+						<{foreach $items as $item}>
+						<{if isset($item['itemId'])}>
+						<li><{t}>道具<{/t}>：<{t}><{$item['itemId']}><{/t}><{if isset($item['bind'])}>(<{if $item['bind']==1}><{t}>非绑定<{/t}><{elseif $item['bind']==0}><{t}>绑定<{/t}><{/if}>)<{/if}> <{t}>数量<{/t}>：<{$item['number']}></li>
+						<{else}>
+						<li><{$activity_config['money_type'][$item['type']]}>：<{$item['money']}></li>
+						<{/if}>
+						<{/foreach}>
+					</ul>
+				</li>
+			<{/foreach}>
+			<li><hr style="margin:5px 0"/></li>
+		</ul>
+		<{/foreach}>
+	</dd>
+</dl>
+
+<{elseif $row['type']==8}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+	<{foreach $row['param'] as $param}>
+		<div>
+			ID：<{$param['id']}>
+			<{t}>buff类型<{/t}>：<{$param['buffId']}>
+			<{t}>加成百分比<{/t}>：<{$param['addition']}>%
+		</div>
+	<{/foreach}>
+	<{if !empty($param['time'])}>
+		<ul class="unstyled" style="margin-top:10px;">
+			<{foreach $param['time'] as $items}>
+				<li>
+					<{t}>加成时间<{/t}>：<{$items[0]|date_format:'%Y-%m-%d %T'}> <i class="icon-minus"></i> <{$items[1]|date_format:'%Y-%m-%d %T'}>
+				</li>
+			<{/foreach}>
+		</ul>
+		<{/if}>
+	</dd>
+</dl>
+
+<{elseif $row['type']==9}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+		<{foreach $row['param']['other'] as $other}>
+			<{$activity_config['money_type'][$other['moneyType']]}><{t}>下注最低等级<{/t}>：<{$other['level']}>
+		<{/foreach}>
+	<{foreach $row['param']['schedule'] as $schedule}>
+		<div>
+			<{t}>场次<{/t}>：<{$schedule['index']}>
+			<{t}>比赛时间<{/t}>：<{$schedule['time']|date_format:'%Y-%m-%d %T'}>
+			<{t}>队伍<{/t}>：<{$schedule['group'][0]}>VS<{$schedule['group'][1]}>
+			<{t}>结果<{/t}>：<{$activity_config['world_cup_win'][$schedule['win']]}>
+		</div>
+	<{/foreach}>
+	<{if !empty($row['param']['quiz'])}>
+		<ul class="unstyled" style="margin-top:10px;">
+			<{foreach $row['param']['quiz'] as $items}>
+				<li>
+					<{t}>奖励ID<{/t}>：<{$items['id']}>
+					<{t}>下注<{/t}><{$activity_config['money_type'][$items['moneyType']]}>：<{$items['money']}>
+					<{t}>最低日充值元宝数<{/t}>：<{$items['recharge']}>
+				</li>
+				<{if !empty($items['itemList'])}>
+					<{foreach $items['itemList'] as $item}>
+					<li>
+						<{t}>奖励道具<{/t}>：<{t}><{$item['itemId']}><{/t}>(<{if $item['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+						<{t}>数量<{/t}>：<{$item['number']}>
+					</li>
+					<{/foreach}>
+				<{/if}>
+
+				<{if !empty($items['moneyList'])}>
+					<{foreach $items['moneyList'] as $item}>
+						<li>
+							<{t}>奖励<{/t}><{$activity_config['money_type'][$item['type']]}>：<{t}><{$item['money']}><{/t}>
+						</li>
+					<{/foreach}>
+				<{/if}>
+
+				<{if !empty($items['failItemList'])}>
+					<{foreach $items['failItemList'] as $item}>
+					<li>
+						<{t}>补偿道具<{/t}>：<{t}><{$item['itemId']}><{/t}>(<{if $item['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+						<{t}>数量<{/t}>：<{$item['number']}>
+					</li>
+					<{/foreach}>
+				<{/if}>
+
+				<{if !empty($items['failMoneyList'])}>
+					<{foreach $items['failMoneyList'] as $item}>
+						<li>
+							<{t}>补偿<{/t}><{$activity_config['money_type'][$item['type']]}>：<{t}><{$item['money']}><{/t}>
+						</li>
+					<{/foreach}>
+				<{/if}>
+
+				<li><hr style="margin:5px 0"/></li>
+
+			<{/foreach}>
+		</ul>
+		<{/if}>
+	</dd>
+</dl>
+
+<{/if}>

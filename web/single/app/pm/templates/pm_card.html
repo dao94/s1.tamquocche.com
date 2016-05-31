@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>卡类活动<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/lwjsback.js.php"></script>
+</head>
+<body>
+<div id="nav">
+	<ul class="nav nav-tabs" style="margin-bottom:10px;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<{if $conditions['action']=='log'}>
+<script language="javascript">
+$(function($){
+	$('a[rel="popover"]').mouseover(function(){
+		$(this).popover({placement:'right',html:true}).popover('show');
+		$(this).next('.popover').mouseover();
+	}).mouseout(function(){
+		$('.popover').hide();
+	});
+	$('.popover').live('mouseover',function(){
+		$('.popover').hide();
+		$(this).show();
+	}).live('mouseout',function(){
+		$(this).hide();
+	});
+
+	$('.remove').click(function(){
+		if(confirm('<{t}>确定要Xóa卡名：<{/t}>'+this.title)){
+			$.post('?action=remove',{type:this.name},function(msg){
+				alert(msg.info);
+				if(msg.status==1){
+					window.location.href = window.location.href;
+				}
+			},'json');
+		}
+	});
+});
+</script>
+
+<form action="?action=<{$conditions['action']}>" method="get" class="well well-small form-search" style="margin-bottom:10px;">
+<div>
+	<{t}>卡号<{/t}>：<input type="text" name="type" class="input-mini" maxlength="3" value="<{$conditions['type']}>" placeholder="<{t}>1-999数字<{/t}>">
+	GMER：<input type="text" name="gmer" class="input-medium" maxlength="50" value="<{$conditions['gmer']}>" placeholder="<{t}>GM账号<{/t}>">
+	<{t}>种类<{/t}>：
+	<select name="category" class="input-medium">
+		<option value=""><{t}>全部<{/t}>...</option>
+	<{foreach $category_conf as $items}>
+		<{foreach $items['type'] as $key=>$item}>
+		<option value="<{$key}>" <{if $key==$conditions['category']}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	<{/foreach}>
+	</select>
+	<{t}>Xác thực<{/t}>：
+	<select name="verify" class="input-medium">
+		<option value=""><{t}>全部<{/t}>...</option>
+	<{foreach $verify_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $key==$conditions['verify']}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	<{t}>每页显示<{/t}>：
+	<select name="list_rows" class="input-small">
+	<{foreach $list_rows_conf as $key=>$item}>
+		<option value="<{$item}>" <{if $item==$conditions['list_rows']}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+</div>
+<div style="margin-top:10px;">
+	<{t}>开始时间<{/t}>：
+	<input type="text" name="start_start_date" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="input-medium" value="<{$conditions['start_start_date']}>">
+	<i class="icon-minus"></i>
+	<input type="text" name="start_end_date" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="input-medium" value="<{$conditions['start_end_date']}>">
+	<{t}>结束时间<{/t}>：
+	<input type="text" name="end_start_date" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="input-medium" value="<{$conditions['end_start_date']}>">
+	<i class="icon-minus"></i>
+	<input type="text" name="end_date" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="input-medium" value="<{$conditions['end_end_date']}>">
+	<button type="submit" class="btn btn-primary"><i class="icon-search icon-white"></i>搜索</button>
+</div>
+</form>
+
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>卡号<{/t}></th>
+		<th><{t}>卡名<{/t}></th>
+		<th><{t}>已领/上限<{/t}></th>
+		<th><{t}>SL người nhận<{/t}></th>
+		<th><{t}>种类<{/t}></th>
+		<th><{t}>Xác thực<{/t}></th>
+		<th><{t}>Link<{/t}></th>
+		<th><{t}>奖励列表<{/t}></th>
+		<th><{t}>开始时间<{/t}></th>
+		<th><{t}>结束时间<{/t}></th>
+		<th><{t}>Hiển thị<{/t}></th>
+		<th>GMER</th>
+		<th><{t}>备注<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr id="row_<{$row['id']}>">
+		<td><{$row['type']}></td>
+		<td><{$row['name']}></td>
+		<td><{$row['use_count']}>/<{$row['limit']}></td>
+		<td><{$row['count']}></td>
+		<td><{$category_conf[$row['category_parent']]['type'][$row['category']]|default:''}></td>
+		<td><{$verify_conf[$row['verify']]}></td>
+		<td><{if $row['url']}><a href="<{$row['url']}>" target="_blank"><i class="icon-search"></i><{t}>查看<{/t}></a><{/if}></td>
+		<td>
+			<a href="javascript:;" rel="<{if $row['money']||$row['item']}>popover<{/if}>" data-original-title="<{t}>奖励列表<{/t}>" data-content="<ul class='unstyled'>
+			<{foreach $row['money'] as $item}>
+				<li><{$money_type_conf[$item[0]]}>：<{$item[1]}></li>
+			<{/foreach}>
+			<{foreach $row['item'] as $item}>
+				<li><{t}><{$item[0]}><{/t}>：<{$item[1]}> [<{if $item[2]==0}><{t}>绑定<{/t}><{else}><{t}>非绑定<{/t}><{/if}>]</li>
+			<{/foreach}>
+			</ul>"><i class="icon-search"></i><{t}>查看<{/t}></a>
+		</td>
+		<td><{$row['start_time']}></td>
+		<td><{$row['end_time']}></td>
+		<td><{if $row['union_id']==1}><span class="badge badge-inverse"><{t}>整合<{/t}></span><{else}><{t}>Alone<{/t}><{/if}></td>
+		<td><{$row['gmer']}></td>
+		<td>
+			<a href="?action=set_view&id=<{$row['type']}>"><i class="icon-edit"></i><{t}>Sửa<{/t}></a>
+			<a href="javascript:;" class="remove" name="<{$row['type']}>" title="<{$row['name']}>"><i class="icon-remove"></i><{t}>Xóa<{/t}></a>
+		</td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+
+<{else if $conditions['action']=='used_card'}>
+<script language="javascript" src="../../public/js/lwjs.typeahead.js"></script>
+<form class="well well-small form-search" method="get" action="">
+	<label><{t}>玩家ID<{/t}>：
+	<input name="id" class="input-mini" placeholder="<{t}>玩家ID<{/t}>..." maxlength="20" type="text" value="<{$conditions['id']}>"></label>
+	<label style="margin-left:5px;"><{t}>角色名<{/t}>：
+	<div class="input-append">
+		<input name="name" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="<{$conditions['name']}>"><span class="add-on"><i class="icon-search"></i></span>
+	</div>
+	</label>
+	<label style="margin-left:5px;"><{t}>卡号<{/t}>：
+	<input name="type" class="input-mini" placeholder="<{t}>卡号类型<{/t}>" maxlength="3" type="text" value="<{$conditions['type']}>"></label>
+	<label style="margin-left:5px;"><{t}>激活码<{/t}>：
+	<input name="code" placeholder="<{t}>激活码<{/t}>" maxlength="32" type="text" value="<{$conditions['code']}>" style="width:225px"></label>
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" name="end_date" value="<{$conditions['end_date']}>">
+	<button type="submit" class="btn btn-primary"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>卡号<{/t}></th>
+		<th><{t}>卡名<{/t}></th>
+		<th><{t}>激活码<{/t}></th>
+		<th><{t}>领取时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['charId']}>"><{$row['char_name']}></a></td>
+		<td><{$row['type']}></td>
+		<td><{$row['type_name']}></td>
+		<td><{$row['code']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+<{else if $conditions['action']=='set_view'}>
+<script language="javascript">
+$(function($){
+	$('#category_parent').change(function(){
+		$('.category').hide().attr('disabled',true);
+		$('#category_'+this.value).attr('disabled',false).fadeIn();
+		$('input[name="verify"]').attr('disabled',true);
+		switch(this.value){
+			case '10':
+				//人工
+				$('input[name="verify"]').attr('disabled',true);
+				$('input[name="verify"]:eq(0)').attr({checked:true,disabled:false});
+				$('input[name="verify"]:eq(2)').attr('disabled',false);
+				break;
+			case '20':
+				//导卡
+				$('input[name="verify"]').attr('disabled',true);
+				$('input[name="verify"]:eq(1)').attr({checked:true,disabled:false});
+				break;
+			case '30':
+				//接口
+				$('input[name="verify"]:eq(3)').attr('checked',true);
+				$('input[name="verify"]:gt(2)').attr('disabled',false);
+				break;
+		}
+	});
+
+	//卡类设置
+	$('#btn_set').click(function(){
+		var data={},
+			reward_list = new Array(),
+			id = parseInt($('[name="id"]').val()),
+			type = parseInt($('[name="type"]').val()),
+			limit = parseInt($('[name="limit"]').val()),
+			name = $('[name="name"]').val(),
+			count = parseInt($('[name="count"]').val()),
+			category_parent=$('#category_parent').val();
+			category=$('.category:not(:disabled)').val(),
+			verify = $('[name="verify"]:checked').val(),
+			union_id = $('[name="union_id"]:checked').val(),
+			url = $.trim($('[name="url"]').val()),
+			start_date = $.trim($('[name="start_date"]').val()),
+			end_date = $.trim($('[name="end_date"]').val());
+
+		$('#check_result').empty();
+		if(type>999||type<1 || !$.isNumeric(type)){
+			$('#check_result').html('<{t}>请正确设置卡类型<{/t}>');
+			return false;
+		}
+		if(limit>100000 || limit<1 || !$.isNumeric(limit)){
+			$('#check_result').html('<{t}>请正确设置卡数量<{/t}>');
+			return false;
+		}
+		if(name == ''){
+			$('#check_result').html('<{t}>请设置卡名<{/t}>');
+			return false;
+		}
+		if(start_date==''||end_date==''||end_date<=start_date){
+			$('#check_result').html('<{t}>请正确设置有效时间<{/t}>');
+			return false;
+		}
+		$('#card_reward .reward').each(function(i){
+			var type=$(this).val(),
+			num = $(this).siblings('[name="num"]').val();
+			if(type==='item' && num>0){
+					var item_info = $.trim($(this).siblings('.item').children('[name=item_info]').val()),
+					item_bind = $(this).siblings('.item').children('[name=item_bind]').attr('checked')==='checked'?1:0;
+					item_info ? reward_list[i]={type:'item',num:num,item:item_info,bind:item_bind} : '';
+			}else if(num>0){
+					reward_list[i]={type:type,num:num};
+			}
+		});
+		if(reward_list.length==0){
+			$('#check_result').html('<{t}>请设置奖励列表<{/t}>');
+			return false;
+		}
+		var data={id:id,type:type,limit:limit,name:name,count:count,category_parent:category_parent,category:category,verify:verify,union_id:union_id,start_date:start_date,end_date:end_date,url:url,reward_list:reward_list};
+		$.post('?action=set',data,function(msg){
+			$('#check_result').html(msg.info);
+		},'json');
+	});
+});
+</script>
+
+<ol>
+	<li><{t}>新手卡接口：md5(key+username)<{/t}></li>
+	<li><{t}>手机绑定接口：md5(key +game + server + username + type) ; game：游戏名称拼音首字母(lwjs)；server：游戏服标记（如S1，S2，S3）；usernam：平台用户名，urlencode后的值；type：礼包类型，此处一律为（sj）<{/t}> </li>
+</ol>
+<form id="form_card">
+<dl class="dl-horizontal">
+	<dt><{t}>卡号<{/t}></dt>
+	<dd><input type="text" name="type" class="input-mini" maxlength="3" <{if isset($data['id'])}>readonly<{/if}> value="<{$data['type']|default:''}>"> <span class="label label-info"><{t}>1-999的数字<{/t}></span></dd>
+	<dt><{t}>数量<{/t}></dt>
+	<dd><input type="text" name="limit" class="input-small" maxlength="6" value="<{$data['limit']|default:''}>">  <span class="label label-info"><{t}>最大100000<{/t}></span></dd>
+	<dt><{t}>卡名<{/t}></dt>
+	<dd><input type="text" name="name" class="span2" maxlength="50" value="<{$data['name']|default:''}>"></dd>
+	<dt><{t}>SL người nhận<{/t}></dt>
+	<dd><input type="text" name="count" value="<{$data['count']|default:1}>" class="input-mini" maxlength="3"></dd>
+	<dt><{t}>Thế hệ<{/t}></dt>
+	<dt><{t}>Loại giftcode<{/t}></dt>
+	<dd class="form-inline">
+		<select id="category_parent" class="input-small">
+		<{foreach $category_conf as $key=>$items}>
+			<option value="<{$key}>" <{if isset($data['category_parent'])&&$data['category_parent']==$key}>selected<{/if}> ><{$items['name']}></option>
+		<{/foreach}>
+		</select>
+		<{foreach $category_conf as $key=>$items}>
+		<{$hide=(isset($data['category_parent'])&&$data['category_parent']!=$key)||(!isset($data['category_parent'])&&$key!=10)}>
+		<select name="category" id="category_<{$key}>" class="input-medium category <{if $hide}>hide<{/if}>" <{if $hide}>disabled<{/if}>>
+		<{foreach $items['type'] as $k=>$item}>
+			<option value="<{$k}>" <{if isset($data['category'])&&$data['category']==$k}>selected<{/if}>><{$item}></option>
+		<{/foreach}>
+		</select>
+		<{/foreach}>
+	</dd>
+	<dt><{t}>Xác thực<{/t}></dt>
+	<dd class="form-inline">
+		<{foreach $verify_conf as $key=>$item}>
+		<label style="margin-left:5px;"><input type="radio" name="verify" <{if $key===1 || (isset($data['verify'])&&$data['verify']==$key)}>checked="checked"<{/if}> <{if ($key>3&&!isset($data['category_parent']))||(isset($data['category_parent'])&&$data['category_parent']!=30)}>disabled="disabled"<{/if}> value="<{$key}>"><{$item}></label>
+	<{/foreach}>
+	</dd>
+	<dt><{t}>Hiển thị<{/t}></dt>
+	<dd class="form-inline">
+		<label style="margin-left:5px;"><input type="radio" name="union_id" value="0" <{if !isset($data['union_id']) || (isset($data['union_id'])&&$data['union_id']==0)}>checked<{/if}>><{t}>Alone<{/t}></label>
+		<label style="margin-left:5px;"><input type="radio" name="union_id" value="1" <{if isset($data['union_id'])&&$data['union_id']==1}>checked<{/if}>><{t}>整合<{/t}></label>
+	</dd>
+	<dt><{t}>Thời gian<{/t}></dt>
+	<dd>
+		<input type="text" name="start_date" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="input-medium" value="<{$data['start']|default:''}>">
+		<i class="icon-minus"></i>
+		<input type="text" name="end_date" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="input-medium" value="<{$data['over']|default:''}>">
+	</dd>
+	<dt><{t}>活动链接<{/t}></dt>
+	<dd>
+		<input type="text" name="url" class="input-xxlarge" value="<{$data['url']|default:''}>">
+	</dd>
+	<dt><{t}>奖励列表<{/t}></dt>
+	<dd>
+		<ul id="card_reward" class="unstyled form-inline">
+			<{if empty($data['money'])&&empty($data['item'])}>
+			<li style="margin:5px 0;">
+			<select class="span1 reward" onchange="lwjsback.rewardSet.reward_change(this)">
+				<option value="item"><{t}>道具<{/t}></option>
+				<option value="gold"><{t}>铜币<{/t}></option>
+				<option value="giftGold"><{t}>铜券<{/t}></option>
+				<option value="jade"><{t}>元宝<{/t}></option>
+				<option value="giftJade"><{t}>礼券<{/t}></option>
+			</select> <{t}>数量<{/t}>：<input type="text" name="num" class="span1"> <span class="item"><{t}>道具<{/t}>：<input type="text" name="item_info" class="span3" onkeyup="lwjsback.itemSearch.searchItem(this)"> <input type="checkbox" name="item_bind"> <{t}>非绑定<{/t}></span> <button type="button" class="btn btn-mini" onclick="lwjsback.rewardSet.reward_add(this)"><i class="icon-plus"></i></button></li>
+			<{/if}>
+
+			<{if !empty($data['money'])}>
+			<{foreach $data['money'] as $key=>$item}>
+			<li style="margin:5px 0;">
+			<select class="span1 reward" onchange="lwjsback.rewardSet.reward_change(this)">
+				<option value="item"><{t}>道具<{/t}></option>
+				<option value="gold" <{if $item[0]==1}>selected<{/if}>><{t}>铜币<{/t}></option>
+				<option value="giftGold" <{if $item[0]==2}>selected<{/if}>><{t}>铜券<{/t}></option>
+				<option value="jade" <{if $item[0]==3}>selected<{/if}>><{t}>元宝<{/t}></option>
+				<option value="giftJade" <{if $item[0]==4}>selected<{/if}>><{t}>礼券<{/t}></option>
+			</select> <{t}>数量<{/t}>：<input type="text" name="num" class="span1" value="<{$item[1]}>"> <button type="button" class="btn btn-mini" onclick="lwjsback.rewardSet.<{if $key==0}>reward_add<{else}>reward_del<{/if}>(this)"><i class="<{if $key==0}>icon-plus<{else}>icon-minus<{/if}>"></i></button></li>
+			<{/foreach}>
+			<{/if}>
+
+			<{if !empty($data['item'])}>
+			<{foreach $data['item'] as $key=>$item}>
+			<li style="margin:5px 0;">
+			<select class="span1 reward" onchange="lwjsback.rewardSet.reward_change(this)">
+				<option value="item" selected><{t}>道具<{/t}></option>
+				<option value="gold"><{t}>铜币<{/t}></option>
+				<option value="giftGold"><{t}>铜券<{/t}></option>
+				<option value="jade"><{t}>元宝<{/t}></option>
+				<option value="giftJade"><{t}>礼券<{/t}></option>
+			</select> <{t}>数量<{/t}>：<input type="text" name="num" class="span1" value="<{$item[1]}>"> <span class="item"><{t}>道具<{/t}>：<input type="text" name="item_info" class="span3" onkeyup="lwjsback.itemSearch.searchItem(this)" value="<{$item[0]}>|<{t}><{$item[0]}><{/t}>"> <input type="checkbox" name="item_bind" <{if $item[2]==1}>checked<{/if}>> <{t}>非绑定<{/t}></span> <button type="button" class="btn btn-mini" onclick="lwjsback.rewardSet.reward_<{if empty($data['money'])}>add<{else}>del<{/if}>(this)"><i class="<{if empty($data['money'])}>icon-plus<{else}>icon-minus<{/if}>"></i></button></li>
+			<{/foreach}>
+			<{/if}>
+		</ul>
+	</dd>
+	<dd>
+		<input type="button" class="btn btn-primary" id="btn_set" value="<{t}>设置<{/t}>">
+		<span id="check_result" class="badge badge-warning"></span>
+	</dd>
+	<dd><div id="result_list" class="well well-small hide" readonly="readonly" style="width:500px; height:200px; margin-top:10px;"></div></dd>
+</dl>
+<input type="hidden" name="id" value="<{$data['id']|default:''}>">
+</form>
+
+<{/if}>
+</body>
+</html>

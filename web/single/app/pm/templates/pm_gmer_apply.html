@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />   
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <script language="javascript" src="../../public/js/jquery.js"></script>
+        <script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+        <script lang="javascript">
+            $(document).ready(function(){
+                $('#tab1_set').click(function(){
+                    var char_type = $('#tab1 [name="char_type"]:checked').val(),
+                    char_info = $.trim($('#tab1 [name="char_info"]').val()),
+                    true_name = $.trim($('#tab1 [name="truename"]').val()),
+                    job = $.trim($('#tab1 [name="job"]').val()),
+                    source = $('#tab1 [name="source"]').val();
+                    if(char_info==''||true_name==''||job==''){
+                        $('#tab1_ajax').html('<{t}>请确认玩家信息<{/t}>');
+                        return;
+                    }
+                    $.ajax({
+                        url:'?',
+                        type :'POST',
+                        data:{type:'internal',char_type:char_type,char_info:char_info,true_name:true_name,job:job,source:source},
+                        dataType:'json',
+                        success:function(result){
+                            if(result.status=='ok'){
+                                $('#tab1 [name="char_type"]:checked').val('');
+                                $('#tab1 [name="char_info"]').val('');
+                                $('#tab1 [name="truename"]').val('');
+                                $('#tab1 [name="job"]').val('');
+                            }
+                            $('#tab1_ajax').html(result.info);
+                        }
+                    })
+                })
+                $('#tab2_set').click(function(){
+                    var char_type = $('#tab2 [name="tab2_char_type"]:checked').val(),
+                    char_info = $.trim($('#tab2 [name="char_info"]').val()),
+                    gmer_type = $('#tab2 [name="account_type"]:checked').val();
+                    if(char_info==''){
+                        $('#tab2_ajax').html('<{t}>请确认玩家信息<{/t}>');
+                        return;
+                    }
+                    $.ajax({
+                        url:'?',
+                        type :'POST',
+                        data:{type:'gmer',char_type:char_type,char_info:char_info,gmer_type:gmer_type},
+                        dataType:'json',
+                        success:function(result){
+                            if(result.status=='ok'){
+                                $('#tab2 [name="tab2_char_type"]:checked').val('');
+                                $('#tab2 [name="char_info"]').val('');
+                                $('#tab2 [name="account_type"]').val('');
+                            }
+                            $('#tab2_ajax').html(result.info);
+                        }
+                    })
+                })
+            })
+        </script>   
+    </head>
+    <body>
+            <div class="tabbable">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#tab1" data-toggle="tab"><{t}>内部号申请<{/t}></a></li>
+                    <li><a href="#tab2" data-toggle="tab"><{t}>新指GM申请<{/t}></a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="tab1">
+                        <dl class="dl-horizontal">
+                            <dt><{t}>玩家信息<{/t}></dt>
+                            <dd class="form-inline"><input type="radio" name="char_type" value="3" id="char_type_3" checked="checked"><label for="char_type_3"><{t}>角色名<{/t}></label>  <input type="radio" name="char_type" value="1" id="char_type_1"><label for="char_type_1"><{t}>角色id<{/t}></label>  <input type="radio" name="char_type" value="2" id="char_type_2"><label for="char_type_2"><{t}>账号<{/t}></label>  </dd>
+                            <dd><input type="text" name="char_info" class="span3"></dd>
+                            <dt><{t}>真实姓名<{/t}></dt>
+                            <dd><input type="text" name="truename" class="span2"></dd>
+                            <dt><{t}>职位<{/t}></dt>
+                            <dd><input type="text" name="job" class="span2"></dd>
+                            <dt><{t}>来源<{/t}></dt>
+                            <dd><select name="source" class="span2">
+                                    <option value="<{t}>菲音<{/t}>"><{t}>菲音<{/t}></option>
+                                    <option value="<{t}>平台内部<{/t}>"><{t}>平台内部<{/t}></option>
+                                    <option value="<{t}>其他<{/t}>"><{t}>其他<{/t}></option>
+                                </select></dd>
+                            <dd><input type="button" class="btn btn-primary" id="tab1_set" value="<{t}>提交<{/t}>">              <span id="tab1_ajax" class="badge badge-warning"></span></dd>
+                        </dl>
+                    </div>
+                    <div class="row tab-pane" id="tab2">
+                        <dl class="dl-horizontal">
+                            <dt><{t}>类型<{/t}></dt>
+                            <dd class="form-inline"><input type="radio" name="account_type" value="1" id="account_type_1" checked="checked"><label for="account_type_1">GM</label>   <input type="radio" name="account_type" value="2" id="account_type_2"><label for="account_type_2"><{t}>新手指导员<{/t}></label></dd>
+                            <dt><{t}>玩家账号<{/t}></dt>
+                            <dd class="form-inline"><input type="radio" name="tab2_char_type" value="3" id="tab2_char_type_3" checked="checked"><label for="tab2_char_type_3"><{t}>角色名<{/t}></label>  <input type="radio" name="tab2_char_type" value="1" id="tab2_char_type_1"><label for="tab2_char_type_1"><{t}>角色id<{/t}></label>  <input type="radio" name="tab2_char_type" value="2" id="tab2_char_type_2"><label for="tab2_char_type_2"><{t}>账号<{/t}></label>  </dd>
+                            <dd><input type="text" name="char_info" class="span3"></dd>
+                            <dd><input type="button" class="btn btn-primary" id="tab2_set" value="<{t}>提交<{/t}>">              <span id="tab2_ajax" class="badge badge-warning"></span></dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+    </body>
+</html> 

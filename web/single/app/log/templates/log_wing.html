@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>羽翼流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-medium" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-medium" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button type="submit" class="btn btn-primary"><i class="icon-search icon-white"></i><{t}>提交<{/t}></button>
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<div id="nav">
+	<ul class="nav nav-tabs" style="margin-bottom:10px;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>&char_id=<{$conditions['char_id']}>&from=<{$conditions['from']}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+
+<{if $conditions['action']=='up'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>翅膀阶数<{/t}></th>
+		<th><{t}>增加祝福值<{/t}></th>
+		<th><{t}>祝福值<{/t}></th>
+		<th><{t}>是否升阶<{/t}></th>
+		<th><{t}>属性<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+		<td><{$row['level']}></td>
+		<td><{$row['add_bless']}></td>
+		<td><{$row['left_bless']}></td>
+		<td><{if $row['add_bless']}><{t}>否<{/t}><{else}><{t}>是<{/t}><{/if}></td>
+		<td style="text-align:left;">
+		<{if !empty($row['attr']['baseFixed'])}>
+			<ul>
+				<{foreach $row['attr']['baseFixed'] as $key=>$value}>
+				<{if $value}>
+					<li><{$bag_attr_conf[$key]|default:$key}>:<{$value}></li>
+				<{/if}>
+				<{/foreach}>
+			</ul>
+		<{/if}>
+		</td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='skill'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>技能名称<{/t}></th>
+		<th><{t}>技能等级<{/t}></th>
+		<th><{t}>增加熟练度<{/t}></th>
+		<th><{t}>熟练度<{/t}></th>
+		<th><{t}>是否升级<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+		<td><{$row['skill_name']|default:$row['skill_id']}></td>
+		<td><{$row['skill_level']}></td>
+		<td><{$row['add_exp']}></td>
+		<td><{$row['left_exp']}></td>
+		<td><{if $row['add_exp']}><{t}>否<{/t}><{else}><{t}>是<{/t}><{/if}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<{else if $conditions['action']=='strong'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>道具<{/t}></th>
+		<th><{t}>强化前品阶<{/t}></th>
+		<th><{t}>强化后品阶<{/t}></th>
+		<th><{t}>增加祝福值<{/t}></th>
+		<th><{t}>祝福值<{/t}></th>
+		<th><{t}>消耗材料<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+		<td><{t}><{$row['item_id']}><{/t}></td>
+		<td><{$class_conf[$row['class_old']]|default:$row['class_old']}><{t}>阶<{/t}><{$row['level_old']}><{t}>级<{/t}></td>
+		<td><{$class_conf[$row['class_new']]|default:$row['class_old']}><{t}>阶<{/t}><{$row['level_new']}><{t}>级<{/t}></td>
+		<td><{$row['add_bless']}></td>
+		<td><{$row['left_bless']}></td>
+		<td style="text-align:left;">
+		<{if !empty($row['material_list'])}>
+			<ul>
+				<{foreach $row['material_list'] as $item}>
+					<li><{t}><{$item['itemId']}><{/t}>: <{$item['number']}> </li>
+				<{/foreach}>
+			</ul>
+		<{/if}>
+		</td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<{/if}>
+
+<div class="pagination pagination-centered" style="margin:0;"><{$page|default:''}></div>
+</body>
+</html>

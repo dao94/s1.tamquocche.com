@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>玩家查询<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript" src="../../public/js/lwjs.typeahead.js"></script>
+<style type="text/css">
+.info th,.info td {text-align:left; padding-left:0; padding-right:0}
+.info .span_title{width:75px;}
+.table th.text-right,.table td.text-right {text-align:right;}
+li.itemlist{ width:160px; line-height:28px; height:28px;margin:3px; border:1px solid #999; text-align:center; background-color:#D9EDF7;}
+.edit_span,#reason_span{margin:0; padding:0;}
+</style>
+<script language="javascript">
+$(function($){
+	$('*[rel="tooltip"]').live('mouseover',function(){
+		$(this).tooltip({placement:'top',html:true}).tooltip('show');
+	});
+});
+</script>
+</head>
+
+<body>
+<{if $conditions['action']=='info'}>
+	<form class="well well-small form-search" method="get" action="" style="margin-bottom:10px;">
+		<label><{t}>玩家ID<{/t}>：
+		<input name="id" class="input-small" placeholder="<{t}>玩家ID<{/t}>..." maxlength="16" type="text" value="<{$conditions['id']}>"></label>
+		<label style="margin-left:5px;"><{t}>角色名<{/t}>：
+		<div class="input-append">
+			<input name="name" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="<{$conditions['name']}>"><span class="add-on"><i class="icon-search"></i></span>
+		</div>
+		</label>
+
+		<label style="margin-left:5px;"><{t}>账号<{/t}>：
+		<div class="input-append">
+		<input name="account" class="input-medium" placeholder="<{t}>请输入账号<{/t}>..." data-provide="typeahead" type="text" maxlength="50" value="<{$conditions['account']}>"><span class="add-on"><i class="icon-search"></i></span>
+		</div>
+		</label>
+		<button type="submit" class="btn btn-primary" style="margin-left:5px;"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+
+	<{if !empty($data)}>
+		<button class="btn btn-danger login pull-right"><{t}>一键登录<{/t}></button>
+		<div class="btn-group pull-right" style="margin-right:10px;">
+			<button type="button" class="btn" onClick="javascipt:window.location='forbid.php?action=manage&type=1&name=<{$data['name']}>'"><{t}>禁言<{/t}></button>
+			<button type="button" class="btn" onClick="javascipt:window.location='forbid.php?action=manage&type=2&name=<{$data['name']}>'"><{t}>封角色<{/t}></button>
+			<!--<button type="button" class="btn" onClick="javascipt:window.location='forbid.php?action=manage&type=2&account=<{$data['account']}>'"><{t}>封账号<{/t}></button>-->
+			<{if $data['online']==1}>
+			<button type="button" class="btn" id="btn_offline"><{t}>踢下线<{/t}></button>
+			<{/if}>
+		</div>
+	<{/if}>
+	<input type="hidden" name="sid" value="<{$conditions['sid']}>">
+	</form>
+
+	<{if !empty($list)}>
+	<table class="table">
+		<thead>
+			<tr>
+				<th><{t}>角色名<{/t}></th>
+				<th>ID</th>
+				<th><{t}>账号<{/t}></th>
+				<th><{t}>区服<{/t}></th>
+				<th><{t}>等级<{/t}></th>
+				<th><{t}>职业<{/t}></th>
+				<th><{t}>最近登录<{/t}></th>
+			</tr>
+		</thead>
+		<tbody>
+		<{foreach $list as $row}>
+			<tr>
+				<td><a href="?account=<{$row['account']}>&sid=<{$row['serverId']}>"><{$row['name']}></a></td>
+				<td><{$row['_id']}></td>
+				<td><{$row['account']}></td>
+				<td><{$row['serverId']}></td>
+				<td><{$row['level']}></td>
+				<td><{$occ_conf[$row['occ']]|default:$row['occ']}></td>
+				<td><{$row['loginTime']|date_format:"%Y-%m-%d %T"}></td>
+			</tr>
+		<{/foreach}>
+		</tbody>
+	</table>
+	<{/if}>
+
+<form  id="login" method="post" target="_blank" class="hide"></form>
+
+<{if !empty($data)}>
+<!--玩家数据-->
+<div style="margin-bottom:10px;line-height:28px;">
+	<a href="?&id=<{$data['_id']}>" target="main"><button type="button" class="btn btn-small btn-info"><{t}>基本信息<{/t}></button></a>
+	<a href="?action=pet&id=<{$data['_id']}>" class="log"><button type="button" class="btn btn-small"><{t}>宠物信息<{/t}></button></a>
+<{foreach $log_conf as $key=>$item}>
+	<a href="<{$key}>?char_id=<{$data['_id']}>&from=info" class="log"><button type="button" class="btn btn-small"><{$item}></button></a>
+<{/foreach}>
+</div>
+
+<script language="javascript">
+$(document).ready(function(){
+	$('.edit_text').hide();
+
+	$('#btn_edit_view').toggle(function(){
+		$('.edit_span').hide();
+		$('#reason_span').fadeIn();
+		$('.edit_text').fadeIn();
+		$('#btn_save').attr('disabled',false);
+		$(this).html('<i class="icon-off icon-white"></i><{t}>取消Sửa<{/t}>');
+	},function(){
+		$('.edit_text').hide();
+		$('#reason_span').hide();
+		$('.edit_span').fadeIn();
+		$('#btn_save').attr('disabled',true);
+		$(this).html('<i class="icon-edit icon-white"></i><{t}>Sửa数据<{/t}>');
+	});
+
+	$('#btn_save').click(function(){
+		var edit_text=$('#edit_form').find('.edit_text'),reason=$.trim($('input[name="reason"]').val());
+		if(!reason){
+			$('input[name="reason"]').focus();
+			alert('<{t}>Sửa原因不能为空<{/t}>');
+			return false;
+		}
+		if(!confirm('<{t}>确定要Sửa数据吗？<{/t}>')) return false;
+		var new_data=[],old_data=[],fields=[];
+		$.each(edit_text,function(i,obj){
+			var result=obj.value.match('^[0-9]*$'),name=obj.name;
+			if(result==null){
+				var title=$(this).parent('td').prev().html();
+				alert(title+'<{t}>必须为正整数<{/t}>');
+				$('input[name="'+name+'"]').focus();
+				return false;
+			}
+			var old_val=$(this).prev().html();
+			fields.push(name);
+			old_data.push(old_val);
+			new_data.push(obj.value);
+		});
+		$.ajax({
+			url:'player_update.php',
+			type:'POST',
+			data:{char_id:"<{$data['_id']}>",char_name:"<{$data['name']}>",old_data:old_data,new_data:new_data,fields:fields,reason:reason},
+			dataType:'json',
+			beforeSend: function(){
+				$('#btn_edit_view').attr('disabled',true);
+				$('#btn_save').attr('disabled',true);
+			},
+			success: function(msg){
+				alert(msg.info);
+				if(msg.status==1){
+					window.location.reload();
+				}
+			},
+			complete: function(){
+				$('#btn_edit_view').attr('disabled',false);
+				$('#btn_edit_view').click();
+			}
+		});
+	});
+
+	//踢玩家下线
+	$('#btn_offline').click(function(){
+		$.post('?action=offline',{id:"<{$data['_id']}>"},function(msg){
+			alert(msg.info);
+			if(msg.status==1){
+				window.location.reload();
+			}
+		},'json');
+	});
+
+	//重置密保
+	$('#reset_lock').click(function(){
+		if(confirm('<{t}>确定要重置<{/t}> '+"<{$data['name']}>"+' <{t}>保护锁吗？<{/t}>'))
+		$.post('?action=reset_lock',{id:"<{$data['_id']}>"},function(msg){
+			alert(msg.info);
+			if(msg.status==1){
+				window.location.reload();
+			}
+		},'json');
+	});
+
+	//装备背包
+	setTimeout(function(){
+		$.post('?action=equip_bag',{id:"<{$data['_id']}>"},function(msg){
+			if(msg.status==1){
+				$('#equip_bag').empty();
+				$.each(msg.data,function(i,obj){
+					var id='equip_bag'+i;
+					$('#equip_bag').append('<tr id="'+id+'"></tr>');
+					$('#'+id).append('<td>'+obj.part+'</td>');
+					$('#'+id).append('<td><a href="javascript:;" rel="tooltip" data-placement="right" data-title="'+(typeof(obj.attr)=='undefined' ? '' : obj.attr)+'">'+(typeof(obj.item_name)=='undefined' ? '-' : obj.item_name)+'</a></td>');
+					$('#'+id).append('<td>'+(typeof(obj.level)=='undefined' ? '-' : obj.level)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.colour)=='undefined' ? '-' : obj.colour)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.strong1)=='undefined'||obj.strong1==0 ? '-' : obj.strong1)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.strong2)=='undefined'||obj.strong2==0 ? '-' : obj.strong2)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.strong3)=='undefined'||obj.strong3==0 ? '-' : obj.strong3)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.strong4)=='undefined'||obj.strong4==0 ? '-' : obj.strong4)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.strong5)=='undefined'||obj.strong5==0 ? '-' : obj.strong5)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.deily_level)=='undefined'||obj.deily_level==0 ? '-' : obj.deily_level)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.gem1)=='undefined'||obj.gem1==0 ? '-' : obj.gem1)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.gem2)=='undefined'||obj.gem2==0 ? '-' : obj.gem2)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.gem3)=='undefined'||obj.gem3==0 ? '-' : obj.gem3)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.gem_elite1)=='undefined'||obj.gem_elite1==0 ? '-' : obj.gem_elite1)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.gem_elite2)=='undefined'||obj.gem_elite2==0 ? '-' : obj.gem_elite2)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.gem_elite3)=='undefined'||obj.gem_elite3==0 ? '-' : obj.gem_elite3)+'</td>');
+					$('#'+id).append('<td>'+(typeof(obj.carve_level)=='undefined'||obj.carve_level==0 ? '-' : obj.carve_level)+'</td>');
+				});
+			}
+		},'json');
+	},500);
+
+	//其他背包
+	setTimeout(function(){
+		$.post('?action=other_bag',{id:"<{$data['_id']}>"},function(msg){
+			if(msg.status==1){
+				$('#other_bag').empty();
+				var i=0;
+				$.each(msg.data,function(bag_name,item_list){
+					if(item_list.size){
+						i++;
+						var id='other_bag'+i,uid='other_bag_ul'+i;
+						$('#other_bag').append('<tr id="'+id+'"></tr>');
+						$('#'+id).append('<td style="vertical-align:top">'+bag_name+'<br>'+item_list.count+'/'+item_list.size+'(<{t}>格<{/t}>)</td>');
+						$('#'+id).append('<td style="text-align:left"><ul class="unstyled inline itemlist" id="'+uid+'"></ul</td>');
+						$.each(item_list.list,function(j,obj){
+							var attr=obj.bind!=1 ? '<li><{t}>已绑定<{/t}></li>' : '<li><{t}>非绑定<{/t}></li>';
+							attr+=typeof(obj.attr)=='undefined' ? '' : obj.attr;
+							$('#'+uid).append('<li class="itemlist"><span rel="tooltip" data-placement="right" data-title="'+attr+'"><div>'+obj.item_name+'*'+obj.item_num+'</div></span></li>');
+						});
+					}
+				});
+			}
+		},'json');
+	},1000);
+
+	$('#loading').ajaxStart(function(){
+		$(this).fadeIn();
+	}).ajaxStop(function(){
+		$(this).hide();
+	});
+
+	//一键登录
+	$('.login').click(function(){
+		$.post('player_login.php?action=login',{name:"<{$data['name']}>",one_key:1},function(msg){
+			if(msg.status!=1){
+				alert(msg.info);
+			}else if(msg.data!=''){
+				$('#login').attr('action',msg.data).submit();
+			}
+		},'json');
+		return false;
+	});
+
+	$('.log').click(function(){
+		$('.log').find('.btn').removeClass('btn-success');
+		$(this).find('.btn').addClass('btn-success');
+		if(this.href=='javascript:;'){
+			$('.div_box').hide();
+			$('#div_'+this.id).fadeIn();
+			$('#iframe_log').hide();
+		}else{
+			$('.div_box').hide();
+			$('#iframe_log').attr('src',this.href).fadeIn();
+		}
+		return false;
+	});
+
+	$('#iframe_log').load(function(){
+		var height=$(this).contents().find('body').height()+$(this).contents().find('#type_list').height();
+		$(this).height(height+30);
+	});
+});
+</script>
+
+<div id="iframe_loading" class="hide"><img src="../../public/images/loading2.gif"> <{t}>拼命加载数据中,请稍等...<{/t}></div>
+<iframe id="iframe_log" src="" class="hide" style="width:100%; height:200px;" frameborder="0" scrolling="auto" marginheight="0" marginwidth="0"></iframe>
+
+<div id="div_info" class="div_box">
+
+<{$gm_childs=$smarty.session.__single_ROLE_MENU.gm.childs}>
+<{if isset($data['online']) && !empty($gm_childs['player_update.php'])}>
+<div class="form-search" style="margin-left:10px; margin-bottom:10px;">
+	<div class="btn-group">
+		<button type="button" id="btn_edit_view" class="btn btn-danger"><i class="icon-edit icon-white"></i><{t}>Sửa数据<{/t}></button>
+		<a href="player_update.php?action=log&char_id=<{$data['_id']}>" class="btn btn-primary log"><i class="icon-search icon-white"></i><{t}>Sửa日志<{/t}></a>
+		<button type="button" id="btn_save" disabled="disabled" class="btn btn-danger"><i class="icon-pencil icon-white"></i><{t}>保存数据<{/t}></button>
+	</div>
+	<span id="reason_span" class="hide"><{t}>Sửa原因<{/t}>：<input type="text" class="input-large" name="reason" maxlength="200" style="border:1px solid red" placeholder="<{t}>必须输入Sửa原因<{/t}>"></span>
+</div>
+<{/if}>
+
+<form id="edit_form">
+	<table class="table table-hover info" style="border:1px solid #ddd">
+		<tr>
+			<td class="span_title text-right">ID：</td>
+			<td><span <{if $conditions['id']}>class="badge badge-important"<{/if}>><{$data['_id']}></span></td>
+				<td class="span_title text-right"><{t}>名称<{/t}>：</td>
+			<td>
+				<span <{if $conditions['name']}>class="badge badge-important"<{/if}>><{$data['name']}></span> <{if $data['online']==1}><span class="badge badge-info"><{t}>在线<{/t}></span><{else}><span class="badge"><{t}>离线<{/t}></span><{/if}>
+			</td>
+			<td class="span_title text-right"><{t}>账号<{/t}>：</td>
+			<td><span <{if $conditions['account']}>class="badge badge-important"<{/if}>><{$data['account']}></span></td>
+			<td class="span_title text-right"><{t}>区服<{/t}>：</td>
+			<td><{$data['serverId']}></td>
+			<td class="span_title text-right"><{t}>数据采集<{/t}>：</td>
+			<td style="width:240px;"><{$data['gather_time']|default:''}></td>
+		</tr>
+		<tr>
+			<td class="span_title text-right"><{t}>等级<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['level']}></span>
+				<input type="text" name="level" class="input-mini edit_text" style="border:1px solid red" maxlength="3" value="<{$data['level']}>"/>
+			</td>
+			<td class="span_title text-right"><{t}>阵营<{/t}>：</td>
+			<td><{$camp_conf[$data['camp']]}></td>
+			<td class="span_title text-right"><{t}>职业<{/t}>：</td>
+			<td><{$occ_conf[$data['occ']]}></td>
+			<td class="span_title text-right"><{t}>性别<{/t}>：</td>
+			<td><{$gender_conf[$data['gender']]}></td>
+			<td class="span_title text-right"><{t}>注册时间<{/t}>：</td>
+			<td><{$data['creat_time']}></td>
+		</tr>
+		<tr>
+			<td class="span_title text-right"><{t}>气血<{/t}>：</td>
+			<td><{$data['hp']|default:0}>/<{$data['combatAttr']['maxhp']|default:0}></td>
+			<td class="span_title text-right"><{t}>法力<{/t}>：</td>
+			<td><{$data['mp']|default:0}>/<{$data['combatAttr']['maxmp']|default:0}></td>
+			<td class="span_title text-right"><{t}>体力<{/t}>：</td>
+			<td><{$data['vigor']|default:0}></td>
+			<td class="span_title text-right"><{t}>经验<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['exp']|default:0}></span>
+				<input type="text" name="exp" class="input-mini edit_text" style="border:1px solid red" maxlength="15" value="<{$data['exp']|default:0}>"/>
+				/<{$data['max_exp']|default:0}>
+			</td>
+			<td class="span_title text-right"><{t}>登录时间<{/t}>：</td>
+			<td><{$data['loginTime']}>(<{$data['last_ip']}>)</td>
+		</tr>
+		<tr>
+			<td class="span_title text-right"><{t}>攻击<{/t}>：</td>
+			<td><{$data['combatAttr']['attack']|default:0}></td>
+			<td class="span_title text-right"><{t}>防御<{/t}>：</td>
+			<td><{$data['combatAttr']['defense']|default:0}></td>
+			<td class="span_title text-right"><{t}>命中<{/t}>：</td>
+			<td><{$data['combatAttr']['point']|default:0}></td>
+			<td class="span_title text-right"><{t}>闪避<{/t}>：</td>
+			<td><{$data['combatAttr']['dodge']|default:0}></td>
+			<td class="span_title text-right"><{t}>登出时间<{/t}>：</td>
+			<td><{$data['leaveTime']}></td>
+		</tr>
+		<tr>
+			<td class="span_title text-right"><{t}>暴击<{/t}>：</td>
+			<td><{$data['combatAttr']['critical']|default:0}></td>
+			<td class="span_title text-right"><{t}>抗暴<{/t}>：</td>
+			<td><{$data['combatAttr']['criticaldf']|default:0}></td>
+			<td class="span_title text-right"><{t}>爆伤<{/t}>：</td>
+			<td><{$data['combatAttr']['criticaleffect']|default:0}></td>
+			<td class="span_title text-right"><{t}>韧性<{/t}>：</td>
+			<td><{$data['combatAttr']['criticaleffectdf']|default:0}></td>
+			<td class="span_title text-right"><{t}>属性攻防<{/t}>：</td>
+			<td>
+				<a href="javascript:;" rel="tooltip" data-placement="top" data-title="<{t}>火攻<{/t}>：<{$data['combatAttr']['fireattack']|default:0}><br/><{t}>火抗<{/t}>：<{$data['combatAttr']['firedefense']|default:0}>"><{t}>火<{/t}></a>
+				<a href="javascript:;" rel="tooltip" data-placement="top" data-title="<{t}>冰攻<{/t}>：<{$data['combatAttr']['iceattack']|default:0}><br/><{t}>冰抗<{/t}>：<{$data['combatAttr']['icedefense']|default:0}>"><{t}>冰<{/t}></a>
+				<a href="javascript:;" rel="tooltip" data-placement="top" data-title="<{t}>毒攻<{/t}>：<{$data['combatAttr']['poisonattack']|default:0}><br/><{t}>毒抗<{/t}>：<{$data['combatAttr']['poisondefense']|default:0}>"><{t}>毒<{/t}></a>
+				<a href="javascript:;" rel="tooltip" data-placement="top" data-title="
+				<{t}>定身免疫<{/t}>：<{$data['combatAttr']['stopdf']|default:0}><br/>
+				<{t}>牵引免疫<{/t}>：<{$data['combatAttr']['pulldf']|default:0}><br/>
+				<{t}>减速免疫<{/t}>：<{$data['combatAttr']['decspeeddf']|default:0}><br/>
+				<{t}>击退免疫<{/t}>：<{$data['combatAttr']['retreatdf']|default:0}><br/>
+				<{t}>沉默免疫<{/t}>：<{$data['combatAttr']['silencedf']|default:0}><br/>
+				<{t}>眩晕免疫<{/t}>：<{$data['combatAttr']['dizzydf']|default:0}>
+				"><i class="icon-search"></i><{t}>免疫<{/t}></a>
+			</td>
+		</tr>
+		<tr>
+			<td class="span_title text-right"><{t}>魅力<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['charm']|default:0}></span>
+				<input type="text" name="charm" class="input-mini edit_text" style="border:1px solid red" maxlength="15" value="<{$data['charm']|default:0}>"/>
+			</td>
+			<td class="span_title text-right"><{t}>竞技<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['arena_point']|default:0}></span>
+				<input type="text" name="arena_point" class="input-mini edit_text" style="border:1px solid red" maxlength="15" value="<{$data['arena_point']|default:0}>"/><{t}>点<{/t}>
+			</td>
+			<td class="span_title text-right"><{t}>真气<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['spirit']|default:0}></span>
+				<input type="text" name="spirit" class="input-mini edit_text" style="border:1px solid red" maxlength="15" value="<{$data['spirit']|default:0}>"/>
+			</td>
+			<td class="span_title text-right"><{t}>元力<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['hunsoul']|default:0}></span>
+				<input type="text" name="hunsoul" class="input-mini edit_text" style="border:1px solid red" maxlength="15" value="<{$data['hunsoul']|default:0}>"/>
+			</td>
+			<td class="span_title text-right"><{t}>元神等级<{/t}>：</td>
+			<td><{$data['soul_level']|default:0}></td>
+		</tr>
+		<tr>
+			<td class="span_title text-right"><{t}>伴侣<{/t}>：</td>
+			<td><a href="?id=<{$data['wife']|default:''}>"><{$data['wife_name']|default:''}></a></td>
+			<td class="span_title text-right"><{t}>婚礼<{/t}>：</td>
+			<td><{$data['weddingLv']|default:''}></td>
+			<td class="span_title text-right"><{t}>婚戒<{/t}>：</td>
+			<td><{$data['ringName']|default:''}></td>
+			<td class="span_title text-right"><{t}>同心<{/t}>：</td>
+			<td><{$data['ringTitle']|default:''}></td>
+			<td class="span_title text-right"><{t}>结婚时间<{/t}>：</td>
+			<td><{$data['weddingTime']|default:''}></td>
+		</tr>
+		<tr>
+			<td class="span_title text-right"><{t}>帮派<{/t}>：</td>
+			<td><a href="faction.php?faction_name=<{$data['faction']|default:''}>"><{$data['faction']|default:''}></a></td>
+			<td class="span_title text-right"><{t}>职位<{/t}>：</td>
+			<td><{$faction_position_conf[$data['position']]|default:''}></td>
+			<td class="span_title text-right"><{t}>帮贡<{/t}>：</td>
+			<td><{$data['contribution']|default:0}>/<{$data['hisContribution']|default:0}></td>
+			<td class="span_title text-right"><{t}>VIP<{/t}>：</td>
+			<td><{$data['vipLvl']|default:0}></td>
+			<td class="span_title text-right"><{t}>日在线<{/t}>：</td>
+			<td><{$data['onlineTime']|default:0}></td>
+		</tr>
+		<tr>
+			<td class="span_title text-right"><{t}>衣柜<{/t}>：</td>
+			<td><{$data['wardrobe_level']|default:0}><{t}>级<{/t}></td>
+			<td class="span_title text-right"><{t}>坐骑<{/t}>：</td>
+			<td><a href="javascript:;" rel="tooltip" data-placement="right" data-title="
+				<{if !empty($data['ride']['skill'])}>
+				<{t}>技能<{/t}>：
+				<{foreach $data['ride']['skill'] as $skill=>$level}>
+					<{$skill}><{$level}><{t}>级<{/t}>
+				<{/foreach}>
+				<br/>
+				<{/if}>
+
+				<{if !empty($data['ride']['rides'])}>
+				<{foreach $data['ride']['rides'] as $key=>$items}>
+					<{$ride_type_conf[$key+1]|default:$key}><br/>
+					<{t}>祝福值<{/t}>：<{$items[1]}><br>
+					<{t}>等级<{/t}>：<{$items[0]}><br>
+					<{t}>形象<{/t}>：
+						<{foreach $data['ride']['show'] as $k=>$show}>
+							<{if $show['isDefault']}>
+							<{$show['name']}>(<{$show['rideLv']}><{t}>级<{/t}>)、
+							<{/if}>
+						<{/foreach}>
+						<br/>
+						<hr style='margin:2px 0;'/>
+				<{/foreach}>
+				<{/if}>
+				<{if empty($data['ride'])}>
+					<{t}>暂无坐骑信息<{/t}>
+				<{/if}>
+				"><i class="icon-search"></i><{t}>查看<{/t}>(<{t}>战力<{/t}>:<{$data['ride']['fight']|default:0}>)</a></td>
+			<td class="span_title text-right"><{t}>羽翼<{/t}>：</td>
+			<td>
+				<!-- 羽翼信息 -->
+				<{if !empty($data['wing'])}>
+					<{$data['wing']['advLvl']}>阶
+					<a href="javascript:;" rel="tooltip" data-placement="right" data-title="
+					<{foreach $data['wing']['skill'] as $key=>$item}>
+						<{t}>技能<{/t}>：<{$key}>,<{t}>等级<{/t}>：<{$item['level']}>,<{t}>熟练度<{/t}>：<{$item['percent']}><br>
+					<{/foreach}>
+					">查看技能</a>
+				<{/if}>
+			</td>
+			<td class="span_title text-right"><{t}>功勋<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['exploit']|default:0}></span>
+				<input type="text" name="exploit" class="input-mini edit_text" style="border:1px solid red" maxlength="15" value="<{$data['exploit']|default:0}>"/>
+			</td>
+			<td class="span_title text-right"><{t}>活跃度<{/t}>：</td>
+			<td><{$data['daily_active']|default:0}></td>
+		</tr>
+		<tr>
+			<td class="span_title text-right"><{t}>铜币<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['moneyList'][0]|default:0}></span>
+				<input type="text" name="money_0" class="input-mini edit_text" style="border:1px solid red" maxlength="15" value="<{$data['moneyList'][0]|default:0}>"/>
+			</td>
+			<td class="span_title text-right"><{t}>铜券<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['moneyList'][1]|default:0}></span>
+				<input type="text" name="money_1" class="input-mini edit_text" style="border:1px solid red" maxlength="15" value="<{$data['moneyList'][1]|default:0}>"/>
+			</td>
+			<td class="span_title text-right"><{t}>元宝<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['moneyList'][2]|default:0}></span>
+				<input type="text" name="money_2" class="input-mini edit_text" style="border:1px solid red" maxlength="15" value="<{$data['moneyList'][2]|default:0}>"/>
+			</td>
+			<td class="span_title text-right"><{t}>礼券<{/t}>：</td>
+			<td>
+				<span class="edit_span"><{$data['moneyList'][3]|default:0}></span>
+				<input type="text" name="money_3" class="input-mini edit_text" style="border:1px solid red" maxlength="15" value="<{$data['moneyList'][3]|default:0}>"/>
+			</td>
+			<td class="span_title text-right"><{t}>战斗力<{/t}>：</td>
+			<td><{$data['fight']|default:0}></td>
+		</tr>
+		<tr>
+			<td class="span_title text-right"><{t}>保护锁<{/t}>：</td>
+			<td>
+				<{$lock_conf[$data['lock_info']['lock']]|default:''}>
+				<{if isset($data['lock_info']['lock'])&&$data['lock_info']['lock']!==0}><a href="javascript:;" id="reset_lock"><i class="icon-off"></i><{t}>重置<{/t}></a><{/if}>
+			</td>
+			<td class="span_title text-right"><{t}>密码<{/t}>：</td>
+			<td><{$data['lock_info']['passInfo']['password']|default:''}></td>
+			<td class="span_title text-right"><{t}>问题<{/t}>：</td>
+			<td><{$data['lock_info']['passInfo']['question']|default:''}></td>
+			<td class="span_title text-right"><{t}>答案<{/t}>：</td>
+			<td><{$data['lock_info']['passInfo']['answer']|default:''}></td>
+			<td class="span_title text-right"><{t}>使用人数<{/t}>：</td>
+			<td><{$data['lock_info']['total_count']|default:0}> (<{t}>全服使用人数<{/t}>)</td>
+		</tr>
+		<{if !empty($data['moduleModelList'][0])}>
+		<tr>
+			<td class="span_title text-right"><{t}>武饰<{/t}>：</td>
+			<td colspan="9" style="line-height:22px;">
+			<{foreach $data['moduleModelList'][0] as $item}>
+				<span class="label <{if in_array($item[0],$data['moduleModeInUseList'])}>label-important<{/if}>"><{t}><{$item[0]}><{/t}></span>
+			<{/foreach}>
+			</td>
+		</tr>
+		<{/if}>
+		<{if !empty($data['moduleModelList'][1])}>
+		<tr>
+			<td class="span_title text-right"><{t}>时饰<{/t}>：</td>
+			<td colspan="9" style="line-height:22px;">
+			<{foreach $data['moduleModelList'][1] as $item}>
+				<span class="label <{if in_array($item[0],$data['moduleModeInUseList'])}>label-important<{/if}>"><{t}><{$item[0]}><{/t}></span>
+			<{/foreach}>
+			</td>
+		</tr>
+		<{/if}>
+		<{if !empty($data['titleList'])}>
+		<tr>
+			<td class="span_title text-right" style="vertical-align:middle"><{t}>称号<{/t}>：</td>
+			<td colspan="9" style="line-height:20px;">
+			<{foreach $data['titleList'] as $key=>$item}>
+				<span class="label <{if in_array($item[0],$data['useTitle'])&&!empty($data['useTitle'])}>label-important<{/if}>"><{$title_conf[$item[0]]|default:$item[0]}></span>
+			<{/foreach}>
+			</td>
+		</tr>
+		<{/if}>
+		<!--无双技能-->
+		<{foreach $data['base_skill'] as $key=>$skill_list}>
+		<{if $skill_list}>
+		<tr>
+			<td class="span_title text-right"><{$skill_type_conf[$key]|default:$key}>：</td>
+			<td colspan="9" style="line-height:22px;">
+			<{foreach $skill_list as $skill=>$skill_item}>
+				<span class="label label-success"><{$skill}></span>
+				<{foreach $skill_item as $skill_name=>$level}>
+						<span class="label"><{$skill_name}><{$level}><{t}>级<{/t}></span>
+				<{/foreach}>
+			<{/foreach}>
+			</td>
+		</tr>
+		<{/if}>
+		<{/foreach}>
+		<{if !empty($data['faction_skill_list'])}>
+		<tr>
+			<td class="span_title text-right"><{t}>帮派技能<{/t}>：</td>
+			<td colspan="7" style="line-height:22px;">
+			<{foreach $data['faction_skill_list'] as $key=>$item}>
+				<span class="label"><{$key}></span>
+			<{/foreach}>
+			</td>
+		</tr>
+		<{/if}>
+		<{if !empty($data['pet_skill_list'])}>
+		<tr>
+			<td class="span_title text-right"><{t}>阵魂技能<{/t}>：</td>
+			<td colspan="7" style="line-height:22px;">
+			<{foreach $data['pet_skill_list'] as $key=>$item}>
+				<span class="label"><{$key}></span>
+			<{/foreach}>
+			</td>
+		</tr>
+		<{/if}>
+	</table>
+<input type="hidden" name="char_id" value="<{$data['_id']}>">
+</form>
+
+	<table class="table table-bordered table-hover table-condensed">
+	<thead>
+		<tr style="background-color:#FCF8E3">
+			<th rowspan="2" width="80"><{t}>部位<{/t}></th>
+			<th rowspan="2"><{t}>装备<{/t}></th>
+			<th rowspan="2"><{t}>等级<{/t}></th>
+			<th rowspan="2"><{t}>颜色<{/t}></th>
+			<th colspan="5"><{t}>强化等级信息<{/t}></th>
+			<th rowspan="2"><{t}>神化等级<{/t}></th>
+			<th colspan="3"><{t}>宝石等级信息<{/t}></th>
+			<th colspan="3"><{t}>宝石神炼信息<{/t}></th>
+			<th rowspan="2"><{t}>宝石雕刻信息<{/t}></th>
+		</tr>
+		<tr style="background-color:#FCF8E3">
+			<th><{t}>凡火<{/t}></th>
+			<th><{t}>灵火<{/t}></th>
+			<th><{t}>仙火<{/t}></th>
+			<th><{t}>神火<{/t}></th>
+			<th><{t}>圣火<{/t}></th>
+			<th><{t}>宝石1<{/t}></th>
+			<th><{t}>宝石2<{/t}></th>
+			<th><{t}>宝石3<{/t}></th>
+			<th><{t}>宝石1<{/t}></th>
+			<th><{t}>宝石2<{/t}></th>
+			<th><{t}>宝石3<{/t}></th>
+		</tr>
+	</thead>
+	<tbody id="equip_bag">
+	<tr>
+		<td colspan="12"><img src="../../public/images/loading2.gif"> <{t}>拼命加载数据中,请稍等...<{/t}></td>
+	</tr>
+	</tbody>
+	</table>
+
+	<table class="table table-bordered table-condensed">
+	<thead>
+		<tr style="background-color:#FCF8E3">
+			<td width="80"><{t}>背包类型<{/t}></td>
+			<td style="text-align:left"><{t}>道具列表<{/t}></td>
+		</tr>
+	</thead>
+	<tbody id="other_bag">
+	<tr>
+		<td colspan="2"><img src="../../public/images/loading2.gif"> <{t}>拼命加载数据中,请稍等...<{/t}></td>
+	</tr>
+	</tbody>
+	</table>
+</div>
+<{/if}>
+
+<{elseif $data&&$conditions['action']=='pet'}>
+<div style="margin-bottom:5px;" align="right"><{t}>数据采集时间<{/t}>：<{$data['time']|default:''}></div>
+
+<table class="table info" style="border:1px solid #ddd;">
+	<tr>
+		<td class="span_title text-right"><{t}>兵符阁<{/t}>：</td>
+		<td colspan="11" style="line-height:22px;">
+			(<{t}>共<{/t}><{$data['hunt']['bag']['itemList']|count|default:0}><{t}>个<{/t}>)
+		<{if !empty($data['hunt']['bag']['itemList'])}>
+			<{foreach $data['hunt']['bag']['itemList'] as $item}>
+				<span style="margin-right:5px;"><{$item['name']}><{$item['level']}><{t}>级<{/t}></li></span>
+			<{/foreach}>
+		<{/if}>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="12" style="background-color:#F5F5F5"><{t}>宠物列表<{/t}>：</td>
+	</tr>
+<{foreach $data['petList'] as $key=>$row}>
+	<tr>
+		<td class="span_title text-right">ID：</td>
+		<td><{$row['id']}></td>
+		<td class="span_title text-right"><{t}>名字<{/t}>：</td>
+		<td><span <{if isset($data['warPetId'])&&$data['warPetId']==$row['id']}>style="color:red;font-weight:bold"<{/if}>><{$row['name']}></span></td>
+		<td class="span_title text-right"><{t}>模型<{/t}>：</td>
+		<td><{$row['originalName']}></td>
+		<td class="span_title text-right"><{t}>等级<{/t}>：</td>
+		<td><{$row['level']}></td>
+		<td class="span_title text-right"><{t}>经验<{/t}>：</td>
+		<td><{$row['exp']}></td>
+		<td class="span_title text-right"><{t}>战斗力<{/t}>：</td>
+		<td><{$row['fight']}></td>
+	</tr>
+	<tr>
+		<td class="span_title text-right"><{t}>生命<{/t}>：</td>
+		<td><{round($row['maxhp'],0)}> <a style="color:blue" href="javascript:;" rel="tooltip" data-placement="right" data-title="<{t}>灵识等级/灵识经验<{/t}>">(<{$row['pullulateList']['hp']|default:0}>/<{$row['pullulateExp']['hp']|default:0}>)</a></td>
+		<td class="span_title text-right"><{t}>攻击<{/t}>：</td>
+		<td><{round($row['attack'],0)}> <a style="color:blue" href="javascript:;" rel="tooltip" data-placement="right" data-title="<{t}>灵识等级/灵识经验<{/t}>">(<{$row['pullulateList']['attack']|default:0}>/<{$row['pullulateExp']['attack']|default:0}>)</a></td>
+		<td class="span_title text-right"><{t}>防御<{/t}>：</td>
+		<td><{round($row['defense'],0)}> <a style="color:blue" href="javascript:;" rel="tooltip" data-placement="right" data-title="<{t}>灵识等级/灵识经验<{/t}>">(<{$row['pullulateList']['defense']|default:0}>/<{$row['pullulateExp']['defense']|default:0}>)</a></td>
+		<td class="span_title text-right"><{t}>闪避<{/t}>：</td>
+		<td><{$row['dodge']}></td>
+		<td class="span_title text-right"><{t}>命中<{/t}>：</td>
+		<td><{$row['point']}></td>
+		<td class="span_title text-right"><{t}>暴击<{/t}>：</td>
+		<td><{$row['critical']}></td>
+	</tr>
+	<tr>
+		<td class="span_title text-right"><{t}>抗暴<{/t}>：</td>
+		<td><{$row['criticaldf']}></td>
+		<td class="span_title text-right"><{t}>暴伤<{/t}>：</td>
+		<td><{$row['criticaleffect']}></td>
+		<td class="span_title text-right"><{t}>韧性<{/t}>：</td>
+		<td><{$row['criticaleffectdf']}></td>
+		<td class="span_title text-right"><{t}>属性<{/t}>：</td>
+		<td>
+			<a href="javascript:;" rel="tooltip" data-placement="right" data-title="<{t}>火攻<{/t}>：<{$row['fireattack']|default:0}><br/><{t}>火抗<{/t}>：<{$row['firedefense']|default:0}>"><{t}>火<{/t}></a>
+			<a href="javascript:;" rel="tooltip" data-placement="right" data-title="<{t}>冰攻<{/t}>：<{$row['iceattack']|default:0}><br/><{t}>冰抗<{/t}>：<{$row['icedefense']|default:0}>"><{t}>冰<{/t}></a>
+			<a href="javascript:;" rel="tooltip" data-placement="right" data-title="<{t}>毒攻<{/t}>：<{$row['poisonattack']|default:0}><br/><{t}>毒抗<{/t}>：<{$row['poisondefense']|default:0}>"><{t}>毒<{/t}></a>
+		</td>
+		<td class="span_title text-right"><{t}>境界<{/t}>：</td>
+		<td colspan="3"><{$row['realm_name']|default:''}> (<{t}>祝福值<{/t}>:<{$row['blessing']|default:0}>)</td>
+	</tr>
+	<tr>
+		<td class="span_title text-right"><{t}>战技<{/t}>：</td>
+		<td colspan="11">
+		<{foreach $row['skillList'] as $key=>$skill_list}>
+			<span class="label label-important" <{if $key!=0}>style="margin-left:20px;"<{/if}>><{$skill_list['skill']}></span> =
+			<{foreach $skill_list['desc'] as $k=>$skill}>
+				<{if $k!=0}>+<{/if}>
+				<{$skill}>
+			<{/foreach}>
+		<{/foreach}>
+		</td>
+	</tr>
+	<tr>
+		<td class="span_title text-right"><{t}>幻形<{/t}>：</td>
+		<td colspan="11">
+		<{foreach $row['modelName'] as $key=>$model}>
+			<span class="label <{if $row['selectModel']==$key+1}>label-important<{/if}>"><{$model}></span>
+		<{/foreach}>
+		</td>
+	</tr>
+	<tr>
+		<td class="span_title text-right"><{t}>兵符<{/t}>：</td>
+		<td colspan="11">
+		<{if isset($data['hunt']['bag']['petList'][(string)$row['id']]['itemList'])}>
+		<{foreach $data['hunt']['bag']['petList'][(string)$row['id']]['itemList'] as $item}>
+			<{$item['name']}><{$item['level']}><{t}>级<{/t}>
+		<{/foreach}>
+		<{/if}>
+		</td>
+	</tr>
+	<tr>
+		<td class="span_title text-right"><{t}>伙伴装备<{/t}>：</td>
+		<td colspan="11">
+		<{if isset($data['equip_bag'][(string)$row['id']])}>
+		<{t}><{$data['equip_bag'][(string)$row['id']]['item_id']}><{/t}>--<{$data['equip_bag'][(string)$row['id']]['level']}><{t}>级<{/t}>
+		<{/if}>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="12" bgcolor="#F5F5F5"></td>
+	</tr>
+<{/foreach}>
+</table>
+
+<{/if}>
+
+<{if (empty($data)&&empty($list))&&($conditions['id'] || $conditions['account'] || $conditions['name'])}>
+<div class="well"><h5><{t}>暂无玩家相关信息，请稍后再查询<{/t}>...</h5></div>
+<{/if}>
+</body>
+</html>

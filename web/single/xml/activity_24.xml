@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="24" name="金玉转盘">
+    <show_time>2015-01-01 00:00:00</show_time>
+    <hide_time>2015-01-04 23:59:59</hide_time>
+    <start_time>2015-01-01 00:00:00</start_time>
+    <end_time>2015-01-04 23:59:59</end_time>
+    <time startDay="1" overDay="5"/>
+    <lottery>
+      <item gold="100" number="1"/>
+      <item gold="500" number="2"/>
+      <item gold="1000" number="3"/>
+      <item gold="2000" number="4"/>
+      <item gold="5000" number="5"/>
+      <item gold="10000" number="6"/>
+      <item gold="20000" number="7"/>
+      <item gold="30000" number="8"/>
+      <item gold="40000" number="9"/>
+      <item gold="50000" number="10"/>
+    </lottery>
+    <turntable>
+      <gird id="1" type="1">
+        <item id="1" itemId="30139000015" number="1" bind="1"/>
+      </gird>
+      <gird id="2" type="1">
+        <item id="1" itemId="20103050005" number="1" bind="0"/>
+      </gird>
+      <gird id="3" type="1">
+        <item id="1" itemId="30139000014" number="1" bind="1"/>
+      </gird>
+      <gird id="4" type="2">
+        <item id="1" percent="20"/>
+      </gird>
+      <gird id="5" type="1">
+        <item id="1" itemId="10112000055" number="1" bind="0"/>
+      </gird>
+      <gird id="6" type="1">
+        <item id="1" itemId="22100000004" number="1" bind="0"/>
+      </gird>
+      <gird id="7" type="2">
+        <item id="1" percent="5"/>
+      </gird>
+      <gird id="8" type="1">
+        <item id="1" itemId="20103050005" number="1" bind="0"/>
+      </gird>
+      <gird id="9" type="1">
+        <item id="1" itemId="30102060034" number="1" bind="0"/>
+      </gird>
+      <gird id="10" type="2">
+        <item id="1" percent="10"/>
+      </gird>
+    </turntable>
+  </activity>
+</config>

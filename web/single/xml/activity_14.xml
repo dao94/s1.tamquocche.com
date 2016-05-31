@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="14" name="坐騎升階有禮">
+    <show_time>2015-01-01 00:00:00</show_time>
+    <hide_time>2015-01-04 23:59:59</hide_time>
+    <start_time>2015-01-01 00:00:00</start_time>
+    <end_time>2015-01-04 23:59:59</end_time>
+    <info><![CDATA[活動期間，只要玩家的坐騎階數升級到一定等級，就可以獲得系統免費送出的大禮一份哦。機會難得，千萬不可錯過！<br />]]></info>
+    <reward id="1" type="1" param="5" series="1">
+      <item id="30118000024" number="8" bind="0"/>
+    </reward>
+    <reward id="2" type="1" param="6" series="1">
+      <item id="30118000034" number="16" bind="0"/>
+    </reward>
+    <reward id="3" type="1" param="7" series="1">
+      <item id="30118000034" number="22" bind="0"/>
+    </reward>
+    <reward id="4" type="1" param="8" series="1">
+      <item id="30118000044" number="30" bind="0"/>
+    </reward>
+    <reward id="5" type="1" param="9" series="1">
+      <item id="30118000044" number="60" bind="0"/>
+    </reward>
+    <reward id="6" type="1" param="10" series="1">
+      <item id="22000001434" number="1" bind="0"/>
+      <item id="22000001445" number="1" bind="0"/>
+    </reward>
+  </activity>
+</config>

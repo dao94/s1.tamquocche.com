@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="25" name="充值排行">
+    <show_time>2015-01-01 00:00:00</show_time>
+    <hide_time>2015-01-04 23:59:59</hide_time>
+    <start_time>2015-01-01 00:00:00</start_time>
+    <end_time>2015-01-04 23:59:59</end_time>
+    <info><![CDATA[充值排行]]></info>
+    <level minLv="1" maxLv="1">
+      <baseReward>
+        <item id="30102070045" number="24" bind="0" effect=""/>
+        <item id="30102080045" number="24" bind="0" effect=""/>
+        <item id="30102090045" number="24" bind="0" effect=""/>
+        <item id="20102040004" number="50" bind="0" effect=""/>
+        <money type="8" num="3000" effect=""/>
+      </baseReward>
+      <extraReward minJade="50000">
+        <item id="90451010105" number="1" bind="0" effect=""/>
+      </extraReward>
+    </level>
+    <level minLv="2" maxLv="2">
+      <baseReward>
+        <item id="30102070045" number="18" bind="0" effect=""/>
+        <item id="30102080045" number="18" bind="0" effect=""/>
+        <item id="30102090045" number="18" bind="0" effect=""/>
+        <item id="20102040004" number="30" bind="0" effect=""/>
+        <money type="8" num="2000" effect=""/>
+      </baseReward>
+      <extraReward minJade="40000">
+        <item id="90551010104" number="1" bind="0" effect=""/>
+      </extraReward>
+    </level>
+    <level minLv="3" maxLv="3">
+      <baseReward>
+        <item id="30102070045" number="15" bind="0" effect=""/>
+        <item id="30102080045" number="15" bind="0" effect=""/>
+        <item id="30102090045" number="15" bind="0" effect=""/>
+        <item id="20102040004" number="20" bind="0" effect=""/>
+        <money type="8" num="1500" effect=""/>
+      </baseReward>
+      <extraReward minJade="30000">
+        <item id="90651010104" number="1" bind="0" effect=""/>
+      </extraReward>
+    </level>
+    <level minLv="4" maxLv="10">
+      <baseReward>
+        <item id="30102070045" number="9" bind="0" effect=""/>
+        <item id="30102080045" number="9" bind="0" effect=""/>
+        <item id="30102090045" number="9" bind="0" effect=""/>
+        <item id="20102040004" number="10" bind="0" effect=""/>
+        <money type="8" num="1000" effect=""/>
+      </baseReward>
+    </level>
+    <level minLv="11" maxLv="50">
+      <baseReward>
+        <item id="30102070045" number="6" bind="0" effect=""/>
+        <item id="30102080045" number="6" bind="0" effect=""/>
+        <item id="30102090045" number="6" bind="0" effect=""/>
+        <item id="20102040004" number="5" bind="0" effect=""/>
+        <money type="8" num="500" effect=""/>
+      </baseReward>
+    </level>
+  </activity>
+</config>

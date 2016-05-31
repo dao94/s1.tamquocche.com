@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>装备流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+
+<style type="text/css">
+#type_list .span2{
+	width:122px;
+	height:20px;
+	line-height:20px;
+	overflow:hidden;
+}
+</style>
+
+<script language="javascript">
+$(function($){
+	$('#item_name').blur(function(){
+		this.value=='' ? $("input[name='item_id']").val('') : '';
+	}).next().click(function(){
+		$(this).prevAll(':input').keyup();
+	});
+
+	$('#btn_type').toggle(function(){
+		$('#type_list').fadeIn();
+	},function(){
+		$('#type_list').fadeOut();
+	});
+
+	$('#cb_all').click(function(){
+		$('.type').attr('checked',this.checked);
+	});
+
+	$('.btn_selected').click(function(){
+		$("input[name='type[]'][value='"+this.value+"']").attr('checked',false);
+		$('#btn_search').click();
+	});
+
+	$('*[rel="tooltip"]').live('mouseover',function(){
+		$(this).tooltip({placement:'top',html:true}).tooltip('show');
+	});
+});
+</script>
+
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-medium" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-medium" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+
+	<label style="margin-left:5px;"><{t}>坐骑类型<{/t}>:</label>
+	<select name="zuoqi" class="input-small">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $zuoqi_type_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['zuoqi']===$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+
+	<label style="margin-left:5px;"><{t}>操作<{/t}>:</label>
+	<select name="io" class="input-small">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $zuoqi_io_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['io']===$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+
+    <button id="btn_type" type="button" class="btn btn-link"><{t}>项目类型<{/t}></button>
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+
+<{if $conditions['type']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['type'] as $item}>
+		<button class="btn btn-mini btn_selected" type="button" value="<{$item}>"><{$zuoqi_xm_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $zuoqi_xm_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="type[]" value="<{$key}>" class="type" <{if in_array($key,$conditions['type'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+
+	<input type="hidden" name="from" value="<{$conditions['from']}>">
+</form>
+
+<{if $data}>
+<div class="pagination pagination-right" style="margin:0;"><ul><{$page}></ul></div>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>坐骑类型<{/t}></th>
+		<th><{t}>操作<{/t}></th>
+		<th><{t}>项目<{/t}></th>
+		<th><{t}>属性<{/t}></th>
+		<th><{t}>备注<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+        <td><{$zuoqi_type_conf[$row['zuoqi_type']]|default:$row['zuoqi_type']}></td>
+        <td><{$zuoqi_io_conf[$row['io']]|default:$row['io']}></td>
+        <td><{$zuoqi_xm_conf[$row['xm_type']]|default:$row['xm_type']}></td>
+        <td>
+        <{t}>速度<{/t}>：<{$row['remark']['speed']}>;
+        <{t}>气血<{/t}>：<{$row['remark']['hp']}>;
+        <{t}>属性防御<{/t}>：
+        <a href="javascript:;" rel="tooltip" data-placement="right"
+        data-title="<{t}>火抗<{/t}>：<{$row['remark']['firedefense']|default:0}>
+                    <{t}>毒抗<{/t}>：<{$row['remark']['poisondefense']|default:0}>
+                    <{t}>冰抗<{/t}>：<{$row['remark']['icedefense']|default:0}>">
+        <{if empty($row['remark'])}>0<{else}><{$row['remark']['firedefense']+$row['remark']['poisondefense']+$row['remark']['icedefense']}><{/if}></a></td>
+        <td><span class="badge"><{$row['old_level']}><{t}>阶<{/t}></span> <i class="icon-forward"></i> <span class="badge badge-success"><{$row['new_level']}><{t}>阶<{/t}></span></td>
+		<td><{$row['time']|date_format:'%Y-%m-%d %H:%M:%S'}></td>
+
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+<{/if}>
+</body>
+</html>

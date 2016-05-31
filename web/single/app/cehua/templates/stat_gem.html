@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>宝石分析<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function(){
+	$('.time_type').click(function(){
+		$('#start_date').val($(this).attr('start-date'));
+		$('#end_date').val($(this).attr('end-date'));
+		$('#type').val($(this).attr('name'));
+		$('#btn_search').click();
+	});
+
+	$('.strong').toggle(function(){
+		$('.'+this.name).fadeIn();
+	},function(){
+		$('.'+this.name).hide();
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well well-small form-search">
+	<div class="btn-group">
+<{foreach $time_type as $type=>$item}>
+	<button class="btn time_type <{if $type==$conditions['type']}>btn-inverse<{/if}>" type="button"
+name="<{$type}>" start-date="<{$item[1]}>" end-date="<{$item[2]}>"><{$item[0]}></button>
+<{/foreach}>
+	</div>
+	<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+    <input type="hidden" id="type" name="type">
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+</form>
+
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th>部位</th>
+		<th></th>
+		<{for $foo=1 to 10}>
+		<td class="strong1 hide"><{t}>充能<{/t}><{$foo}></td>
+	  <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong1"><{t}>充能等级<{/t}></a></th>
+        <{for $foo=1 to 10}>
+		<td class="strong2 hide"><{t}>神炼<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong2"><{t}>神炼等级<{/t}></a></th>
+        <{for $foo=1 to 12}>
+		<td class="strong3 hide"><{t}>雕刻<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong3"><{t}>雕刻等级<{/t}></a></th>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $row}>
+		<{for $part=1 to 12}>  <!-- 部位 -->
+		<tr>
+			<{if $part==1}>
+			<td rowspan="24"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+			<{/if}>
+			<td rowspan="2"><{$part_conf[$part]}></td>
+			<td><{t}>数量<{/t}></td>
+			<{$count_cn=0}><{$count_sl=0}><{$count_dk=0}><{$percent_cn=0}><{$percent_sl=0}><{$percent_dk=0}>
+			<{for $level=1 to 10}>  <!-- 等级 -->
+				<{$count_cn=$count_cn+$row['gem_chongneng_remark'][$part][$level]|default:0}>
+				<td class="strong1 hide"><{$row['gem_chongneng_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_cn}></td>
+	   		 <{for $level=1 to 10}>  <!-- 等级 -->
+	   		 	<{$count_sl=$count_sl+$row['gem_shenlian_remark'][$part][$level]|default:0}>
+				<td class="strong2 hide"><{$row['gem_shenlian_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_sl}></td>
+	   		 <{for $level=1 to 12}>  <!-- 等级 -->
+	   		 	<{$count_dk=$count_dk+$row['gem_diaoke_remark'][$part][$level]|default:0}>
+				<td class="strong3 hide"><{$row['gem_diaoke_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_dk}></td>
+	   	</tr>
+	   	<tr>
+			<td><{t}>比例<{/t}></td>
+			<{for $level=1 to 10}>  <!-- 等级 -->
+				<td class="strong1 hide"><{if isset($row['gem_chongneng_remark'][$part][$level])&&isset($row['allow_player'])}><{$percent_cn=$percent_cn+$row['gem_chongneng_remark'][$part][$level]/$row['allow_player']}><{round($row['gem_chongneng_remark'][$part][$level]/$row['allow_player'],4)*100}><{else}>0<{/if}>%</td>
+	   		 <{/for}>
+	   		 <td><{round($percent_cn/10,4)*100}>%</td>
+	   		 <{for $level=1 to 10}>  <!-- 等级 -->
+				<td class="strong2 hide"><{if isset($row['gem_shenlian_remark'][$part][$level])&&isset($row['allow_player'])}><{$percent_sl=$percent_sl+$row['gem_shenlian_remark'][$part][$level]/$row['allow_player']}><{round($row['gem_shenlian_remark'][$part][$level]/$row['allow_player'],4)*100}><{else}>0<{/if}>%</td>
+	   		 <{/for}>
+	   		 <td><{round($percent_sl/10,4)*100}>%</td>
+	   		 <{for $level=1 to 12}>  <!-- 等级 -->
+				<td class="strong3 hide"><{if isset($row['gem_diaoke_remark'][$part][$level])&&isset($row['allow_player'])}><{$percent_dk=$percent_dk+$row['gem_diaoke_remark'][$part][$level]/$row['allow_player']}><{round($row['gem_diaoke_remark'][$part][$level]/$row['allow_player'],4)*100}><{else}>0<{/if}>%</td>
+	   		 <{/for}>
+	   		 <td><{round($percent_dk/12,4)*100}>%</td>
+	   	</tr>
+	    <{/for}>
+	<{/foreach}>
+</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

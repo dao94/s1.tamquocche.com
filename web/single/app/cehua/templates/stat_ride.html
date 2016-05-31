@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>坐骑分析<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+
+<script language="javascript">
+$(function(){
+	$('.time_type').click(function(){
+		$('#start_date').val($(this).attr('start-date'));
+		$('#end_date').val($(this).attr('end-date'));
+		$('#type').val($(this).attr('name'));
+		$('input[name="action"]').val("<{$conditions['action']}>");
+		$('#btn_search').click();
+	});
+
+	$('.strong').toggle(function(){
+		$('.'+this.name).fadeIn();
+	},function(){
+		$('.'+this.name).hide();
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<div id="nav">
+	<ul class="nav nav-tabs" style="margin-bottom:10px;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>&type=<{$conditions['type']}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<form class="well well-small form-search">
+
+	<div class="accordion-heading">
+	 	<span class="accordion-toggle" data-toggle="collapse" href="#collapse">
+				<a href="javascript:;"><{t}>定义说明<{/t}></a>
+		</span>
+	</div>
+	<div id="collapse" class="accordion-body in collapse">
+		<div class="accordion-inner">
+		<{if $conditions['action']=='ride'}>
+			<ol>
+				<li><{t}>数量：当前服务器中当系最高阶的坐骑阶数<{/t}></li>
+				<li><{t}>百分比：不填<{/t}></li>
+				<li><{t}>坐骑的每个系均可以点击展开(数量)：当日已激活的该坐骑数量，取玩家已经激活的坐骑的最大阶 <{/t}></li>
+				<li><{t}>对于坐骑7-1这种特殊形式的坐骑，属于坐骑外观，只要玩家有激活即统计数量，但不计算百分比，也不纳入其它坐骑计算百分比时的总和计算<{/t}></li>
+				<li><{t}>坐骑的每个系均可以点击展开(百分比)：某坐骑激活数量/该系所有激活坐骑数量总和（该总和不计算坐骑外观的数量，即7-1这种坐骑）*100%（保留两位小数）<{/t}></li>
+			</ol>
+		<{else if $conditions['action']=='jinglian'}>
+			<ol>
+				<li><{t}>数量：累计到达的具体某天<{/t}></li>
+				<li><{t}>本服参与坐骑精炼的玩家人数（即至少进行了一次坐骑精炼的玩家人数）<{/t}></li>
+				<li><{t}>本服坐骑精炼的参与度（参与精炼玩家人数/满足坐骑精炼等级要求的玩家总数）<{/t}></li>
+			</ol>
+		<{/if}>
+		</div>
+	</div>
+
+	<div class="btn-group">
+<{foreach $time_type as $type=>$item}>
+	<button class="btn time_type <{if $type==$conditions['type']}>btn-inverse<{/if}>" type="button" name="<{$type}>" start-date="<{$item[1]}>" end-date="<{$item[2]}>"><{$item[0]}></button>
+<{/foreach}>
+	</div>
+	<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+    <input type="hidden" id="type" name="type">
+    <input type="hidden" name="action" value="<{$conditions['action']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+</form>
+</div>
+<{if $conditions['action']=='ride'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th></th>
+		<{for $foo=1 to 10}>
+		<td class="strong1 hide"><{t}>坐骑<{/t}><{$foo}></td>
+	    <{/for}>
+	    <{for $foo=1 to 10}>
+		<td class="strong1 hide"><{t}>外观<{$foo}>-1<{/t}></td>
+	    <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong1"><{t}>陆行系<{/t}></a></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $key=>$items}>
+	<tr>
+		<td  rowspan="2"><{$key}></td>
+	    <{foreach $items as $k=>$row}>
+		  <{if $k!=0}><tr><{/if}>
+			  	<td><{t}>数量<{/t}></td>
+		        <{for $foo=1 to 10}>
+				<td class="strong1 hide"><{$row['ride_remark'][$foo]|default:0}></td>
+			  	<{/for}>
+			  	<{for $foo=1 to 10}>
+				<td class="strong1 hide"><{$row['show_remark'][$foo]|default:0}></td>
+			  	<{/for}>
+				<td><{$row['max_level']}></td>
+			</tr>
+		    <tr>
+		    	<td><{t}>比例<{/t}></td>
+		        <{for $foo=1 to 10}>
+				<td class="strong1 hide"><{if $row['ride_count']&&isset($row['ride_remark'][$foo])}><{round($row['ride_remark'][$foo]/$row['ride_count'],4)*100}><{else}>0<{/if}>%</td>
+			  	<{/for}>
+			  	<{for $foo=1 to 10}>
+				<td class="strong1 hide">--</td>
+			  	<{/for}>
+		        <td>--</td>
+		  <{if $k+1!=count($items)}></tr><{/if}>
+		<{/foreach}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='jinglian'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>满足人数<{/t}></th>
+		<th><{t}>精炼人数<{/t}></th>
+		<th><{t}>参与度<{/t}></th>
+		<th>部位</th>
+		<th></th>
+		<{for $foo=1 to 10}>
+		<td class="strong1 hide"><{t}>凡品<{/t}><{$foo}></td>
+	    <{/for}>
+		<th><a href="javascript:;" class="strong" name="strong1"><{t}>凡品<{/t}></a></th>
+        <{for $foo=1 to 10}>
+		<td class="strong2 hide"><{t}>灵品<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong2"><{t}>灵品<{/t}></a></th>
+        <{for $foo=1 to 10}>
+		<td class="strong3 hide"><{t}>仙品<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong3"><{t}>仙品<{/t}></a></th>
+		<{for $foo=1 to 10}>
+		<td class="strong4 hide"><{t}>神品<{/t}><{$foo}></td>
+	  	<{/for}>
+		<th><a href="javascript:;" class="strong" name="strong4"><{t}>神品<{/t}></a></th>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $row}>
+	<{$fan_level=0}><{$ling_level=0}><{$xian_level=0}><{$shen_level=0}><{$total_level=0}>
+		<{for $part=0 to 4}>  <!-- 部位 -->
+		<tr>
+			<{if $part==0}>
+			<td rowspan="10"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+			<td rowspan="10"><{$row['allow_player']}></td>
+			<td rowspan="10"><{$row['join_count']}></td>
+			<td rowspan="10"><{$row['avg_count']}>%</td>
+			<{/if}>
+			<td rowspan="2"><{$part_conf[$part]}></td>
+			<td><{t}>数量<{/t}></td>
+			<{$count_fan=0}><{$count_ling=0}><{$count_xian=0}><{$count_shen=0}><{$count_total=0}>
+			<{if $part==0}>
+				<{for $level=1 to 10}>  <!-- 全部 -->
+					<{$fan_level=$fan_level+$row['fan_level'][$level]|default:0}>
+					<td class="strong1 hide"><{$row['fan_level'][$level]|default:0}></td>
+		   		 <{/for}>
+		   		 <td><{$fan_level}></td>
+		   		 <{for $level=11 to 20}>  <!-- 全部 -->
+					<{$ling_level=$ling_level+$row['ling_level'][$level]|default:0}>
+					<td class="strong2 hide"><{$row['ling_level'][$level]|default:0}></td>
+		   		 <{/for}>
+		   		 <td><{$ling_level}></td>
+		   		 <{for $level=21 to 30}>  <!-- 全部 -->
+					<{$xian_level=$xian_level+$row['xian_level'][$level]|default:0}>
+					<td class="strong3 hide"><{$row['xian_level'][$level]|default:0}></td>
+		   		 <{/for}>
+		   		 <td><{$xian_level}></td>
+		   		 <{for $level=31 to 40}>  <!-- 全部 -->
+					<{$shen_level=$shen_level+$row['shen_level'][$level]|default:0}>
+					<td class="strong4 hide"><{$row['shen_level'][$level]|default:0}></td>
+		   		 <{/for}>
+		   		 <td><{$shen_level}></td>
+			<{else}>
+				<{for $level=1 to 10}>  <!-- 凡品 -->
+					<{$count_fan=$count_fan+$row['ride_fan_remark'][$part][$level]|default:0}>
+					<td class="strong1 hide"><{$row['ride_fan_remark'][$part][$level]|default:0}></td>
+		   		 <{/for}>
+		   		 <td><{$count_fan}></td>
+		   		 <{for $level=11 to 20}>  <!-- 灵品 -->
+		   		 	<{$count_ling=$count_ling+$row['ride_ling_remark'][$part][$level]|default:0}>
+					<td class="strong2 hide"><{$row['ride_ling_remark'][$part][$level]|default:0}></td>
+		   		 <{/for}>
+		   		 <td><{$count_ling}></td>
+		   		 <{for $level=21 to 30}>  <!-- 仙品 -->
+		   		 	<{$count_xian=$count_xian+$row['ride_xian_remark'][$part][$level]|default:0}>
+					<td class="strong3 hide"><{$row['ride_xian_remark'][$part][$level]|default:0}></td>
+		   		 <{/for}>
+		   		 <td><{$count_xian}></td>
+		   		 <{for $level=31 to 40}>  <!-- 神品 -->
+		   		 	<{$count_shen=$count_shen+$row['ride_shen_remark'][$part][$level]|default:0}>
+					<td class="strong4 hide"><{$row['ride_shen_remark'][$part][$level]|default:0}></td>
+		   		 <{/for}>
+		   		 <td><{$count_shen}></td>
+	   		 <{/if}>
+	   	</tr>
+		<tr>
+			<td><{t}>比例<{/t}></td>
+			<{if $part==0}>
+				<{$total_level=$fan_level+$ling_level+$xian_level+$shen_level}>
+				<{for $level=1 to 10}>  <!-- 全部 -->
+					<td class="strong1 hide"><{if isset($row['fan_level'][$level])&&!empty($total_level)}><{round($row['fan_level'][$level]/$total_level,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{/for}>
+		   		 <td><{if $total_level!=0}><{round($fan_level/$total_level,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{for $level=11 to 20}>  <!-- 全部 -->
+					<td class="strong2 hide"><{if isset($row['ling_level'][$level])&&!empty($total_level)}><{round($row['ling_level'][$level]/$total_level,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{/for}>
+		   		 <td><{if $total_level!=0}><{round($ling_level/$total_level,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{for $level=21 to 30}>  <!-- 全部 -->
+					<td class="strong3 hide"><{if isset($row['xian_level'][$level])&&!empty($total_level)}><{round($row['xian_level'][$level]/$total_level,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{/for}>
+		   		 <td><{if $total_level!=0}><{round($xian_level/$total_level,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{for $level=31 to 40}>  <!-- 全部 -->
+					<td class="strong4 hide"><{if isset($row['shen_level'][$level])&&!empty($total_level)}><{round($row['shen_level'][$level]/$total_level,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{/for}>
+		   		 <td><{if $total_level!=0}><{round($shen_level/$total_level,4)*100}><{else}>0<{/if}>%</td>
+			<{else}>
+				<{$count_total=$count_fan+$count_ling+$count_xian+$count_shen}>
+				<{for $level=1 to 10}>  <!-- 凡品 -->
+					<td class="strong1 hide"><{if isset($row['ride_fan_remark'][$part][$level])&&!empty($count_total)}><{round($row['ride_fan_remark'][$part][$level]/$count_total,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{/for}>
+		   		 <td><{if $count_total!=0}><{round($count_fan/$count_total,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{for $level=11 to 20}>  <!-- 灵品 -->
+					<td class="strong2 hide"><{if isset($row['ride_ling_remark'][$part][$level])&&!empty($count_total)}><{round($row['ride_ling_remark'][$part][$level]/$count_total,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{/for}>
+		   		 <td><{if $count_total!=0}><{round($count_ling/$count_total,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{for $level=21 to 30}>  <!-- 仙品 -->
+					<td class="strong3 hide"><{if isset($row['ride_xian_remark'][$part][$level])&&!empty($count_total)}><{round($row['ride_xian_remark'][$part][$level]/$count_total,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{/for}>
+		   		 <td><{if $count_total!=0}><{round($count_xian/$count_total,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{for $level=31 to 40}>  <!-- 神品 -->
+					<td class="strong4 hide"><{if isset($row['ride_shen_remark'][$part][$level])&&!empty($count_total)}><{round($row['ride_shen_remark'][$part][$level]/$count_total,4)*100}><{else}>0<{/if}>%</td>
+		   		 <{/for}>
+		   		 <td><{if $count_total!=0}><{round($count_shen/$count_total,4)*100}><{else}>0<{/if}>%</td>
+	   		 <{/if}>
+	   	</tr>
+	    <{/for}>
+	<{/foreach}>
+</tbody>
+</table>
+<{/if}>
+<div class="pagination pagination-centered"><{$page}></div>
+</div>
+
+</body>
+</html>

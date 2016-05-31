@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><{t}>登录流水<{/t}></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+	<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+	<script language="javascript" src="../../public/js/jquery.js"></script>
+	<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+	<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+	<label style="margin-left:5px;"><{t}>ip<{/t}>：</label>
+	<input type="text" name="ip" class="input-small" placeholder="<{t}>ip搜索<{/t}>" maxlength="25" value="<{$conditions['ip']}>">
+	<label style="margin-left:5px;"><{t}>登录时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+</form>
+
+<{if $data}>
+<div class="pagination pagination-right" style="margin:0;"><ul><{$page}></ul></div>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>等级<{/t}></th>
+		<th><{t}>登录时间<{/t}></th>
+		<th><{t}>登出时间<{/t}></th>
+		<th><{t}>在线时长<{/t}></th>
+		<th><{t}>首次登录<{/t}></th>
+		<th>user</th>
+		<th>gate</th>
+		<th>IP</th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+		<td><{$row['level']}></td>
+		<td><{$row['login_time']}></td>
+		<td><{$row['logout_time']}></td>
+		<td><{$row['online_length']|default:'--'}></td>
+		<td><{if $row['is_first']==1}><span class="badge badge-important"><{t}>是<{/t}></span><{else}><{t}>否<{/t}><{/if}></td>
+		<td><{$row['user_line']|default:''}></td>
+		<td><{$row['gate_line']|default:''}></td>
+		<td><{$row['ip']}>(<{$row['country']}>)</td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+<{/if}>
+</body>
+</html>

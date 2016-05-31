@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/kindeditor/kindeditor-min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/lwjsback.js.php"></script>
+<script lang="javascript">
+	var same_editor;
+	KindEditor.ready(function(K) {
+			same_editor = K.create('#activity_content',{
+					themeType:'diy',
+					items : ['undo', 'redo', '|','active','level','rule','online','race','money','item','|','rewardview'],
+					filterMode : false,
+					width:'500px',
+					height:'400px',
+					minWidth:'500px;'
+			});
+	});
+	$(document).ready(function(){
+			$('#activity_set').click(function(){
+					var activity_content = $.trim(same_editor.html());
+					if(activity_content ==''){
+							$("#activity_ajax_result").html('<{t}>请设置活动内容<{/t}>');
+							return
+					}
+					$.ajax({
+							url:'?',
+							type:'post',
+							data:{type:'activity_set',activity:activity_content},
+							dataType:'json',
+							success:function(result){
+									if(result.status==='error'){
+											$("#activity_ajax_result").html(result.info);
+									}else{
+											same_editor.html('');
+											$("#activity_ajax_result").html(result.info);
+									}
+							}
+					})
+			})
+
+			$('.edit').click(function(){
+					var html = $(this).siblings('div').html();
+					same_editor.html(html);
+					$('#li_log').removeClass('active');
+					$('#log').removeClass('active');
+					$('#li_act').addClass('active');
+					$('#act').addClass('active');
+			})
+			$('.main-select').change(function(){
+					var tag = $(this).attr('tag');
+					$(this).attr('checked')==='checked'?$('#'+tag+' .sub-select').attr('checked','checked'):$('#'+tag+' .sub-select').removeAttr('checked');
+			})
+			$('.activity_action').click(function(){
+					var val = $(this).val(),
+					action = $(this).attr('action'),
+					ids = [],
+					types = [];
+					$('#log .sub-select:checked').each(function(i){
+							ids[i] = $(this).attr('id');
+							types[i] = $(this).val();
+							i++;
+					})
+					if(ids.length === 0){
+							$('#activity_ajax').html('<{t}>请选择活动<{/t}>');
+							return;
+					}
+					if(window.confirm('<{t}>你确实要对所选活动<{/t}>'+val)){
+							var phprpc_client = new PHPRPC_Client('../interface/pm_api.php', ['pm_activity']);
+							phprpc_client.pm_activity({action:action,ids:ids,types:types}, function (result, args, output, warning) {
+									if(result.status==='ok'){
+											switch(action){
+													//更新
+													case '1':
+															for(var i in ids){
+																	$('#tr_'+ids[i]+' .act_status').html('<span class="badge badge-success"><{t}>已更新<{/t}></span>');
+															}
+															break;
+													//Xóa
+											case '2':
+													for(var i in ids){
+															$('#tr_'+ids[i]).detach();
+													}
+													break;
+									}
+									$('#activity_ajax').html(result.info);
+									window.location.href='?type=<{$type}>';
+							}else{
+									$('#activity_ajax').html(result.info);
+							}
+					}, true);
+			}
+	})
+})
+</script>
+</head>
+<body>
+	<div class="tabbable">
+			<ul class="nav nav-tabs">
+					<li class="<{if $type neq 'log' && $type neq 'cardlog'}>active<{/if}>" id="li_act"><a href="#act" data-toggle="tab"><{t}>活动设置<{/t}></a></li>
+					<li <{if $type eq 'log'}>class="active"<{/if}> id="li_log"><a href="?type=log"><{t}>活动记录<{/t}></a></li>
+			</ul>
+			<div class="tab-content">
+					<!--活动设置-->
+					<div class="row tab-pane<{if $type neq 'log' && $type neq 'cardlog'}> active<{/if}>" id="act">
+							<dl class="dl-horizontal">
+									<dt><{t}>活动说明<{/t}></dt>
+									<dd><span class="label label-info">
+											 <{t}>活动模板是一个活动的完整样例，也表示着本活动的标签嵌套结构<{/t}> </span>
+											</dd>
+											<dd>
+											<span class="label label-info">
+													<{t}>more字样的表示可以设置多个，其他则在其父标签内只能唯一。<{/t}>
+											</span>
+										 </dd>
+									<dt><{t}>活动内容<{/t}></dt>
+									<dd>
+											<ul class="unstyled row-fluid">
+													<li class="span6"><textarea name="activity_content" id="activity_content"></textarea>
+													</li>
+													<li class="span6">
+															<ul class="unstyled" style="margin-left: 10px;">
+																	<li><select name="act_tpl">
+																					<script lang="javascript">
+																					var activityInfo = [],
+																					activityName = [];
+																					$('[name="act_tpl"]').change(function(){
+																							var type = $(this).val();
+																							type==''?$('#act_help').html(''):$('#act_help').html(activityInfo[type]);
+																					})
+																					</script>
+																					<option value=""><{t}>活动模板<{/t}>
+																					</option>
+																					<{foreach $act_info as $act_type => $info}>
+																					<option value="<{$act_type}>"><{$info['name']}></option>
+																					<script lang="javascript">
+																					activityInfo[<{$act_type}>] = '<{$info["info"]}>';
+																					activityName[<{$act_type}>] = '<{$info["name"]}>';
+																					</script>
+																					<{/foreach}>
+																			</select></li>
+																	<li id="act_help"></li>
+															</ul>
+													</li>
+											</ul>
+									</dd>
+									<dd><input type="button" class="btn btn-primary" id="activity_set" value="<{t}>设置<{/t}>">              <span id="activity_ajax_result" class="badge badge-warning"></span></dd>
+							</dl>
+					</div>
+					<!--活动设置-->
+
+					<!--活动设置记录开始-->
+					<{if $type eq 'log'}>
+					<div class="tab-pane active" id="log">
+							<table class="table table-striped table-bordered table-condensed">
+									<thead>
+											<tr>
+													<th><{t}>活动ID<{/t}></th>
+													<th><{t}>活动类型<{/t}></th>
+													<th><{t}>Thời gian<{/t}></th>
+													<th><{t}>活动参数<{/t}></th>
+													<th><{t}>状态<{/t}></th>
+													<th>GMER</th>
+													<th><{t}>设置时间<{/t}></th>
+													<th><{t}>操作<{/t}></th>
+											</tr>
+									</thead>
+									<tbody>
+											<{foreach $activitys as $activity}>
+											<tr id="tr_<{$activity['_id']}>">
+													<td class="form-inline">
+															<input type="checkbox" class="sub-select" name="actid" value="<{$activity['type']}>" id="<{$activity['_id']}>"><label for="<{$activity['_id']}>"><{$activity['_id']}></label>
+													</td>
+													<td>
+															<script lang="javascript">
+															document.write(activityName[<{$act_type}>]);
+															</script>
+													</td>
+													<td><{$activity['start']|date_format:"%Y-%m-%d %T"}>~<{$activity['over']|date_format:"%Y-%m-%d %T"}></td>
+													<td style="text-align:left">
+															<a class="accordion-toggle btn" data-toggle="collapse" href="#act_<{$activity['_id']}>"><i class="icon-search"></i></a>
+															<div id="act_<{$activity['_id']}>" class="accordion-body collapse">
+																	<{$activity_obj->showActivity($activity['txt'])}>
+															</div>
+													</td>
+													<td class="act_status"><{if $activity['status'] eq 0}><span class="badge badge-warning"><{t}>未更新<{/t}></span><{else}><span class="badge badge-success"><{t}>已更新<{/t}></span><{/if}></td>
+													<td><{$activity['gmer']}></td>
+													<td><{$activity['set_time']|date_format:"%Y-%m-%d %T"}></td>
+													<td><div style="display: none"><{$activity['txt']}></div>
+															<input type="button" class="btn btn-primary edit" value="<{t}>Sửa<{/t}>"></td>
+											</tr>
+											<{/foreach}>
+											<tr class="form-inline">
+													<td colspan="8">
+															<input type="checkbox" class="main-select" tag="log" id="selectall"><label for="selectall"><{t}>全选/全不选<{/t}></label>
+															<input type="button" class="btn btn-primary activity_action" action="1" value="<{t}>更新<{/t}>">
+															<input type="button" class="btn btn-primary activity_action" action="2" value="<{t}>彻底Xóa<{/t}>">
+															<span id="activity_ajax" class="badge badge-warning"></span>
+													</td>
+											</tr>
+									</tbody>
+							</table>
+							<div class="pagination pagination-centered">
+									<{$page}>
+							</div>
+					</div>
+					<{/if}>
+					<!--活动设置记录结束-->
+			</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function($){
+	$('a[rel="popover"]').mouseover(function(){
+		$(this).popover({placement:'right',html:true}).popover('show');
+		$(this).next('.popover').mouseover();
+	}).mouseout(function(){
+		$('.popover').hide();
+	});
+	$('.popover').live('mouseover',function(){
+		$('.popover').hide();
+		$(this).show();
+	}).live('mouseout',function(){
+		$(this).hide();	
+	});	
+});
+</script>
+</head>
+
+<body>
+<div id="nav">
+<ul class="nav nav-tabs">
+	<{foreach $action_conf as $key=>$item}>
+	<li <{if $conditions['action']==$key}>class="active"<{/if}>><a href="?action=<{$key}>&date=<{$conditions['date']}>"><{$item}></a></li>
+	<{/foreach}>
+</ul>
+</div>
+
+<form class="well form-search">
+	<{t}>时间<{/t}>： 
+	<input class="input-medium" placeholder="<{t}>输入日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="date" name="date" value="<{$conditions['date']}>"> 
+	<{t}>只显示前<{/t}>：<input class="input-mini-mini" placeholder="<{t}>输入日期<{/t}>" type="text" name="limit" value="<{$conditions['limit']}>">
+	<{t}>名<{/t}><button type="submit" class="btn btn-primary" style="margin-left: 10px;"><{t}>查 询<{/t}></button>
+	<span class="label label-important"><{t}>选择天数代表当天晚上23:59:59的时候的排行榜情况，当天的则是即时<{/t}></span>
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+	<input type="hidden" name="type" value="<{$conditions['type']}>">
+</form>
+
+<div class="tabbable tabs-left">
+<ul class="nav nav-tabs" style="min-height: 120px">
+	<li style="margin-top: 20px;">&nbsp;</li>
+	<{foreach $type_conf as $key=>$item}>
+	<li <{if $conditions['type']==$key}>class="active"<{/if}>><a href="?action=<{$conditions['action']}>&type=<{$key}>&date=<{$conditions['date']}>"><{$item}></a></li>
+	<{/foreach}>
+</ul>
+<div class="tab-content tab-pane active">
+<table class="table table-bordered table-hover">
+	<{if $conditions['action']=='personal'}>
+	<thead>
+		<tr>
+			<th><{t}>排名<{/t}></th>
+			<th><{t}>账号<{/t}></th>
+			<th><{t}>角色名<{/t}></th>
+			<th><{if $conditions['type']=='lvl'}><{t}>等级<{/t}><{else if $conditions['type']=='fight' }><{t}>战斗力<{/t}><{/if}></th>
+			<th><{t}>帮派<{/t}></th>
+			<th><{t}>阵营<{/t}></th>
+			<th><{t}>职业<{/t}></th>
+			<th><{t}>在线情况<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{foreach $data as $row}>
+		<tr>
+			<td><{$row['num']}></td>
+			<td><{$row['account']}></td>
+			<td><a href="../gm/player.php?id=<{$row['_id']}>"><{$row['name']}></a></td>
+			<td><{$row[$conditions['type']]}></td>
+			<td><a href="../gm/faction.php?faction_name=<{$row['faction_name']}>"><{$row['faction_name']|default:'-'}></a></td>
+			<td><{$camp_conf[$row['camp']]}></td>
+			<td><{$occ_conf[$row['occ']]}></td>
+			<td><{if is_online($row['_id'])==true}><span class="badge badge-info"><{t}>在线<{/t}></span><{else}><{t}>离线<{/t}><{/if}></td>
+		</tr>
+		<{/foreach}>
+	</tbody>
+	
+	<{else if $conditions['action']=='money'}>
+	<thead>
+		<tr>
+			<th><{t}>排名<{/t}></th>
+			<th><{t}>元宝<{/t}></th>
+			<th><{t}>礼券<{/t}></th>
+			<th><{t}>铜币<{/t}></th>
+			<th><{t}>铜券<{/t}></th>
+			<th><{t}>账号<{/t}></th>
+			<th><{t}>角色ID<{/t}></th>
+			<th><{t}>角色名<{/t}></th>
+			<th><{t}>等级<{/t}></th>
+			<th><{t}>最后登录<{/t}></th>
+			<th><{t}>注册时间<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{foreach $data as $row}>
+		<tr>
+			<th><{$row['num']}></th>
+			<td><{$row['moneyList'][2]|default:0}></td>
+			<td><{$row['moneyList'][3]|default:0}></td>
+			<td><{$row['moneyList'][0]|default:0}></td>
+			<td><{$row['moneyList'][1]|default:0}></td>
+			<td><{$row['account']}></td>
+			<td><{$row['_id']}></td>
+			<td><a href="../gm/player.php?id=<{$row['_id']}>"><{$row['name']}></a></td>
+			<td><{$row['level']}></td>
+			<td><{$row['loginTime']|date_format:'%Y-%m-%d %H:%M'}></td>
+			<td><{$row['creat_time']|date_format:'%Y-%m-%d %H:%M'}></td>
+		</tr>
+		<{/foreach}>
+	</tbody>
+	
+
+	<{else if $conditions['action']=='faction'}>
+	<thead>
+		<tr>
+			<th><{t}>排名<{/t}></th>
+			<th><{t}>帮派<{/t}></th>
+			<th><{t}>等级<{/t}></th>
+			<th><{t}>人数<{/t}></th>
+			<th><{t}>资金<{/t}></th>
+			<th><{t}>守卫等级<{/t}></th>
+			<th><{t}>阵营<{/t}></th>
+			<th><{t}>帮主<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{foreach $data as $row}>
+		<tr>
+			<td><{$row['num']}></td>
+			<td><a href="../gm/faction.php?faction_name=<{$row['name']}>"><{$row['name']}></a></td>
+			<td><{$row['level']}></td>
+			<td><{$row['memberSize']}></td>
+			<td><{$row['money']}></td>
+			<td><{$row['copyLevel']}></td>
+			<td><{$camp_conf[$row['camp']]}></td>
+			<td><a href="../gm/player.php?id=<{$row['president_id']}>"><{$row['president_name']|default:''}></a></td>
+		</tr>
+		<{/foreach}>
+	</tbody>
+
+	<{else if $conditions['action']=='pet'}>
+	<thead>
+		<tr>
+			<th><{t}>排名<{/t}></th>
+			<th><{t}>宠物名字<{/t}></th>
+			<th><{t}>宠物模型<{/t}></th>
+			<th><{t}>主人名字<{/t}></th>
+			<th>
+				<{if $conditions['type']=='fight'}><{t}>宠物战力<{/t}><{/if}>
+				<{if $conditions['type']=='attack'}><{t}>宠物攻击<{/t}><{/if}>
+				<{if $conditions['type']=='defense'}><{t}>宠物防御<{/t}><{/if}>
+				<{if $conditions['type']=='maxHp'}><{t}>宠物生命<{/t}><{/if}>
+			</th>
+			<th><{t}>在线情况<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{foreach $data as $row}>
+		<tr>
+			<td><{$row['num']}></td>
+			<td><{$row['name']}></td>
+			<td><{$row['original_name']|default:''}></td>
+			<td><a href="../gm/player.php?id=<{$row['owner']}>"><{$row['char_name']|default:$row['owner']}></a></td>
+			<td><{$row[$conditions['type']]}></td>
+			<td><{if is_online($row['owner'])==true}><span class="badge badge-info"><{t}>在线<{/t}></span><{else}><{t}>离线<{/t}><{/if}></td>
+		</tr>
+		<{/foreach}>
+	</tbody>
+
+	<{else if $conditions['action']=='equip'}>
+	<thead>
+		<tr>
+			<th><{t}>排名<{/t}></th>
+			<th><{t}>装备名字<{/t}></th>
+			<th><{t}>部位<{/t}></th>
+			<th><{t}>职业<{/t}></th>
+			<th><{t}>持有者<{/t}></th>
+			<th><{t}>装备评分<{/t}></th>
+			<th><{t}>在线情况<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{foreach $data as $row}>
+		<tr>
+			<td><{$row['num']}></td>
+			<td><a href="javascript:;" rel="popover" data-placement="right" data-title='<{t}>附加属性<{/t}>' data-content='
+			<ul class="unstyled">
+			<{foreach $row['attr'] as $key=>$item}>
+				<li><{$item['attr']}>：<{$item['value']}></li>
+			<{/foreach}>
+			</ul>
+		'><{$row['name']}></a></td>
+			<td><{$row['part']}></td>
+			<td><{$row['occ_name']}></td>
+			<td><a href="../gm/player.php?id=<{$row['id']}>"><{$row['char_name']}></a></td>
+			<td><{$row['fight']}></td>
+			<td><{if is_online($row['id'])==true}><span class="badge badge-info"><{t}>在线<{/t}></span><{else}><{t}>离线<{/t}><{/if}></td>
+		</tr>
+		<{/foreach}>
+	</tbody>
+	
+	<{else if $conditions['action']=='flower'}>
+	<thead>
+		<tr>
+			<th><{t}>排名<{/t}></th>
+			<th><{t}>名字<{/t}></th>
+			<th><{t}>帮派<{/t}></th>
+			<th><{t}>魅力值<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{foreach $data as $row}>
+		<tr>
+			<td><{$row['num']}></td>
+			<td><a href="../gm/player.php?id=<{$row['_id']}>"><{$row['char_name']}></a></td>
+			<td><a href="../gm/faction.php?faction_name=<{$row['faction']}>"><{$row['faction']}></a></td>
+			<td><{$row['charm']}></td>
+		</tr>
+		<{/foreach}>
+	</tbody>
+	
+	<{else if $conditions['action']=='arena'}>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css"/>
+<script language="javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+<script language="javascript">
+$(function($){
+	$('.colorbox').click(function(){
+		$(this).colorbox({iframe:true,width:"1000px", height:"500px",opacity:0});
+	});
+})
+</script>
+	<thead>
+		<tr>
+			<th><{t}>排名<{/t}></th>
+			<th><{t}>角色名<{/t}></th>
+			<th><{t}>参与次数<{/t}></th>
+			<th><{t}>胜场<{/t}></th>
+			<th><{t}>胜率<{/t}></th>
+			<th><{t}>获得竞技点<{/t}></th>
+			<th><{t}>在线情况<{/t}></th>
+			<th><{t}>查看详细<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{foreach $data as $row}>
+		<tr>
+			<th><{$row['num']}></th>
+			<td><a href="../gm/player.php?id=<{$row['winner_id']}>"><{$row['winner_name']}></a></td>
+			<td><{$row['count']}></td>
+			<td><{$row['winner_count']}></td>
+			<td><{$row['win_ratio']}>%</td>
+			<td><{$row['score']}></td>
+			<td><{if is_online($row['winner_id'])==true}><span class="badge badge-info"><{t}>在线<{/t}></span><{else}><{t}>离线<{/t}><{/if}></td>
+			<td><a class="colorbox" href="../log/log_arena.php?char_id=<{$row['winner_id']}>&start_date=<{$conditions['date']}>&end_date=<{$conditions['date']}>&from=info"><i class="icon-search"></i><{t}>点击查看<{/t}></a></td>
+		</tr>
+		<{/foreach}>
+	</tbody>
+
+	<{/if}>
+</table>
+</div>
+</div>
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

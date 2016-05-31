@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>时间流失<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(document).ready(function(){
+	$('.time_type').click(function(){
+			$('#start_date').val($(this).attr('start-date'));
+			$('#end_date').val($(this).attr('end-date'));
+			$('#type').val($(this).attr('name'));
+			$('#btn_search').click();			
+	});	
+});
+	</script>
+</head>
+
+<body>
+<div id="nav">
+	<ul class="nav nav-tabs">
+	<{foreach $action_conf as $act=>$name}>
+		<li <{if $action==$act}>class="active"<{/if}>><a href="?action=<{$act}>"><{$name}></a></li>
+	<{/foreach}>
+	</ul>
+</div>
+<form class="accordion-group" style="padding-bottom:10px;">
+<div class="accordion-heading">
+	<span class="accordion-toggle" data-toggle="collapse" href="#collapse"> <a href="javascript:;"><{t}>定义说明<{/t}></a></span>
+</div>
+<div id="collapse" class="accordion-body in collapse">
+	<div class="accordion-inner">
+		<ol>
+		<{if $action=='everyday_loss'}>
+			<li><{t}>新玩家数：首次创建角色的玩家数量(注册数)<{/t}></li>
+			<li><{t}>老玩家数：今天登录的非新玩家数<{/t}></li>
+			<li><{t}>玩家小计：新玩家数+老玩家数<{/t}></li>
+			<li><{t}>累计玩家数=当天新玩家数+前一天的累计玩家数<{/t}></li>
+			<li><{t}>流失率= 100%-（当天老玩家数 ÷ 前一天累计玩家数 ）×100%<{/t}></li>
+		<{else if $action=='minute_loss'}>
+			<li><{t}>1分,3分,5分,1小时等流失率：第一次登录游戏在1,3,5分钟等时间内首次退出游戏的人数占当天注册玩家数的比例<{/t}></li>
+			<li><{t}>次日流失率：第一天注册且第二天无登录的玩家÷新玩家×100%<{/t}></li>
+			<li><{t}>标准流失率：连续三天没有登录玩家÷总玩家×100%<{/t}></li>
+		<{else if $action=='online_length'}>
+			<li>
+			<table>
+				<tr>
+					<{foreach $fields as $field=>$colour}>
+					<td style="padding-left: 10px;"><{$field}>:</td>
+					<td width="20" bgcolor="<{$colour}>"></td>
+					<{/foreach}>
+					<td style="padding-left: 10px;">(m：分钟,h：小时)</td>
+				</tr>
+			</table>
+			</li>
+		<{/if}>
+		</ol>
+	</div>
+</div>
+<div class="form-search">
+	<div class="btn-group">
+<{foreach $time_type as $type=>$item}>
+	<button class="btn time_type <{if $type==$conditions['type']}>btn-inverse<{/if}>" type="button"
+name="<{$type}>" start-date="<{$item[1]}>" end-date="<{$item[2]}>"><{$item[0]}></button>
+<{/foreach}>
+	</div>
+	<label style="margin-left: 10px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})"
+id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜索<{/t}></button>
+	<input type="hidden" id="type" name="type" value="<{$type}>">
+	<input type="hidden" id="action" name="action" value="<{$action}>">
+</div>
+</form>
+
+<{if $action=='everyday_loss'}>
+<table class="table table-bordered table-hover table-striped" style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th><a href="?action=<{$action}>&type=<{$conditions['type']}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>&sort=<{if
+			$conditions['sort']==1}>0<{else}>1<{/if}>"><{t}>统计日期<{/t}></a> <i class="<{if
+			$conditions['sort']==1}>icon-arrow-up<{else}>icon-arrow-down<{/if}>"></i>
+			</th>
+			<th><{t}>新玩家<{/t}></th>
+			<th><{t}>老玩家<{/t}></th>
+			<th><{t}>玩家小计<{/t}></th>
+			<th><{t}>累计玩家<{/t}></th>
+			<th><{t}>流失率<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{if $data}> <{foreach $data as $row}>
+		<tr>
+			<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+			<td><{$row['character_count']}></td>
+			<td><{$row['old_player']}></td>
+			<td><{$row['subtotal_player']}></td>
+			<td><{$row['total_character_count']}></td>
+			<td style="text-align: left"><img
+				src="../../public/images/baifenbi.gif" style="" height:10px; width:<{$row['loss']}>px"/><{$row['loss']}>%</td>
+		</tr>
+		<{/foreach}> <{else}>
+		<tr>
+			<td colspan="6"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+		</tr>
+		<{/if}>
+	</tbody>
+</table>
+
+<{else if $action=='minute_loss'}>
+<script language="javascript">
+$(function($){
+	$('.alt').toggle(function(){
+		$('.'+this.name).fadeIn();
+	},function(){
+		$('.'+this.name).hide();
+	});
+});
+</script>
+<table class="table table-bordered table-hover table-condensed"
+	style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th rowspan="2"><a href="?action=<{$action}>&type=<{$conditions['type']}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>&sort=<{if
+			$conditions['sort']==1}>0<{else}>1<{/if}>"><{t}>统计日期<{/t}></a> <i class="<{if
+			$conditions['sort']==1}>icon-arrow-up<{else}>icon-arrow-down<{/if}>"></i>
+			</th>
+			<th rowspan="2"><{t}>注册数<{/t}></th>
+			<th colspan="16"><{t}>各时间点流失率<{/t}></th>
+		</tr>
+		<tr>
+			<th><{t}>10秒内<{/t}></th>
+			<th><{t}>10-30秒<{/t}></th>
+			<th><{t}>30秒-1分钟<{/t}></th>
+			<th><{t}>1-2分<{/t}></th>
+			<th><{t}>2-3分<{/t}></th>
+			<th><{t}>3-5分<{/t}></th>
+			<th><{t}>5-10分<{/t}></th>
+			<th><{t}>10-20分<{/t}></th>
+			<th><{t}>20-30分<{/t}></th>
+			<th class="m30_h1 hide"><{t}>30-40分<{/t}></th>
+			<th class="m30_h1 hide"><{t}>40-50分<{/t}></th>
+			<th class="m30_h1 hide"><{t}>50-60分<{/t}></th>
+			<th style="background-color:#FCF8E3"><a href="javascript:;" name="m30_h1" class="alt"><{t}>30分-1小时<{/t}></a></th>
+			<th class="h1_h3 hide"><{t}>60-80分<{/t}></th>
+			<th class="h1_h3 hide"><{t}>80-100分<{/t}></th>
+			<th class="h1_h3 hide"><{t}>100-120分<{/t}></th>
+			<th class="h1_h3 hide"><{t}>2-3小时<{/t}></th>
+			<th style="background-color:#FCF8E3"><a href="javascript:;" name="h1_h3" class="alt"><{t}>1-3小时<{/t}></a></th>
+			<th><{t}>3-5小时<{/t}></th>
+			<th><{t}>5小时+<{/t}></th>
+			<th><{t}>次日<{/t}></th>
+			<th><{t}>标准<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{if $data}> <{foreach $data as $key=>$row}>
+		<tr>
+			<td><{$row['date']}></td>
+			<td><{$row['character_count']}></td>
+			<td><{$row['s10_loss']}>%</td>
+			<td><{$row['s10_s30_loss']}>%</td>
+			<td><{$row['s30_m1_loss']}>%</td>
+			<td><{$row['m1_m2_loss']}>%</td>
+			<td><{$row['m2_m3_loss']}>%</td>
+			<td><{$row['m3_m5_loss']}>%</td>
+			<td><{$row['m5_m10_loss']}>%</td>
+			<td><{$row['m10_m20_loss']}>%</td>
+			<td><{$row['m20_m30_loss']}>%</td>
+			<td class="m30_h1 hide"><{$row['m30_m40_loss']}>%</td>
+			<td class="m30_h1 hide"><{$row['m40_m50_loss']}>%</td>
+			<td class="m30_h1 hide"><{$row['m50_m60_loss']}>%</td>
+			<td style="background-color:#FCF8E3"><{$row['m30_h1_loss']}>%</td>
+			<td class="h1_h3 hide"><{$row['m60_m80_loss']}>%</td>
+			<td class="h1_h3 hide"><{$row['m80_m100_loss']}>%</td>
+			<td class="h1_h3 hide"><{$row['m100_m120_loss']}>%</td>
+			<td class="h1_h3 hide"><{$row['h2_h3_loss']}>%</td>
+			<td style="background-color:#FCF8E3"><{$row['h1_h3_loss']}>%</td>
+			<td><{$row['h3_h5_loss']}>%</td>
+			<td><{$row['h5_loss']}>%</td>
+			<td><{$row['morrow_loss_loss']}>%</td>
+			<td><{$row['standard_loss_loss']}>%</td>
+		</tr>
+		<{/foreach}> <{else}>
+		<tr>
+			<td colspan="17"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+		</tr>
+		<{/if}>
+	</tbody>
+</table>
+
+<{else if $action=='online_length'}>
+<table class="table table-bordered table-condensed"
+	style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th><a href="?action=<{$action}>&type=<{$conditions['type']}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>&sort=<{if
+			$conditions['sort']==1}>0<{else}>1<{/if}>"><{t}>统计日期<{/t}></a> <i class="<{if
+			$conditions['sort']==1}>icon-arrow-up<{else}>icon-arrow-down<{/if}>"></i>
+			</th>
+			<th><{t}>登录人数<{/t}></th>
+			<th><{t}>5分钟以下<{/t}></th>
+			<th><{t}>5分钟-1小时<{/t}></th>
+			<th><{t}>1-2小时<{/t}></th>
+			<th><{t}>2-3小时<{/t}></th>
+			<th><{t}>3-4小时<{/t}></th>
+			<th><{t}>4-6小时<{/t}></th>
+			<th><{t}>6-8小时<{/t}></th>
+			<th><{t}>8小时以上<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{if $data}> <{foreach $data as $row}>
+		<tr>
+			<td rowspan="3"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+			<td rowspan="3"><{$row['login_player']}></td>
+			<{foreach $fields as $field=>$colour}>
+			<td><{$row[$field]}></td>
+			<{/foreach}>
+		</tr>
+		<tr>
+			<{foreach $fields as $field=>$colour}>
+			<td><{$row[$field|cat:'_ratio']}>%</td>
+			<{/foreach}>
+		</tr>
+		<tr>
+			<td colspan="8" style="padding: 0px; margin: 0px;">
+			<table width="100%">
+				<tr>
+					<{foreach $fields as $field=>$colour}> <{if
+					$row[$field|cat:'_ratio']>0}>
+					<td height="10" bgcolor="<{$colour}>"
+					width="<{$row[$field|cat:'_ratio']}>%"></td>
+					<{/if}> <{/foreach}>
+				</tr>
+			</table>
+			</td>
+		</tr>
+		<{/foreach}> <{else}>
+		<tr>
+			<td colspan="10"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+		</tr>
+		<{/if}>
+	</tbody>
+</table>
+<{/if}>
+
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

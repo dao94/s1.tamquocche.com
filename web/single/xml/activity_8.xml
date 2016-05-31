@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="8" name="Ưu Đãi Hoạt Động">
+    <show_time>2016-04-08 11:46:22</show_time>
+    <hide_time>2016-04-11 23:59:59</hide_time>
+    <info><![CDATA[Tham gia các hoạt động Ôn Tuyền đánh quái phụ bản và vận tiêu sẽ được tăng 20% Lợi Ích]]></info>
+    <item>
+      <info><![CDATA[Tham gia các hoạt động Ôn Tuyền đánh quái phụ bản và vận tiêu sẽ được tăng 20% Lợi Ích]]></info>
+      <time>
+        <show_time>2016-04-08 10:49:00</show_time>
+        <hide_time>2016-04-11 22:59:00</hide_time>
+        <start_time>2016-04-08 10:49:00</start_time>
+        <end_time>2016-04-11 22:59:00</end_time>
+      </time>
+    </item>
+    <item>
+      <info><![CDATA[]]></info>
+      <time>
+        <show_time>2016-04-08 10:49:00</show_time>
+        <hide_time>2016-04-11 22:59:00</hide_time>
+        <start_time>2016-04-08 10:49:00</start_time>
+        <end_time>2016-04-11 22:59:00</end_time>
+      </time>
+    </item>
+    <item>
+      <info><![CDATA[]]></info>
+      <time>
+        <show_time>2016-04-08 10:49:00</show_time>
+        <hide_time>2016-04-11 22:59:00</hide_time>
+        <start_time>2016-04-08 10:49:00</start_time>
+        <end_time>2016-04-11 22:59:00</end_time>
+      </time>
+    </item>
+  </activity>
+</config>

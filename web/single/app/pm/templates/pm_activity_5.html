@@ -1,0 +1,239 @@
+<!--累计充值-->
+<{if $tpl=='set'}>
+<script language="javascript">
+$(function($){
+	$('select[name="fall_type"]').live('change',function(){
+		$(this).find('option[value="'+this.value+'"]').attr('selected',true);
+		$(this).find('option[value!="'+this.value+'"]').attr('selected',false);
+		$(this).parents('table').find('.items').hide();
+		$(this).parents('table').find('.items').find('input').attr('disabled',true);
+		$(this).parents('table').find('.items').find('select').attr('disabled',true);
+		$(this).parents('table').find('.items_'+this.value).fadeIn();
+		$(this).parents('table').find('.items_'+this.value).find('input').attr('disabled',false);
+		$(this).parents('table').find('.items_'+this.value).find('select').attr('disabled',false);
+	});
+});
+
+function getParam(){
+	var param=[],check_result=true,index_arr=[];
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		$(control_group).each(function(b,control){
+			var item_list=[],money_list=[],type_obj=$(control).find('[name="fall_type"]:enabled');
+			var cost=parseInt($.trim($(control).find('[name="cost"]').val())),
+					limit=parseInt($.trim($(control).find('[name="limit"]').val())),
+					index=parseInt($.trim($(control).find('[name="index"]').val())),
+					limit_type=parseInt($.trim($(control).find('[name="limit_type"]').val()));
+			limit=isNaN(limit)||limit<1 ? 1 : limit;//每人限购默认1
+			if(isNaN(cost)||cost<1){
+				$(control).find('[name="cost"]').focus();
+				alert('<{t}>充值元宝必填,且是大于1的数字<{/t}>');
+				check_result=false;
+				return false;
+			}else if(isNaN(index)||index<1){
+				$(control).find('[name="index"]').focus();
+				alert('<{t}>序号必填,且是大于1的数字<{/t}>');
+				check_result=false;
+				return false;
+			}else if(index_arr[index]===true){
+				$(control).find('[name="index"]').focus();
+				alert('<{t}>序号不允许相同<{/t}>');
+				check_result=false;
+				return false;
+			}
+			index_arr[index]=true;
+
+			$(type_obj).each(function(c,obj){
+				var type=$(obj).val(),
+						items_row=$(obj).parents('table').find('.items_'+type),
+						num=parseInt($.trim(items_row.find('[name="num"]').val()));
+				switch(type){
+					case '1':
+						//单道具
+						var item_val=items_row.find('[name="item"]').val().split('|'),
+								bind=items_row.find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+						num=isNaN(num)||num<1 ? 1 : num;
+						if($.trim(item_val[0])==''){
+							items_row.find('[name="item"]').focus();
+							alert('<{t}>道具为必填项<{/t}>');
+							check_result=false;
+							return false;
+						}
+						item_list.push({itemId:item_val[0],number:num,bind:bind});
+						break;
+					case '2':
+						//金钱
+						if(isNaN(num)||num<1){
+							items_row.find('[name="num"]').focus();
+							alert('<{t}>数量必填,且是大于1的数字<{/t}>');
+							check_result=false;
+							return false;
+						}
+						var money_type=items_row.find('[name="money_type"]').val();
+						money_list.push({money:num,type:money_type});
+						break;
+				}
+			});
+			param.push({index:index,cost:cost,limit:limit,limitType:limit_type,itemList:item_list,moneyList:money_list});
+		});
+	});
+	return check_result ? param : check_result;
+}
+</script>
+
+<{if isset($data['param'])}>
+	<{$params=$data['param']}>
+<{else}>
+	<{$params=array(1)}>
+<{/if}>
+<{foreach $params as $param}>
+<div class="control-group">
+	<div class="control-label">
+		<div>
+		<button type="button" class="btn btn-mini btn-inverse btn_add_config"><i class="icon-plus icon-white"></i></button>
+		<button type="button" class="btn btn-mini btn-inverse btn_del_config"><i class="icon-minus icon-white"></i></button>
+		<{t}>活动配置<{/t}>
+		</div>
+	</div>
+
+	<div style="margin-left: 180px;">
+		<{t}>充值元宝<{/t}>：<input type="text" name="cost" class="input-mini" maxlength="8" value="<{$param['cost']|default:''}>" placeholder="<{t}>正整数<{/t}>"/>
+		<{t}>每人限购<{/t}>：<input type="text" name="limit" value="<{$param['limit']|default:''}>" class="input-mini" maxlength="8" placeholder="<{t}>默认1<{/t}>"/>
+		<{t}>序号<{/t}>：<input type="text" name="index" value="<{$param['index']|default:''}>" class="input-mini" maxlength="6" placeholder="<{t}>正整数<{/t}>"/>
+		<div style="display:none;">
+		<{t}>限购类型<{/t}>：
+		<select name="limit_type" class="input-small">
+		<{foreach $activity_config['pay_limit_type'] as $key=>$value}>
+			<option value="<{$key}>" <{if isset($param['limitType'])&&$param['limitType']==$key}>selected="selected"<{/if}>><{$value}></option>
+		<{/foreach}>
+		</select>
+		</div>
+	</div>
+
+	<{if empty($param['itemList'])}>
+		<{$param['itemList']=array()}>
+	<{/if}>
+	<{if empty($param['moneyList'])}>
+		<{$param['moneyList']=array()}>
+	<{/if}>
+	<{if empty($param['itemList'])&&empty($param['moneyList'])}>
+		<{$param['itemList']=array(1)}>
+	<{/if}>
+
+	<{foreach $param['itemList'] as $items}>
+	<div class="controls form-search" style="margin-bottom:5px; margin-top:5px;">
+		<table>
+			<tr>
+				<td valign="top">
+					<select class="input-small" name="fall_type">
+					<{foreach $activity_config['pay_type'] as $key=>$value}>
+						<option value="<{$key}>" <{if $key==1}>selected="selected"<{/if}>><{$value}></option>
+					<{/foreach}>
+					</select>
+				</td>
+				<td class="items items_1">
+					<{t}>道具<{/t}>：
+					<div class="input-append">
+						<input type="text" class="input-large" name="item"  value="<{if isset($items['itemId'])}><{$items['itemId']}>|<{t}><{$items['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+						<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+					</div>
+					<{t}>数量<{/t}>：<input type="text" class="input-mini" name="num" maxlength="6" value="<{$items['number']|default:''}>" placeholder="默认1">
+					<label><input type="checkbox" name="bind" <{if isset($items['bind'])&&$items['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+				</td>
+				<td class="items items_2 hide">
+					<select class="input-small" name="money_type">
+					<{foreach $activity_config['money_type'] as $key=>$item}>
+					<{if $key>0}>
+						<option value="<{$key}>"><{$item}></option>
+					<{/if}>
+					<{/foreach}>
+					</select>
+					<{t}>数量<{/t}>：<input type="text" class="input-small" name="num" maxlength="8">
+				</td>
+				<td valign="top">
+					<button type="button" class="btn btn-small btn-primary btn_add_items"><i class="icon-plus icon-white"></i></button>
+					<button type="button" class="btn btn-small btn-primary btn_del_items"><i class="icon-minus icon-white"></i></button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<{/foreach}>
+
+	<{foreach $param['moneyList'] as $items}>
+	<div class="controls form-search" style="margin-bottom:5px; margin-top:5px;">
+		<table>
+			<tr>
+				<td valign="top">
+					<select class="input-small" name="fall_type">
+					<{foreach $activity_config['pay_type'] as $key=>$value}>
+						<option value="<{$key}>" <{if $key==2}>selected="selected"<{/if}>><{$value}></option>
+					<{/foreach}>
+					</select>
+				</td>
+				<td class="items items_1 hide">
+					<{t}>道具<{/t}>：
+					<div class="input-append">
+						<input type="text" class="input-large" name="item" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+						<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+					</div>
+					<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" maxlength="6" placeholder="默认1" value="1">
+					<label><input type="checkbox" name="bind"><{t}>非绑定<{/t}></label>
+				</td>
+				<td class="items items_2">
+					<select class="input-small" name="money_type">
+					<{foreach $activity_config['money_type'] as $key=>$item}>
+					<{if $key>0}>
+						<option value="<{$key}>" <{if isset($items['type'])&&$items['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+					<{/if}>
+					<{/foreach}>
+					</select>
+					<{t}>数量<{/t}>：<input type="text" class="input-small" name="num" value="<{$items['money']|default:''}>" maxlength="8">
+				</td>
+				<td valign="top">
+					<button type="button" class="btn btn-small btn-primary btn_add_items"><i class="icon-plus icon-white"></i></button>
+					<button type="button" class="btn btn-small btn-primary btn_del_items"><i class="icon-minus icon-white"></i></button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<{/foreach}>
+</div>
+<{/foreach}>
+
+<{else if $tpl=='show'}>
+<!--累计充值-->
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<{foreach $row['param'] as $params}>
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+		<div>
+			<{t}>充值元宝<{/t}>：<b><{$params['cost']}></b> &nbsp;&nbsp;
+			<{t}>每人限购<{/t}>：<{$params['limit']}> &nbsp;&nbsp;
+			<{t}>序号<{/t}>：<{$params['index']}> &nbsp;&nbsp;
+			<div style="display:none;"><{t}>限购类型<{/t}>：<{$activity_config['pay_limit_type'][$params['limitType']]}></div>
+		</div>
+		<ul class="unstyled">
+		<{if !empty($params['itemList'])}>
+			<{foreach $params['itemList'] as $item}>
+				<li>
+					<{t}>道具<{/t}>：<{t}><{$item['itemId']}><{/t}>(<{if $item['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+					<{t}>数量<{/t}>：<{$item['number']}>
+				</li>
+			<{/foreach}>
+		<{/if}>
+		<{if !empty($params['moneyList'])}>
+			<{foreach $params['moneyList'] as $item}>
+				<li>
+					<{t}><{$activity_config['money_type'][$item['type']]}><{/t}>：<{t}><{$item['money']}><{/t}>
+				</li>
+			<{/foreach}>
+		<{/if}>
+		</ul>
+	</dd>
+	<hr/>
+	<{/foreach}>
+</dl>
+
+<{/if}>

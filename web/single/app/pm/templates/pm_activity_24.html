@@ -1,0 +1,373 @@
+<!--充值转盘-->
+<{if $tpl=='set'}>
+<script language="javascript" src="../../public/js/kindeditor/kindeditor.js"></script>
+<script language="javascript">
+var info_editor;
+
+$(function($){
+	$('select[name="reward_type"]').live('change',function(){
+		$(this).find('option[value="'+this.value+'"]').attr('selected',true);
+		$(this).find('option[value!="'+this.value+'"]').attr('selected',false);
+		$(this).parents('table').find('.items').hide();
+		var reward_item=this.value>0 ? 1 : 0;
+		$(this).parents('table').find('.items_'+reward_item).fadeIn();
+	});
+});
+
+
+function getParam(){
+	var reward_list=[],index_list=[],check_result=true,config_list=[],reward_index=1;
+
+	var overday=parseInt($('#overday').val());
+	var initJade=parseInt($('#initJade').val());
+
+	if(isNaN(initJade)||initJade<1){
+		$('#initJade').focus();
+		alert('<{t}>初始元宝 为必填项,且是大于0的数字<{/t}>');
+		return false;
+	}
+
+	if(isNaN(overday)||overday<1){
+		$('#overday').focus();
+		alert('<{t}>开服几天内不生效 为必填项,且是大于0的数字<{/t}>');
+		return false;
+	}
+
+	$('.sub_item').each(function(e,sub_item){
+		var item_list=[];
+		var reward_type =$(sub_item).attr('reward-type');
+		var percent=0;
+		switch(reward_type){
+			case '1':
+				//道具奖励
+					var item_val=$.trim($(sub_item).find('[name="item"]').val()).split('|');
+					var num=parseInt($.trim($(sub_item).find('[name="num"]').val()));
+					var bind=$(sub_item).find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+					var item_id=$.trim(item_val[0]);
+					if(item_id==''){
+						$(sub_item).find('[name="item"]').focus();
+						alert('<{t}>道具为必填项<{/t}>');
+						check_result=false;
+						return false;
+					}else if(isNaN(num)||num<1){
+						$(sub_item).find('[name="num"]').focus();
+						alert('<{t}>数量为必填,且是大于0的数字<{/t}>');
+						check_result=false;
+						return false;
+					}
+					item_list.push({itemId:item_id,number:num,bind:bind});
+					reward_list.push({id:reward_index,type:reward_type,itemList:item_list});
+				break;
+			case '2':
+				//元宝奖励
+				percent=parseInt($.trim($(sub_item).find('[name="num"]').val()));
+				if(isNaN(percent)||percent<=0||percent>=100){
+					$(sub_item).find('[name="num"]').focus();
+					alert('<{t}>元宝百分比为必填,且必须是大于0小于100的数字<{/t}>');
+					check_result=false;
+					return false;
+				}
+				reward_list.push({id:reward_index,type:reward_type,percent:percent});
+				break;
+		}
+		//reward_list.push({id:reward_index,type:reward_type,percent:percent,itemList:item_list});
+		reward_index++;
+	});
+
+	if(check_result==false) return check_result;
+
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		var weightList=[];
+
+		$(control_group).each(function(b,control){
+			index=parseInt($(control).find('[name="index"]').val());
+			needJade=parseInt($(control).find('[name="needJade"]').val());
+			if(isNaN(needJade)||needJade<1){
+				$(control).find('[name="needJade"]').focus();
+				alert('<{t}>充值元宝为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}
+			else if(isNaN(index)||index<1){
+				$(control).find('[name="index"]').focus();
+				alert('<{t}>序号为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if(jQuery.inArray(index,index_list)>=0){
+				$(control).find('[name="index"]').focus();
+				alert('<{t}>序号不能相同<{/t}>');
+				check_result=false;
+				return false;
+			}
+
+			index_list.push(index);
+
+			var weight_index=1
+
+			$($(control).find('.controls')).each(function(c,controls){
+				$($(controls).find('.weight')).each(function(){
+					var weight=parseInt($(this).val());
+					if(isNaN(weight)||weight<0){
+						$(this).focus();
+						alert('<{t}>权重必填，且为非负整数<{/t}>');
+						check_result=false;
+						return false;
+					}
+					weightList.push({id:weight_index,weight:weight,});
+					weight_index++;
+				});
+			});
+		});
+		config_list.push({count:index,needJade:needJade,weightList:weightList});
+	});
+	return check_result ? {day:overday,initJade:initJade,reward:reward_list,config:config_list} : check_result;
+}
+
+//获取xml配置
+function getXml(){
+	var show_start_date=$.trim($('#show_start_date').val()),
+			show_end_date=$.trim($('#show_end_date').val()),
+			name=$.trim($('#name').val());
+			//info=$.trim(info_editor.html());
+	if(!show_start_date || !show_end_date || show_start_date>=show_end_date){
+		$('#show_start_date').focus();
+		alert('<{t}>请正确选择图标显示时间<{/t}>');
+		return false;
+	}else if(name==''){
+		$('#name').focus();
+		alert('<{t}>活动名称不能为空<{/t}>');
+		return false;
+	}
+	var xml_config={show_start_date:show_start_date,show_end_date:show_end_date,name:name};
+	return xml_config;
+}
+</script>
+<input type="hidden" name="is_xml"  value="1"/>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="show_start_date"><{t}>图标显示时间<{/t}></label>
+	<div class="controls">
+		<input type="text" id="show_start_date" name="show_start_date" class="input-medium" value="<{$data['xml_config']['show_time']|default:''}>" placeholder="<{t}>图标显示时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+		<i class="icon-minus"></i>
+		<input type="text" id="show_end_date" name="show_end_date" class="input-medium" value="<{$data['xml_config']['hide_time']|default:''}>" placeholder="<{t}>图标隐藏时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+	</div>
+</div>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="name"><{t}>活动名称<{/t}></label>
+	<div class="controls">
+		<input type="text" id="name" name="name" class="input-xlarge" value="<{$data['xml_config']['name']|default:''}>" maxlength="50" placeholder="<{t}>长度在50个字符之内<{/t}>">
+	</div>
+</div>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="overday"><{t}>开服几天内不生效<{/t}></label>
+	<div class="controls">
+		<input type="text" id="overday"  name="overday" class="input-xlarge" value="<{$data['param']['day']|default:''}>" maxlength="50" placeholder="<{t}>正整数<{/t}>">
+	</div>
+</div>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="initJade"><{t}>初始奖池元宝<{/t}></label>
+	<div class="controls">
+		<input type="text" id="initJade" name="initJade"  class="input-xlarge" value="<{$data['param']['initJade']|default:''}>" maxlength="50" placeholder="<{t}>正整数<{/t}>">
+	</div>
+</div>
+	<div class="controls form-search" style="margin-bottom:5px; margin-top:5px; margin-left:130px;">
+		<table>
+			<tr>
+				<td class="items items_0 ">
+				<ul class="unstyled" style="margin:0;">
+					<li class="sub_item" style="margin-bottom:10px" reward-type="1">
+						<{t}>道具1<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($data['param']['reward'][0]['itemList'][0]['itemId'])}><{$data['param']['reward'][0]['itemList'][0]['itemId']}>|<{t}><{$data['param']['reward'][0]['itemList'][0]['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$data['param']['reward'][0]['itemList'][0]['number']|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+						<label><input type="checkbox" name="bind" <{if isset($data['param']['reward'][0]['itemList'][0]['bind'])&&$data['param']['reward'][0]['itemList'][0]['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+					</li>
+					<li class="sub_item" style="margin-bottom:10px" reward-type="1">
+						<{t}>道具2<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($data['param']['reward'][1]['itemList'][0]['itemId'])}><{$data['param']['reward'][1]['itemList'][0]['itemId']}>|<{t}><{$data['param']['reward'][1]['itemList'][0]['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$data['param']['reward'][1]['itemList'][0]['number']|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+						<label><input type="checkbox" name="bind" <{if isset($data['param']['reward'][1]['itemList'][0]['bind'])&&$data['param']['reward'][1]['itemList'][0]['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+					</li>
+					<li class="sub_item" style="margin-bottom:10px" reward-type="1">
+						<{t}>道具3<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($data['param']['reward'][2]['itemList'][0]['itemId'])}><{$data['param']['reward'][2]['itemList'][0]['itemId']}>|<{t}><{$data['param']['reward'][2]['itemList'][0]['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$data['param']['reward'][2]['itemList'][0]['number']|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+						<label><input type="checkbox" name="bind" <{if isset($data['param']['reward'][2]['itemList'][0]['bind'])&&$data['param']['reward'][2]['itemList'][0]['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+					</li>
+					<li class="sub_item" style="margin-bottom:10px" reward-type="2">
+						<{t}>道具4<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="num" value="<{if isset($data['param']['reward'][3]['percent'])}><{$data['param']['reward'][3]['percent']}><{/if}>" placeholder="<{t}>元宝百分比<{/t}>">
+						</div>
+					</li>
+					<li class="sub_item" style="margin-bottom:10px" reward-type="1">
+						<{t}>道具5<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($data['param']['reward'][4]['itemList'][0]['itemId'])}><{$data['param']['reward'][4]['itemList'][0]['itemId']}>|<{t}><{$data['param']['reward'][4]['itemList'][0]['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$data['param']['reward'][4]['itemList'][0]['number']|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+						<label><input type="checkbox" name="bind" <{if isset($data['param']['reward'][4]['itemList'][0]['bind'])&&$data['param']['reward'][4]['itemList'][0]['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+					</li>
+					<li class="sub_item" style="margin-bottom:10px" reward-type="1">
+						<{t}>道具6<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($data['param']['reward'][5]['itemList'][0]['itemId'])}><{$data['param']['reward'][5]['itemList'][0]['itemId']}>|<{t}><{$data['param']['reward'][5]['itemList'][0]['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$data['param']['reward'][5]['itemList'][0]['number']|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+						<label><input type="checkbox" name="bind" <{if isset($data['param']['reward'][5]['itemList'][0]['bind'])&&$data['param']['reward'][5]['itemList'][0]['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+					</li>
+					<li class="sub_item" style="margin-bottom:10px" reward-type="2">
+						<{t}>道具7<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="num" value="<{if isset($data['param']['reward'][6]['percent'])}><{$data['param']['reward'][6]['percent']}><{/if}>" placeholder="<{t}>元宝百分比<{/t}>">
+						</div>
+					</li>
+					<li class="sub_item" style="margin-bottom:10px" reward-type="1">
+						<{t}>道具8<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($data['param']['reward'][7]['itemList'][0]['itemId'])}><{$data['param']['reward'][7]['itemList'][0]['itemId']}>|<{t}><{$data['param']['reward'][7]['itemList'][0]['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$data['param']['reward'][7]['itemList'][0]['number']|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+						<label><input type="checkbox" name="bind" <{if isset($data['param']['reward'][7]['itemList'][0]['bind'])&&$data['param']['reward'][7]['itemList'][0]['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+					</li>
+					<li class="sub_item" style="margin-bottom:10px" reward-type="1">
+						<{t}>道具9<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($data['param']['reward'][8]['itemList'][0]['itemId'])}><{$data['param']['reward'][8]['itemList'][0]['itemId']}>|<{t}><{$data['param']['reward'][8]['itemList'][0]['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$data['param']['reward'][8]['itemList'][0]['number']|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+						<label><input type="checkbox" name="bind" <{if isset($data['param']['reward'][8]['itemList'][0]['bind'])&&$data['param']['reward'][8]['itemList'][0]['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+					</li>
+					<li class="sub_item" style="margin-bottom:10px" reward-type="2">
+						<{t}>道具10<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="num" value="<{if isset($data['param']['reward'][9]['percent'])}><{$data['param']['reward'][9]['percent']}><{/if}>" placeholder="<{t}>元宝百分比<{/t}>">
+						</div>
+					</li>
+				</ul>
+				</td>
+			</tr>
+		</table>
+	</div>
+<!--
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="info"><{t}>活动描述<{/t}></label>
+	<div class="controls">
+		<textarea id="info" style="height:180px"><{$data['xml_config']['info']|default:''}></textarea>
+	</div>
+</div>
+-->
+
+<{* "设置"功能默认一个元素，"更新"根据数据展现 *}>
+<{if isset($data['param']['config'])}>
+	<{$config_list=$data['param']['config']}>
+<{else}>
+	<{$config_list=array(1)}>
+<{/if}>
+<{foreach $config_list as $config}>
+<div class="control-group">
+	<div class="control-label">
+		<div>
+
+			<button type="button" class="btn btn-mini btn-inverse btn_add_config"><i class="icon-plus icon-white"></i></button>
+			<button type="button" class="btn btn-mini btn-inverse btn_del_config"><i class="icon-minus icon-white"></i></button>
+
+		<{t}>抽奖设置<{/t}>
+		</div>
+	</div>
+
+	<div style="margin-left: 180px;" class="form-search">
+		<{t}>第几次抽奖<{/t}>：
+		<input type="text" name="index" value="<{$config['count']|default:''}>" class="input-mini" maxlength="6" placeholder="<{t}>正整数<{/t}>"/><{t}> <{/t}>
+		<{t}>累计充值元宝<{/t}>：
+		<input type="text" name="needJade" value="<{$config['needJade']|default:''}>" class="input-mini" maxlength="6" placeholder="<{t}>正整数<{/t}>"/><{t}> <{/t}>
+	</div>
+	<div style="margin-left: 180px;margin-top:10px;" class="controls">
+		<ul>
+		<li><{t}>道具1权重:<{/t}>： <input type="text" class="input-mini weight" style="margin-bottom:10px;" value="<{$config['weightList'][0]['weight']}>"></li>
+		<li><{t}>道具2权重:<{/t}>： <input type="text" class="input-mini weight" style="margin-bottom:10px;" value="<{$config['weightList'][1]['weight']}>"></li>
+		<li><{t}>道具3权重:<{/t}>： <input type="text" class="input-mini weight" style="margin-bottom:10px;" value="<{$config['weightList'][2]['weight']}>"></li>
+		<li><{t}>道具4权重:<{/t}>： <input type="text" class="input-mini weight" style="margin-bottom:10px;" value="<{$config['weightList'][3]['weight']}>"></li>
+		<li><{t}>道具5权重:<{/t}>： <input type="text" class="input-mini weight" style="margin-bottom:10px;" value="<{$config['weightList'][4]['weight']}>"></li>
+		<li><{t}>道具6权重:<{/t}>： <input type="text" class="input-mini weight" style="margin-bottom:10px;" value="<{$config['weightList'][5]['weight']}>"></li>
+		<li><{t}>道具7权重:<{/t}>： <input type="text" class="input-mini weight" style="margin-bottom:10px;" value="<{$config['weightList'][6]['weight']}>"></li>
+		<li><{t}>道具8权重:<{/t}>： <input type="text" class="input-mini weight" style="margin-bottom:10px;" value="<{$config['weightList'][7]['weight']}>"></li>
+		<li><{t}>道具9权重:<{/t}>： <input type="text" class="input-mini weight" style="margin-bottom:10px;" value="<{$config['weightList'][8]['weight']}>"></li>
+		<li><{t}>道具10权重:<{/t}>：<input type="text" class="input-mini weight" style="margin-bottom:10px;" value="<{$config['weightList'][9]['weight']}>"></li>
+		</ul>
+	</div>
+</div>
+<{/foreach}>
+
+
+<{else if $tpl=='show'}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"><{t}>显示时间<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['show_time']}> <i class="icon-minus"></i> <{$row['xml_config']['hide_time']}></dd>
+	<dt style="width:80px;"><{t}>活动名称<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['name']}></dd>
+
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+	<{if isset($row['param'])}>
+	<{$reward_list=$row['param']}>
+	<{else}>
+	<{$reward_list=array(1)}>
+	<{/if}>
+	<div>
+	<ul class="unstyled">
+		<li>
+			<{t}>开服几天内不生效：<{$row['param']['day']}><{/t}>
+		</li>
+		<li>
+			<{t}>初始奖池元宝：<{$row['param']['initJade']}><{/t}>
+		</li>
+		<{t}>道具列表<{/t}>
+		<{foreach $row['param']['reward'] as $one_reward}>
+		<{if $one_reward['type']==1}>
+		<{foreach $one_reward['itemList'] as $item}>
+				<li>
+					<{t}>道具<{$one_reward['id']}> : <{/t}><{t}><{$item['itemId']}><{/t}>(<{if $item['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+					<{t}>数量<{/t}>：<{$item['number']}>
+				</li>
+		<{/foreach}>
+		<{/if}>
+		<{if $one_reward['type']==2}>
+			<{t}>道具<{$one_reward['id']}> : 奖池元宝百分之<{$one_reward['percent']}><{/t}>
+		<{/if}>
+		<{/foreach}>
+	</ul>
+	<hr style="margin:2px 0 5px 0"/>
+	</div>
+	<{foreach $row['param']['config'] as $one_conf}>
+		<div>
+			<{t}>第<{$one_conf['count']}>次抽奖：<{/t}>
+			<{t}>所需元宝充值:<{/t}><{$one_conf['needJade']}>
+		</div>
+		<div>
+			<{t}>权重设置列表：<{/t}>
+			<{foreach $one_conf['weightList'] as $weight}>
+			<span class="label label-important"><b><{$weight['weight']}></b></span>
+			<{/foreach}>
+		</div>
+
+		<hr style="margin:2px 0 5px 0"/>
+	<{/foreach}>
+	</dd>
+</dl>
+
+<{/if}>

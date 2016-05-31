@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title><{t}>功能提醒框<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function($){
+	$('.show_detail').toggle(function(){
+		$('.detail_'+this.name).fadeIn();
+		$('.collect_'+this.name).attr({style:"font-weight:bold;font-size:14px;background-color:#F5F5F5"});
+	},function(){
+		$('.detail_'+this.name).hide();;
+	});
+});
+</script>
+</head>
+<body>
+<form class="accordion-group" style="margin-bottom:10px; padding-bottom:10px;">
+	<div class="accordion-heading">
+	 	<span class="accordion-toggle" data-toggle="collapse" href="#collapse">
+				<a href="javascript:;"><{t}>定义说明<{/t}></a>
+		</span>
+	</div>
+	<div id="collapse" class="accordion-body in collapse">
+		<div class="accordion-inner">
+		    <ol>
+		       <li><{t}>项目：第一行是每日的总数据，第二行开始为每日单项统计，暂时做5个，装备强化、伙伴资质、伙伴境界、坐骑升阶、伙伴觐见；<{/t}></li>
+		       <li><{t}>开放等级：各个单项的开放等级，总体则取最低那个；<{/t}></li>
+		       <li><{t}>点击人数：当日至少点击过1次的玩家数量；<{/t}></li>
+		       <li><{t}>满足人数：当日登陆玩家中等级大于等于开放等级的玩家数；<{/t}></li>
+		       <li><{t}>点击率：点击人数/满足人数*100%，保留两位小数；<{/t}></li>
+		       <li><{t}>点击次数：当日点击的总次数；<{/t}></li>
+		       <li><{t}>30-40级，n1-n2级：各个级别段的点击次数；<{/t}></li>
+		       <li><{t}>各单项开放等级：装备强化--33级，伙伴境界--35级，伙伴资质--41级，坐骑进阶--34级，伙伴觐见--35级。<{/t}></li>
+		    </ol>
+		</div>
+	</div>
+</form>
+
+<div style="margin-top:5px;">
+	<form class="well form-search" style="margin-bottom:10px; padding-bottom:10px;">
+		<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+		<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+		<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+	</form>
+	<div class="btn-group">
+		<{foreach $time_conf as $key=>$item}>
+		<{if $key<=$conditions['today']}>
+					<button type="button" onClick="javascript:window.location='?start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+		<{/if}>
+		<{/foreach}>
+    </div>
+    
+    <table class="table table-bordered table-hover" style="margin-top:10px;">
+    	<thead>
+    		<tr>
+    		<th><{t}>日期<{/t}></th>
+			<th><{t}>项目<{/t}></th>
+			<th><{t}>开放等级<{/t}></th>
+			<th><{t}>点击人数<{/t}></th>
+			<th><{t}>满足人数<{/t}></th>
+			<th><{t}>点击率<{/t}></th>
+			<th><{t}>点击次数<{/t}></th>
+			<{foreach $levels as $level}>
+			<th><{t}><{$level}>级<{/t}></th>
+			<{/foreach}>
+    		</tr>
+    	</thead>
+    	<tbody>
+    	<{if $data}>
+    		<{foreach $data as $key=>$items}>
+    		<tr>
+				<td  rowspan="<{$items|count}>"><{$key}></td>			
+				<{foreach $items as $k=>$row}>
+				<{if $k!=0}><tr><{/if}>
+				<td><{$click_box_conf[$k]['name']}></td>
+				<td><{$click_box_conf[$k]['level']}></td>
+				<td><{$row['player']}></td>
+				<td><{$row['allow_player']}></td>
+		        <td><{$row['click_ratio']}>%</td>
+		        <td><{$row['count']}></td>
+		        <{foreach $levels as $key=>$level}>
+		        <td><{$row['remark'][$level]|default:0}></td>
+		        <{/foreach}>
+				<{if $k+1!=count($items)}></tr><{/if}>
+				<{/foreach}>
+			</tr>
+    		<{/foreach}>
+    		<{else}>
+		   	<tr><td colspan="200"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+    	<{/if}>
+    	</tbody>
+    </table>
+    <div class="pagination pagination-centered"><{$page}></div>
+</div>
+</body>
+</html>

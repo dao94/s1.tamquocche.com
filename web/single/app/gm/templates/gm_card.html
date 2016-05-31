@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>卡类活动<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />  
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/lwjs.typeahead.js"></script>
+</head>
+<body>
+
+<div id="nav">
+	<ul class="nav nav-tabs" style="margin-bottom:10px;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<form class="well well-small form-search" method="get" action="">
+	<label><{t}>玩家ID<{/t}>：
+	<input name="id" class="input-mini" placeholder="<{t}>玩家ID<{/t}>..." maxlength="20" type="text" value="<{$conditions['id']}>"></label>
+	<label style="margin-left:5px;"><{t}>角色名<{/t}>：
+	<div class="input-append">
+		<input name="name" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="<{$conditions['name']}>"><span class="add-on"><i class="icon-search"></i></span>   
+	</div>
+	</label>
+	<label style="margin-left:5px;"><{t}>卡号<{/t}>：
+	<input name="type" class="input-mini" placeholder="<{t}>卡号类型<{/t}>" maxlength="3" type="text" value="<{$conditions['type']}>"></label>
+	<label style="margin-left:5px;"><{t}>激活码<{/t}>：
+	<input name="code" placeholder="<{t}>激活码<{/t}>" maxlength="32" type="text" value="<{$conditions['code']}>" style="width:225px"></label>
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" name="end_date" value="<{$conditions['end_date']}>">
+	<button type="submit" class="btn btn-primary"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>卡号<{/t}></th>
+		<th><{t}>卡名<{/t}></th>
+		<th><{t}>激活码<{/t}></th>
+		<th><{t}>领取时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['charId']}>"><{$row['char_name']}></a></td>
+		<td><{$row['type']}></td>
+		<td><{$row['type_name']}></td>
+		<td><{$row['code']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html> 

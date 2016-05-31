@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>神化分析<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function(){
+	$('.time_type').click(function(){
+		$('#start_date').val($(this).attr('start-date'));
+		$('#end_date').val($(this).attr('end-date'));
+		$('#type').val($(this).attr('name'));
+		$('#btn_search').click();
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well well-small form-search">
+	<div class="btn-group">
+<{foreach $time_type as $type=>$item}>
+	<button class="btn time_type <{if $type==$conditions['type']}>btn-inverse<{/if}>" type="button"
+name="<{$type}>" start-date="<{$item[1]}>" end-date="<{$item[2]}>"><{$item[0]}></button>
+<{/foreach}>
+	</div>
+	<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+    <input type="hidden" id="type" name="type">
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+</form>
+
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th>部位</th>
+		<th></th>
+		<{for $foo=1 to 12}>
+		<td class="strong1"><{t}>神<{/t}><{$foo}></td>
+	    <{/for}>
+		<th><{t}>神等级<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $row}>
+		<{for $part=1 to 12}>  <!-- 部位 -->
+		<tr>
+			<{if $part==1}>
+			<td rowspan="24"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+			<{/if}>
+			<td rowspan="2"><{$part_conf[$part]}></td>
+			<td><{t}>数量<{/t}></td>
+			<{$count_shenhua=0}><{$percent_shenhua=0}>
+			<{for $level=1 to 12}>  <!-- 等级 -->
+				<{$count_shenhua=$count_shenhua+$row['shenhua_remark'][$part][$level]|default:0}>
+				<td class="strong1 "><{$row['shenhua_remark'][$part][$level]|default:0}></td>
+	   		 <{/for}>
+	   		 <td><{$count_shenhua}></td>
+	   	</tr>
+	   	<tr>
+			<td><{t}>比例<{/t}></td>
+			<{for $level=1 to 12}>  <!-- 等级 -->
+				<td class="strong1 "><{if isset($row['shenhua_remark'][$part][$level])&&isset($row['allow_player'])}><{$percent_shenhua=$percent_shenhua+$row['shenhua_remark'][$part][$level]/$row['allow_player']}><{round($row['shenhua_remark'][$part][$level]/$row['allow_player'],4)*100}><{else}>0<{/if}>%</td>
+	   		 <{/for}>
+	   		 <td><{round($percent_shenhua/12,4)*100}>%</td>
+	   	</tr>
+	    <{/for}>
+	<{/foreach}>
+</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

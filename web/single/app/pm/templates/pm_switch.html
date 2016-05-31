@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script lang="javascript">
+$(document).ready(function(){
+	$('#tab1_set').click(function(){
+		var type = $('[name="type"]:checked').val(),status = $('[name="status"]').val(),param = $('[name="param"]').val();
+		var phprpc_client = new PHPRPC_Client('../interface/pm_api.php', ['pm_switch']);
+		phprpc_client.pm_switch({type:type,status:status,param:param}, function (result, args, output, warning) {
+			$('#tab1_ajax').html(result.info);
+			$('#span_'+type).html($('[name="status"] option:selected').html());
+		}, true);
+	})
+})
+</script>
+</head>
+<body>
+<div class="tabbable">
+<ul class="nav nav-tabs">
+	<li class="active"><a href="#tab1" data-toggle="tab"><{t}>功能开关<{/t}></a></li>
+</ul>
+<div class="tab-content">
+	<div class="row tab-pane active" id="tab1">
+		<dl class="dl-horizontal">
+			<dt><{t}>当前状态<{/t}></dt>
+			<dd class="form-inline">
+			<ul style="margin-left:0">
+			<{foreach $flag as $type=>$value}>
+				<li><{$switch_type_conf[$type]['name']}>：<span id="span_<{$type}>"><{$switch_action_conf[$value]}></span></li>
+			<{/foreach}>
+			</ul>
+			</dd>
+		
+			<dt><{t}>类型<{/t}></dt>
+			<dd class="form-inline">
+			<{foreach $switch_type_conf as $key=>$arr}>
+				<label style="margin-right:5px;"><input type="radio" name="type" value="<{$key}>" <{if $key==1}>checked<{/if}>><{$arr['name']}></label>
+			<{/foreach}>
+			</dd>
+			<dt><{t}>状态<{/t}></dt>
+			<dd>
+				<select name="status" class="span1">
+					<option value="0"><{t}>关闭<{/t}></option>
+					<option value="1"><{t}>开启<{/t}></option>
+				</select>
+			</dd>
+			<dt><{t}>参数<{/t}></dt>
+			<dd><input type="text" value="" name="param" class="input-small"> <span class="label label-info"><{t}>参数字段为选填字段，防沉迷：首次提示分钟，<{/t}></span></dd>
+			<dd>
+				<button type="button" id="tab1_set" class="btn btn-primary"><i class="icon-wrench icon-white"></i><{t}>设置<{/t}></button>
+				<span id="tab1_ajax" class="badge badge-warning"></span>
+			</dd>
+		</dl>
+	</div>
+</div>
+</div>
+</body>
+</html>

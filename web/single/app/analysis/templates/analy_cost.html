@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html ng-app>
+<head>
+<title><{t}>消费产出<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/angular.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+$(function($){
+	$('#btn_search').click();
+});
+function Ctrl($scope,$http) {
+	$scope.datas = [];
+	$scope.order = '-char_num1';
+	$scope.inner = 0;
+	$scope.field = 'date';
+	$scope.io = 0;
+	$scope.money_type = 3;
+	$scope.sum_money = [];
+	$scope.t_field = [];
+	$scope.minmax = [];
+	$scope.template = null;
+	$scope.search = function(){
+		var start = $('[name="start"]').val(),
+		end = $('[name="end"]').val();
+		var postData = {
+			action:'ajax',
+			inner:$scope.inner,
+			start:start,
+			end:end,
+			field:$scope.field,
+			io:$scope.io,
+			mall_type:$scope.mall_type,
+			money_type:$scope.money_type
+		};
+		$http.post('?action=ajax',postData).success(function(data){
+				if(data.status=='ok'){
+						$scope.datas = data.data;
+						if(data.cols==0){
+							$scope.template = null;
+						}else{
+							$scope.template = '?action=tpl&cols='+data.cols;
+						}
+						$scope.sum_money = data.sum_money;
+						$scope.t_field = data.t_field;
+						$scope.minmax = data.minmax;
+				}else{
+					$scope.datas=null;
+					//alert(data.info);
+				} 
+		});
+	}
+}
+</script>
+</head>
+
+<body ng-controller="Ctrl">	 
+<form action="?" method="post" class="well form-inline">
+	<{t}>用户类型<{/t}>：
+	<select class="span1" style="width: 100px;" name="inner" ng-model="inner">
+		<option value="1"><{t}>内部用户<{/t}></option>
+		<option value="0"><{t}>外部用户<{/t}></option>
+		<option value="2"><{t}>内部+外部<{/t}></option>
+	</select>
+	<{t}>货币类型<{/t}>：
+	<select class="span1" name="money_type" ng-model="money_type">
+		<option value="1"><{t}>铜币<{/t}></option>
+		<option value="2"><{t}>铜券<{/t}></option>
+		<option value="3"><{t}>元宝<{/t}></option>
+		<option value="4"><{t}>礼券<{/t}></option>
+	</select> 
+	<{t}>类型<{/t}>
+	<select class="span1" name="io" ng-model="io">
+		<option value="0"><{t}>消费<{/t}></option>
+		<option value="1"><{t}>产出<{/t}></option>
+	</select> 
+	<{t}>统计类型<{/t}>： 
+	<select class="span1" name="field" ng-model="field">
+		<option value="date"><{t}>日<{/t}></option>
+		<option value="week"><{t}>周<{/t}></option>
+		<option value="month"><{t}>月<{/t}></option>
+	</select> 
+	<{t}>时间<{/t}>：
+	<div class="input-append">
+		<input type="text" name="start" class="input-small" value="<{$yesterday|default:''}>" onclick="WdatePicker({dateFmt:'yyyyMMdd',maxDate:'%y-%M-{%d-1}'})">
+		<span class="add-on"><i class="icon-time"></i></span>
+	</div>
+	<i class="icon-minus"></i>
+	<div class="input-append">
+		<input type="text" name="end" class="input-small" value="<{$yesterday|default:''}>" onclick="WdatePicker({dateFmt:'yyyyMMdd',maxDate:'%y-%M-{%d-1}'})">
+		<span class="add-on"><i class="icon-time"></i></span>
+	</div>
+	<input type="hidden" name="action" value="search">
+	<button type="button" id="btn_search" class="btn btn-primary" ng-click="search()"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+</form>
+<div ng-include src="template"></div>
+</body>
+</html>

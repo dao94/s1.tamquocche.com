@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><{t}>任务计划管理<{/t}></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="refresh" content="300">
+	<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+	<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+	<script language="javascript" src="../../public/js/jquery.js"></script>
+	<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+	<script language="javascript">
+	$(document).ready(function(){
+		$('#btn_submit').click(function(){
+			var data=$('#data').val();
+			$.post('?action=do',{name:"<{$conditions['action']}>",data:data},function(msg){
+				alert(msg.info);
+			},'json');
+		});
+	});
+	</script>
+</head>
+
+<body>
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $conditions['action']==$key}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<div class="well" style="margin-top:10px;">
+	<div class="badge label-important"><{t}>注意事项：保存文件名即可，存放在app/task目录下<{/t}></div>
+	<div style="margin-top:10px;"><textarea id="data" name="data" style="width:98%; height:300px; line-height:20px; letter-spacing:1px; font-size:14px; font-weight:bold; font-family:Arial, Helvetica, sans-serif;" ><{$data}></textarea></div>
+	<button type="button" class="btn btn-primary" onClick="javascript:window.location='?action=<{$conditions['action']}>'"><{t}>取 消<{/t}></button>
+	<button id="btn_submit" type="button" class="btn btn-inverse"><{t}>提 交<{/t}></button>
+</div>
+</body>
+</html>

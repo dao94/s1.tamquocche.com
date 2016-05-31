@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>群英会分析<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function(){
+	$('.time_type').click(function(){
+		$('#start_date').val($(this).attr('start-date'));
+		$('#end_date').val($(this).attr('end-date'));
+		$('#type').val($(this).attr('name'));
+		$('#btn_search').click();
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well well-small form-search">
+	<div class="btn-group">
+<{foreach $time_type as $type=>$item}>
+	<button class="btn time_type <{if $type==$conditions['type']}>btn-inverse<{/if}>" type="button" name="<{$type}>" start-date="<{$item[1]}>" end-date="<{$item[2]}>"><{$item[0]}></button>
+<{/foreach}>
+	</div>
+	<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+    <input type="hidden" id="type" name="type">
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+</form>
+
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="3"><{t}>日期<{/t}></th>
+		<th rowspan="3"><{t}>开启等级<{/t}></th>
+		<th rowspan="3"><{t}>进入人数<{/t}></th>
+		<th rowspan="3"><{t}>满足人数<{/t}></th>
+		<th rowspan="3"><{t}>参与度<{/t}></th>
+		<th colspan="24"><{t}>排行榜<{/t}></th>
+	</tr>
+	<tr>
+		<{for $foo=1 to 8}>
+			<th colspan="3"><{t}>第<{/t}><{$foo}><{t}>名<{/t}></th>
+		<{/for}>
+	</tr>
+	<tr>
+		<{for $foo=1 to 8}>
+			<th><{t}>名称<{/t}></th>
+			<th><{t}>最高战绩<{/t}></th>
+			<th><{t}>战斗时长<{/t}></th>
+		<{/for}>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td ><{$row['level']|default:40}></td>
+		<td ><{$row['player']|default:0}></td>
+		<td ><{$row['allow_player']|default:0}></td>
+		<td ><{$row['avg_count']|default:0}>%</td>
+		<{for $foo=1 to 8}>
+			<{foreach $type_conf as $key=>$item}>
+				<{if $key==3}>
+				<td ><{round($row['remark'][$item|cat:$foo]/60,2)|default:0}><{t}>分<{/t}></td>
+				<{else if $key==2}>
+				<td ><{$fight_conf[$row['remark'][$item|cat:$foo]]|default:0}></td>
+				<{else if $key==1}>
+				<td ><{$row['remark'][$item|cat:$foo]|default:0}></td>
+				<{/if}>
+
+			<{/foreach}>
+	    <{/for}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

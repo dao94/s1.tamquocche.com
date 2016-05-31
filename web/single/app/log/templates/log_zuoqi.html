@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>坐骑流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+
+<style type="text/css">
+#type_list .span2{
+	width:122px;
+	height:20px;
+	line-height:20px;
+	overflow:hidden;
+}
+</style>
+
+<script language="javascript">
+$(function($){
+	$('#item_name').blur(function(){
+		this.value=='' ? $("input[name='item_id']").val('') : '';
+	}).next().click(function(){
+		$(this).prevAll(':input').keyup();
+	});
+
+	$('#btn_type').toggle(function(){
+		$('#type_list').fadeIn();
+	},function(){
+		$('#type_list').fadeOut();
+	});
+
+	$('#cb_all').click(function(){
+		$('.type').attr('checked',this.checked);
+	});
+
+	$('.btn_selected').click(function(){
+		$("input[name='type[]'][value='"+this.value+"']").attr('checked',false);
+		$('#btn_search').click();
+	});
+
+	<{if $conditions['type']}>
+		$('#type_list').fadeIn();
+	<{/if}>
+
+	$('*[rel="tooltip"]').live('mouseover',function(){
+		$(this).tooltip({placement:'top',html:true}).tooltip('show');
+	});
+});
+</script>
+
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+	<{if $conditions['action']=='model'}>
+	<label style="margin-left:5px;"><{t}>形象名<{/t}>：</label>
+	<input type="text" name="model_name" class="input-mini" maxlength="20" value="<{$conditions['model_name']}>">
+	<{/if}>
+
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-medium" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-medium" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<{if $conditions['action']=='model'}>
+	<label style="margin-left:5px;"><{t}>操作<{/t}>:</label>
+	<select name="io" class="input-small">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $ride_io_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['io']===$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+	<{/if}>
+
+	<{if $conditions['action']!='refine'}>
+	<button id="btn_type" type="button" class="btn btn-link"><{t}>项目类型<{/t}></button>
+	<{/if}>
+	
+	<button class="btn btn-primary" id="btn_search"><i class="icon-search icon-white"></i><{t}>搜索<{/t}></button>
+
+<{if $conditions['type']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['type'] as $item}>
+		<button class="btn btn-mini btn_selected" type="button" value="<{$item}>"><{$ride_type_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $ride_type_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="type[]" value="<{$key}>" class="type" <{if in_array($key,$conditions['type'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+
+	<input type="hidden" name="from" value="<{$conditions['from']}>">
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<div id="nav">
+	<ul class="nav nav-tabs" style="margin-bottom:10px;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>&char_id=<{$conditions['char_id']}>&from=<{$conditions['from']}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+
+<{if $data}>
+<div class="pagination pagination-right" style="margin:0;"><ul><{$page}></ul></div>
+<{if $conditions['action']=='up'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>坐骑等级<{/t}></th>
+		<th><{t}>增加祝福值<{/t}></th>
+		<th><{t}>祝福值<{/t}></th>
+		<th><{t}>项目<{/t}></th>
+		<th><{t}>属性<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+        <td><{$row['level']}></td>
+        <td><{$row['add_bless']}></td>
+        <td><{$row['bless_value']}></td>
+        <td><{$ride_type_conf[$row['type']]|default:$row['type']}></td>
+        <td>
+        <{t}>速度<{/t}>：<{$row['remark']['attr']['speed']|default:0}>;
+        <{t}>气血<{/t}>：<{$row['remark']['attr']['hp']|default:0}>;
+        <{t}>属性防御<{/t}>：
+        <a href="javascript:;" rel="tooltip" data-placement="right"
+        data-title="<{t}>火抗<{/t}>：<{$row['remark']['attr']['firedefense']|default:0}>
+                    <{t}>毒抗<{/t}>：<{$row['remark']['attr']['poisondefense']|default:0}>
+                    <{t}>冰抗<{/t}>：<{$row['remark']['attr']['icedefense']|default:0}>">
+        <{if empty($row['remark'])}>0<{else}><{$row['remark']['attr']['firedefense']|default:0+$row['remark']['attr']['poisondefense']|default:0+$row['remark']['attr']['icedefense']|default:0}><{/if}></a>;
+		<{if !empty($row['remark']['skill_name']['list'])}>
+			<{t}>技能列表<{/t}>：<{$row['remark']['skill_name']['list']}>
+		<{/if}>
+        </td>
+		<td><{$row['time']|date_format:'%Y-%m-%d %H:%M:%S'}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<{elseif $conditions['action']=='model'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>形象名<{/t}></th>
+		<th><{t}>操作<{/t}></th>
+		<th><{t}>项目<{/t}></th>
+		<th><{t}>属性<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+        <td><{$row['model_name']|default:$row['model_id']}></td>
+        <td><{$ride_io_conf[$row['io']]|default:$row['io']}></td>
+        <td><{$ride_type_conf[$row['type']]|default:$row['type']}></td>
+        <td>
+        <{t}>气血<{/t}>：<{$row['remark']['attr']['hp']|default:0}>;
+        <{t}>属性防御<{/t}>：
+        <a href="javascript:;" rel="tooltip" data-placement="right"
+        data-title="<{t}>火抗<{/t}>：<{$row['remark']['attr']['firedefense']|default:0}>
+                    <{t}>毒抗<{/t}>：<{$row['remark']['attr']['poisondefense']|default:0}>
+                    <{t}>冰抗<{/t}>：<{$row['remark']['attr']['icedefense']|default:0}>">
+        <{if empty($row['remark'])}>0<{else}><{$row['remark']['attr']['firedefense']|default:0+$row['remark']['attr']['poisondefense']|default:0+$row['remark']['attr']['icedefense']|default:0}><{/if}></a>
+        </td>
+		<td><{$row['time']|date_format:'%Y-%m-%d %H:%M:%S'}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+
+<{elseif $conditions['action']=='refine'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>角色名<{/t}></th>
+		<th rowspan="2"><{t}>装备部位<{/t}></th>
+		<th rowspan="2"><{t}>装备名称<{/t}></th>
+		<th colspan="2"><{t}>精炼结果<{/t}></th>
+		<th rowspan="2"><{t}>是否使用保护符<{/t}></th>
+		<th rowspan="2"><{t}>时间<{/t}></th>
+	</tr>
+	<tr>
+		<th><{t}>精炼前阶数<{/t}></th>
+		<th><{t}>精炼后阶数<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+		<td><{$part_conf[$row['part']]|default:$row['part']}></td>
+		<td><{t}><{$row['item_id']}><{/t}></td>
+		<td><{$row['prev_level']}></td>
+		<td><{$row['curr_level']}></td>
+		<td><{if $row['is_protect']}><{t}>是<{/t}><{else}><{t}>否<{/t}><{/if}></td>
+		<td><{$row['time']}></td>
+	</tr>	
+<{/foreach}>
+</tbody>
+</table>
+
+<{/if}>
+
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+<{/if}>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>升级流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function($){
+	$('#btn_type').toggle(function(){
+		$('#type_list').fadeIn();
+	},function(){
+		$('#type_list').fadeOut();
+	});
+
+	$('#cb_all').click(function(){
+		$('.type').attr('checked',this.checked);
+	});
+
+	$('.btn_selected').click(function(){
+		$("input[name='type[]'][value='"+this.value+"']").attr('checked',false);
+		$('#btn_search').click();
+	});
+
+	<{if $conditions['type']}>
+		$('#type_list').fadeIn();
+	<{/if}>
+});
+</script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-medium" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-medium" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<label style="margin-left:10px;"><{t}>原等级<{/t}>：</label>
+	<label><input class="input-mini-mini" placeholder="<{t}>最低<{/t}>" type="text" maxlength="4" id="min_level" name="min_level" value="<{$conditions['min_level']}>"/></label>
+	<label><i class="icon-minus"></i></label>
+	<label><input class="input-mini-mini" placeholder="<{t}>最高<{/t}>" type="text" maxlength="4" id="max_level" name="max_level" value="<{$conditions['max_level']}>"/></label>
+	<label><input type="checkbox" name="is_upgrade" value="1" <{if $conditions['is_upgrade']}>checked="checked"<{/if}> > <{t}>升级<{/t}></label>
+	<button id="btn_type" type="button" class="btn btn-link"><{t}>项目类型<{/t}></button>
+	<button class="btn btn-primary" id="btn_search"><{t}>搜索<{/t}></button>
+<{if $conditions['type']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['type'] as $item}>
+		<button class="btn btn-mini btn_selected" type="button" value="<{$item}>"><{$exp_type_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $exp_type_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="type[]" value="<{$key}>" class="type" <{if in_array($key,$conditions['type'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+</form>
+
+<div class="pagination pagination-right" style="margin:0;"><{$page}></div>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>等级信息<{/t}></th>
+		<th><{t}>剩余经验<{/t}></th>
+		<th><{t}>新增经验<{/t}></th>
+		<th><{t}>来源<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+		<td><span class="badge"><{$row['old_level']}></span> <i class="icon-forward"></i> <span class="badge badge-success"><{$row['new_level']}></span></td>
+		<td><{$row['left_exp']}></td>
+		<td><{$row['add_exp']}></td>
+		<td><{$row['type']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+</body>
+</html>

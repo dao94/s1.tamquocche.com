@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function($){
+	$('a[rel="popover"]').mouseover(function(){
+		$(this).popover({placement:'right',html:true}).popover('show');
+		$(this).next('.popover').mouseover();
+	}).mouseout(function(){
+		$('.popover').hide();
+	});
+	$('.popover').live('mouseover',function(){
+		$('.popover').hide();
+		$(this).show();
+	}).live('mouseout',function(){
+		$(this).hide();
+	});
+});
+</script>
+</head>
+
+<body>
+
+<form action="" class="well well-small form-search">
+	<{t}>Sửa时间<{/t}>：
+	<input class="input-small" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',dateFmt:'yyyy-MM-dd'})" name="start_date" value="<{$conditions['start_date']}>" placeholder="<{t}>开始时间<{/t}>" >
+	<i class="icon-minus"></i>
+	<input class="input-small" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',dateFmt:'yyyy-MM-dd'})" name="end_date" value="<{$conditions['start_date']}>" placeholder="<{t}>结束时间<{/t}>" >
+	<{t}>操作GM<{/t}>：<input type="text" name="gmer" class="input-medium" value="<{$conditions['gmer']}>" placeholder="<{t}>GM账号<{/t}>">
+	<button type="submit" class="btn btn-primary" style="margin-left:10px;"><i class="icon-search icon-white"></i><{t}>查询<{/t}></button>
+	<input type="hidden" name="char_id" value="<{$conditions['char_id']}>">
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<table class="table table-bordered table-hover">
+	<thead>
+		<tr>
+			<th><{t}>角色ID<{/t}></th>
+			<th><{t}>角色名<{/t}></th>
+			<th><{t}>Sửa原因<{/t}></th>
+			<th><{t}>Sửa内容<{/t}></th>
+			<th><{t}>操作GM<{/t}></th>
+			<th><{t}>操作时间<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+	<{foreach $data as $row}>
+		<tr>
+			<td><{$row['char_id']}></td>
+			<td><{$row['char_name']}></td>
+			<td><{$row['reason']}></td>
+			<td style="text-align:left">
+			<ul>
+			<{foreach $row['old_remark'] as $field=>$old_value}>
+				<li><{$field_conf[$field]|default:$field}>：<{$old_value}> <i class="icon-arrow-right"></i> <{$row['new_remark'][$field]|default:'<{t}>未知<{t}>'}> </li>
+			<{/foreach}>
+			</ul>
+			</td>
+			<td><{$row['gmer']}></td>
+			<td><{$row['time']}></td>
+		</tr>
+	<{/foreach}>
+	</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

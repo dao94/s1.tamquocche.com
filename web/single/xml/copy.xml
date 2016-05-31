@@ -1,0 +1,1096 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<copy_conf>
+	<!--层级副本示例-->
+	<copy name="蜀道试炼(单人)" entryid="560100">
+		<!--副本-->
+		<layer name="39级">
+			<!--本层的怪物和boss-->
+			<boss occ="6603">试炼官·祝融夫人</boss>
+			<boss occ="6606">试炼官·黄盖</boss>
+			<boss occ="6609">试炼官·许褚</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<boss occ="6612">试炼官·祝融夫人</boss>
+			<boss occ="6615">试炼官·黄盖</boss>
+			<boss occ="6618">试炼官·许褚</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<boss occ="6621">试炼官·祝融夫人</boss>
+			<boss occ="6624">试炼官·黄盖</boss>
+			<boss occ="6627">试炼官·许褚</boss>
+		</layer>
+	</copy>
+	<copy name="蜀道试炼(组队)" entryid="560200">
+		<!--副本-->
+		<layer name="39级">
+			<!--本层的怪物和boss-->
+			<boss occ="6632">精英试炼官·祝融夫人</boss>
+			<boss occ="6635">精英试炼官·黄盖</boss>
+			<boss occ="6638">精英试炼官·许褚</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<boss occ="6641">精英试炼官·祝融夫人</boss>
+			<boss occ="6644">精英试炼官·黄盖</boss>
+			<boss occ="6647">精英试炼官·许褚</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<boss occ="6650">精英试炼官·祝融夫人</boss>
+			<boss occ="6653">精英试炼官·黄盖</boss>
+			<boss occ="6656">精英试炼官·许褚</boss>
+		</layer>
+	</copy>
+	<copy name="兵临城下(单人)" entryid="600100">
+		<!--副本-->
+		<layer name="35级">
+			<!--本层的怪物和boss-->
+			<boss occ="4005">左将军（BOSS）</boss>
+			<boss occ="4010">左护大将（BOSS）</boss>
+			<boss occ="4015">右将军（BOSS）</boss>
+			<boss occ="4020">右护大将（BOSS）</boss>
+			<boss occ="4199">右将军（BOSS）</boss>
+			<boss occ="4204">右护大将（BOSS）</boss>
+		</layer>
+		<layer name="40级">
+			<!--本层的怪物和boss-->
+			<boss occ="4025">左将军（BOSS）</boss>
+			<boss occ="4030">左护大将（BOSS）</boss>
+			<boss occ="4035">右将军（BOSS）</boss>
+			<boss occ="4040">右护大将（BOSS）</boss>
+			<boss occ="4209">右将军（BOSS）</boss>
+			<boss occ="4214">右护大将（BOSS）</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<boss occ="4045">左将军（BOSS）</boss>
+			<boss occ="4050">左护大将（BOSS）</boss>
+			<boss occ="4055">右将军（BOSS）</boss>
+			<boss occ="4060">右护大将（BOSS）</boss>
+			<boss occ="4219">右将军（BOSS）</boss>
+			<boss occ="4224">右护大将（BOSS）</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<boss occ="4065">左将军（BOSS）</boss>
+			<boss occ="4070">左护大将（BOSS）</boss>
+			<boss occ="4075">右将军（BOSS）</boss>
+			<boss occ="4080">右护大将（BOSS）</boss>
+			<boss occ="4229">右将军（BOSS）</boss>
+			<boss occ="4234">右护大将（BOSS）</boss>
+		</layer>
+		<layer name="70级">
+			<!--本层的怪物和boss-->
+			<boss occ="4085">左将军（BOSS）</boss>
+			<boss occ="4090">左护大将（BOSS）</boss>
+			<boss occ="4095">右将军（BOSS）</boss>
+			<boss occ="4100">右护大将（BOSS）</boss>
+		</layer>
+	</copy>
+	<copy name="兵临城下(组队)" entryid="600200">
+		<!--副本-->
+		<layer name="35级">
+			<!--本层的怪物和boss-->
+			<boss occ="4855">精英左将军（BOSS）</boss>
+			<boss occ="4860">精英左护大将（BOSS）</boss>
+			<boss occ="4865">精英右将军（BOSS）</boss>
+			<boss occ="4870">精英右护大将（BOSS）</boss>
+			<boss occ="7005">精英右将军（BOSS）</boss>
+			<boss occ="7010">精英右护大将（BOSS）</boss>
+		</layer>
+		<layer name="40级">
+			<!--本层的怪物和boss-->
+			<boss occ="4875">精英左将军（BOSS）</boss>
+			<boss occ="4880">精英左护大将（BOSS）</boss>
+			<boss occ="4885">精英右将军（BOSS）</boss>
+			<boss occ="4890">精英右护大将（BOSS）</boss>
+			<boss occ="7015">精英右将军（BOSS）</boss>
+			<boss occ="7020">精英右护大将（BOSS）</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<boss occ="4895">精英左将军（BOSS）</boss>
+			<boss occ="4900">精英左护大将（BOSS）</boss>
+			<boss occ="4905">精英右将军（BOSS）</boss>
+			<boss occ="4910">精英右护大将（BOSS）</boss>
+			<boss occ="7025">精英右将军（BOSS）</boss>
+			<boss occ="7030">精英右护大将（BOSS）</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<boss occ="4915">精英左将军（BOSS）</boss>
+			<boss occ="4920">精英左护大将（BOSS）</boss>
+			<boss occ="4925">精英右将军（BOSS）</boss>
+			<boss occ="4930">精英右护大将（BOSS）</boss>
+			<boss occ="7035">精英右将军（BOSS）</boss>
+			<boss occ="7040">精英右护大将（BOSS）</boss>
+		</layer>
+		<layer name="70级">
+			<!--本层的怪物和boss-->
+			<boss occ="4935">精英左将军（BOSS）</boss>
+			<boss occ="4940">精英左护大将（BOSS）</boss>
+			<boss occ="4945">精英右将军（BOSS）</boss>
+			<boss occ="4950">精英右护大将（BOSS）</boss>
+		</layer>
+	</copy>
+	<copy name="草船借箭(单人)" entryid="700100">
+		<!--副本-->
+		<layer name="35级">
+			<!--本层的怪物和boss-->
+			<boss occ="4304">一阶稻草魔头</boss>
+			<boss occ="4305">二阶稻草魔头</boss>
+			<boss occ="4306">三阶稻草魔头</boss>
+			<boss occ="4307">四阶稻草魔头</boss>
+			<boss occ="4308">五阶稻草魔头</boss>
+			<boss occ="4309">六阶稻草魔头</boss>
+			<boss occ="4310">七阶稻草魔头</boss>
+			<boss occ="4311">八阶稻草魔头</boss>
+			<boss occ="4312">九阶稻草魔头</boss>
+			<boss occ="4313">终极稻草魔头</boss>
+		</layer>
+		<layer name="40级">
+			<!--本层的怪物和boss-->
+			<boss occ="4317">一阶稻草魔头</boss>
+			<boss occ="4318">二阶稻草魔头</boss>
+			<boss occ="4319">三阶稻草魔头</boss>
+			<boss occ="4320">四阶稻草魔头</boss>
+			<boss occ="4321">五阶稻草魔头</boss>
+			<boss occ="4322">六阶稻草魔头</boss>
+			<boss occ="4323">七阶稻草魔头</boss>
+			<boss occ="4324">八阶稻草魔头</boss>
+			<boss occ="4325">九阶稻草魔头</boss>
+			<boss occ="4326">终极稻草魔头</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<boss occ="4330">一阶稻草魔头</boss>
+			<boss occ="4331">二阶稻草魔头</boss>
+			<boss occ="4332">三阶稻草魔头</boss>
+			<boss occ="4333">四阶稻草魔头</boss>
+			<boss occ="4334">五阶稻草魔头</boss>
+			<boss occ="4335">六阶稻草魔头</boss>
+			<boss occ="4336">七阶稻草魔头</boss>
+			<boss occ="4337">八阶稻草魔头</boss>
+			<boss occ="4338">九阶稻草魔头</boss>
+			<boss occ="4339">终极稻草魔头</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<boss occ="4343">一阶稻草魔头</boss>
+			<boss occ="4344">二阶稻草魔头</boss>
+			<boss occ="4345">三阶稻草魔头</boss>
+			<boss occ="4346">四阶稻草魔头</boss>
+			<boss occ="4347">五阶稻草魔头</boss>
+			<boss occ="4348">六阶稻草魔头</boss>
+			<boss occ="4349">七阶稻草魔头</boss>
+			<boss occ="4350">八阶稻草魔头</boss>
+			<boss occ="4351">九阶稻草魔头</boss>
+			<boss occ="4352">终极稻草魔头</boss>
+		</layer>
+		<layer name="70级">
+			<!--本层的怪物和boss-->
+			<boss occ="4356">一阶稻草魔头</boss>
+			<boss occ="4357">二阶稻草魔头</boss>
+			<boss occ="4358">三阶稻草魔头</boss>
+			<boss occ="4359">四阶稻草魔头</boss>
+			<boss occ="4360">五阶稻草魔头</boss>
+			<boss occ="4361">六阶稻草魔头</boss>
+			<boss occ="4362">七阶稻草魔头</boss>
+			<boss occ="4363">八阶稻草魔头</boss>
+			<boss occ="4364">九阶稻草魔头</boss>
+			<boss occ="4365">终极稻草魔头</boss>
+		</layer>
+	</copy>
+	<copy name="草船借箭(精英)" entryid="700200">
+		<!--副本-->
+		<layer name="35级">
+			<!--本层的怪物和boss-->
+			<boss occ="4404">一阶精英魔头</boss>
+			<boss occ="4405">二阶精英魔头</boss>
+			<boss occ="4406">三阶精英魔头</boss>
+			<boss occ="4407">四阶精英魔头</boss>
+			<boss occ="4408">五阶精英魔头</boss>
+			<boss occ="4409">六阶精英魔头</boss>
+			<boss occ="4410">七阶精英魔头</boss>
+			<boss occ="4411">八阶精英魔头</boss>
+			<boss occ="4412">九阶精英魔头</boss>
+			<boss occ="4413">终极精英魔头</boss>
+		</layer>
+		<layer name="40级">
+			<!--本层的怪物和boss-->
+			<boss occ="4417">一阶精英魔头</boss>
+			<boss occ="4418">二阶精英魔头</boss>
+			<boss occ="4419">三阶精英魔头</boss>
+			<boss occ="4420">四阶精英魔头</boss>
+			<boss occ="4421">五阶精英魔头</boss>
+			<boss occ="4422">六阶精英魔头</boss>
+			<boss occ="4423">七阶精英魔头</boss>
+			<boss occ="4424">八阶精英魔头</boss>
+			<boss occ="4425">九阶精英魔头</boss>
+			<boss occ="4426">终极精英魔头</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<boss occ="4430">一阶精英魔头</boss>
+			<boss occ="4431">二阶精英魔头</boss>
+			<boss occ="4432">三阶精英魔头</boss>
+			<boss occ="4433">四阶精英魔头</boss>
+			<boss occ="4434">五阶精英魔头</boss>
+			<boss occ="4435">六阶精英魔头</boss>
+			<boss occ="4436">七阶精英魔头</boss>
+			<boss occ="4437">八阶精英魔头</boss>
+			<boss occ="4438">九阶精英魔头</boss>
+			<boss occ="4439">终极精英魔头</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<boss occ="4443">一阶精英魔头</boss>
+			<boss occ="4444">二阶精英魔头</boss>
+			<boss occ="4445">三阶精英魔头</boss>
+			<boss occ="4446">四阶精英魔头</boss>
+			<boss occ="4447">五阶精英魔头</boss>
+			<boss occ="4448">六阶精英魔头</boss>
+			<boss occ="4449">七阶精英魔头</boss>
+			<boss occ="4450">八阶精英魔头</boss>
+			<boss occ="4451">九阶精英魔头</boss>
+			<boss occ="4452">终极精英魔头</boss>
+		</layer>
+		<layer name="70级">
+			<!--本层的怪物和boss-->
+			<boss occ="4456">一阶精英魔头</boss>
+			<boss occ="4457">二阶精英魔头</boss>
+			<boss occ="4458">三阶精英魔头</boss>
+			<boss occ="4459">四阶精英魔头</boss>
+			<boss occ="4460">五阶精英魔头</boss>
+			<boss occ="4461">六阶精英魔头</boss>
+			<boss occ="4462">七阶精英魔头</boss>
+			<boss occ="4463">八阶精英魔头</boss>
+			<boss occ="4464">九阶精英魔头</boss>
+			<boss occ="4465">终极精英魔头</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(40级)" entryid="304000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="4601">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="4603">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="4605">乾(随机出1个)</boss>
+			<boss occ="4606">兑(随机出1个)</boss>
+			<boss occ="4607">离(随机出1个)</boss>
+			<boss occ="4608">震(随机出1个)</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="4613">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="4615">暗夜蝠王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="4618">死水妖王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="4621">蛮荒巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="4624">大地尊者</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="4630">乾天蜥神</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="4632">震天雷圣</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="4634">黄泉冥妖</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="4637">洪荒岩神</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(50级)" entryid="305000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="4640">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="4642">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="4647">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="4652">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="4654">暗夜蝠王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="4657">魂魅女王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="4660">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="4695">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="4691">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="4663">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="4696">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="4674">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(52级)" entryid="308000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="4733">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="4734">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="4735">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="4736">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="4737">魂魅女王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="4738">暗夜蝠王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="4739">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="4742">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="4743">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="4744">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="4745">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="4746">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(54级)" entryid="309000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="4747">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="4748">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="4749">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="4750">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="4751">魂魅女王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="4752">暗夜蝠王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="4753">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="4756">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="4757">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="4758">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="4759">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="4760">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(56级)" entryid="310000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="4761">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="4762">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="4763">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="4764">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="4765">魂魅女王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="4766">暗夜蝠王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="4767">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="4770">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="4771">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="4772">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="4773">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="4774">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(58级)" entryid="311000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="4775">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="4776">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="4777">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="4778">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="4779">魂魅女王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="4780">暗夜蝠王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="4781">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="4784">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="4785">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="4786">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="4787">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="4788">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(60级)" entryid="306000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="4705">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="4706">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="4707">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="4708">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="4710">魂魅女王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="4709">暗夜蝠王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="4711">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="4695">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="4715">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="4712">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="4716">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="4717">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(62级)" entryid="312000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="9000">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="9001">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="9002">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="9003">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="9004">暗夜蝠王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="9005">魂魅女王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="9006">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="9009">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="9010">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="9011">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="9012">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="9013">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(64级)" entryid="313000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="9014">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="9015">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="9016">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="9017">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="9018">暗夜蝠王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="9019">魂魅女王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="9020">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="9023">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="9024">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="9025">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="9026">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="9027">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(66级)" entryid="314000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="9028">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="9029">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="9030">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="9031">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="9032">暗夜蝠王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="9033">魂魅女王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="9034">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="9037">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="9038">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="9039">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="9040">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="9041">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(68级)" entryid="315000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="9042">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="9043">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="9044">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="9045">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="9046">暗夜蝠王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="9047">魂魅女王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="9048">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="9051">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="9052">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="9053">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="9054">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="9055">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="乾坤八卦(70级)" entryid="316000">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="9056">神威天将</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="9057">血目蜥蜴</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="9058">烈焰暴君</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="9059">灵锤雷公</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="9060">暗夜蝠王</boss>
+		</layer>
+		<layer name="6层">
+			<!--本层的怪物和boss-->
+			<boss occ="9061">魂魅女王</boss>
+		</layer>
+		<layer name="7层">
+			<!--本层的怪物和boss-->
+			<boss occ="9062">荒古巨人</boss>
+		</layer>
+		<layer name="8层">
+			<!--本层的怪物和boss-->
+			<boss occ="9065">两姐妹的嫁妆</boss>
+		</layer>
+		<layer name="9层">
+			<!--本层的怪物和boss-->
+			<boss occ="9066">生死棋圣</boss>
+		</layer>
+		<layer name="10层">
+			<!--本层的怪物和boss-->
+			<boss occ="9067">三相魔帅</boss>
+		</layer>
+		<layer name="11层">
+			<!--本层的怪物和boss-->
+			<boss occ="9068">毒手药仙</boss>
+		</layer>
+		<layer name="12层">
+			<!--本层的怪物和boss-->
+			<boss occ="9069">无极剑圣</boss>
+		</layer>
+	</copy>
+	<copy name="凤雏秘境" entryid="510100">
+		<!--副本-->
+		<layer name="1层">
+			<!--本层的怪物和boss-->
+			<boss occ="6756">巨岩机关统领</boss>
+		</layer>
+		<layer name="2层">
+			<!--本层的怪物和boss-->
+			<boss occ="6760">飞镖机关统领</boss>
+		</layer>
+		<layer name="3层">
+			<!--本层的怪物和boss-->
+			<boss occ="6762">炸雷机关统领</boss>
+		</layer>
+		<layer name="4层">
+			<!--本层的怪物和boss-->
+			<boss occ="6764">尖刺机关统领</boss>
+		</layer>
+		<layer name="5层">
+			<!--本层的怪物和boss-->
+			<boss occ="6767">烈焰机关统领</boss>
+		</layer>
+	</copy>
+	<copy name="十面埋伏" entryid="500100">
+		<!--副本-->
+		<layer name="40级">
+			<!--本层的怪物和boss-->
+			<boss occ="5005">弑杀BOSS</boss>
+			<boss occ="5010">妖姬BOSS（冰攻）</boss>
+			<boss occ="5015">暗女BOSS（火攻）</boss>
+			<boss occ="5020">魔将BOSS（毒攻）</boss>
+			<boss occ="5085">烈妖BOSS（火攻）</boss>
+			<boss occ="5090">鬼帅BOSS（毒攻）</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<boss occ="5025">弑杀BOSS</boss>
+			<boss occ="5030">妖姬BOSS（冰攻）</boss>
+			<boss occ="5035">暗女BOSS（火攻）</boss>
+			<boss occ="5040">魔将BOSS（毒攻）</boss>
+			<boss occ="5095">烈妖BOSS（火攻）</boss>
+			<boss occ="5100">鬼帅BOSS（毒攻）</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<boss occ="5045">弑杀BOSS</boss>
+			<boss occ="5050">妖姬BOSS（冰攻）</boss>
+			<boss occ="5055">暗女BOSS（火攻）</boss>
+			<boss occ="5060">魔将BOSS（毒攻）</boss>
+			<boss occ="5105">烈妖BOSS（火攻）</boss>
+			<boss occ="5110">鬼帅BOSS（毒攻）</boss>
+		</layer>
+		<layer name="70级">
+			<!--本层的怪物和boss-->
+			<boss occ="5065">弑杀BOSS</boss>
+			<boss occ="5070">妖姬BOSS（冰攻）</boss>
+			<boss occ="5075">暗女BOSS（火攻）</boss>
+			<boss occ="5080">魔将BOSS（毒攻）</boss>
+			<boss occ="5115">烈妖BOSS（火攻）</boss>
+			<boss occ="5120">鬼帅BOSS（毒攻）</boss>
+		</layer>
+	</copy>
+	<copy name="水镜仙乡" entryid="200101">
+		<!--野外-->
+		<layer name="1-9级">
+			<monster occ="1001">紫尾狐</monster>
+			<monster occ="1003">仙灵芝</monster>
+			<monster occ="1008">邪族小妖</monster>
+		</layer>
+	</copy>
+	<copy name="巨鹿" entryid="200201">
+		<!--野外-->
+		<layer name="10-19级">
+			<monster occ="1011">黄巾喽啰</monster>
+			<monster occ="1054">水灵妖</monster>
+			<monster occ="1013">黄巾魔兵</monster>
+		</layer>
+	</copy>
+	<copy name="桃园村" entryid="200401">
+		<!--野外-->
+		<layer name="20-29级">
+			<monster occ="1014">桃园野猪</monster>
+			<monster occ="1016">十年桃妖</monster>
+			<monster occ="1018">千年桃精</monster>
+			<monster occ="1007">董卓密探</monster>
+			<monster occ="1006">仙女蝶</monster>
+			<monster occ="1017">百年桃怪</monster>
+		</layer>
+	</copy>
+	<copy name="长安郊外" entryid="200501">
+		<!--野外-->
+		<layer name="30-39级">
+			<monster occ="1015">大王野猪</monster>
+			<monster occ="1019">军马俑</monster>
+			<monster occ="1021">战袍武士俑</monster>
+			<monster occ="1023">粘土傀儡</monster>
+			<monster occ="1024">熔岩傀儡</monster>
+			<monster occ="1025">黑石傀儡</monster>
+			<monster occ="1009">邪族傀儡</monster>
+			<monster occ="1005">地狱犬</monster>
+		</layer>
+	</copy>
+	<copy name="大荒漠" entryid="200901">
+		<!--野外-->
+		<layer name="36-39级">
+			<monster occ="1060">狗头兵</monster>
+			<monster occ="1061">木械兵</monster>
+			<monster occ="1062">人马兵</monster>
+			<monster occ="1063">巨象兵</monster>
+			<monster occ="1064">刀车兵</monster>
+			<monster occ="1065">重骑兵</monster>
+			<monster occ="1066">弩兵</monster>
+			<monster occ="1067">盾兵</monster>
+			<monster occ="1068">虎豹骑</monster>
+		</layer>
+	</copy>
+	<copy name="隆中" entryid="200601">
+		<!--野外-->
+		<layer name="39-49级">
+			<monster occ="1026">冰灵</monster>
+			<monster occ="1027">冰玄女</monster>
+			<monster occ="1028">冽冰女王</monster>
+			<monster occ="1029">雪怪人</monster>
+			<monster occ="1030">雪战士</monster>
+			<monster occ="1031">天机木人</monster>
+			<monster occ="1032">撼地流牛</monster>
+			<monster occ="1033">玄奇木马</monster>
+		</layer>
+	</copy>
+	<copy name="长坂坡" entryid="200701">
+		<!--野外-->
+		<layer name="50-59级">
+			<monster occ="1034">巨剑兵</monster>
+			<monster occ="1037">山林猪人</monster>
+			<monster occ="1038">鬼女</monster>
+			<monster occ="1039">仙鬼女</monster>
+			<monster occ="1035">巨锤兵</monster>
+			<monster occ="1036">巨斧兵</monster>
+			<monster occ="1040">烈豹骑</monster>
+			<monster occ="1041">霜豹骑</monster>
+			<monster occ="1043">天眼魔兵</monster>
+		</layer>
+	</copy>
+	<copy name="赤壁" entryid="200801">
+		<!--野外-->
+		<layer name="60-80级">
+			<monster occ="1044">边境卫兵</monster>
+			<monster occ="1045">皇宫禁军</monster>
+			<monster occ="1046">娜迦小妖</monster>
+			<monster occ="1047">娜迦海妖</monster>
+			<monster occ="1048">娜迦海王</monster>
+			<monster occ="1049">巨弓兵</monster>
+			<monster occ="1049">巨弓兵</monster>
+			<monster occ="1050">巨炮兵</monster>
+			<monster occ="1051">云怪</monster>
+			<monster occ="1052">风精</monster>
+			<monster occ="1055">东吴都尉</monster>
+			<monster occ="1056">东吴校尉</monster>
+			<monster occ="1057">东吴军祭酒</monster>
+			<monster occ="1058">东吴偏将军</monster>
+			<monster occ="1059">东吴中郎将</monster>
+		</layer>
+	</copy>
+	<copy name="建邺(未开放，忽略)">
+		<!--野外-->
+		<layer name="81-89级">
+			<monster occ="1060">狗头兵</monster>
+			<monster occ="1061">木械兵</monster>
+			<monster occ="1062">人马兵</monster>
+			<monster occ="1063">巨象兵</monster>
+			<monster occ="1064">刀车兵</monster>
+			<monster occ="1065">重骑兵</monster>
+			<monster occ="1066">弩兵</monster>
+			<monster occ="1067">盾兵</monster>
+			<monster occ="1068">虎豹骑</monster>
+		</layer>
+	</copy>
+	<copy name="野外特殊精英怪">
+		<!--野外-->
+		<layer name="野外特殊精英怪">
+			<monster occ="1503">荒漠幽魂</monster>
+			<monster occ="1504">隆中幽魂</monster>
+			<monster occ="1505">长板幽魂</monster>
+			<monster occ="1506">赤壁幽魂</monster>
+		</layer>
+	</copy>
+	<copy name="野外游荡boss">
+		<!--野外-->
+		<layer name="野外游荡boss">
+			<monster occ="1500">铁归藏</monster>
+			<monster occ="1501">银归藏</monster>
+			<monster occ="1502">金归藏</monster>
+		</layer>
+	</copy>
+</copy_conf>

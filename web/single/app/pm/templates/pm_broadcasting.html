@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <script language="javascript" src="../../public/js/jquery.js"></script>
+        <script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+        <script language="javascript" src="../../public/js/kindeditor/kindeditor-min.js"></script>
+        <script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+        <script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+        <script lang="javascript">
+            var msg_editor;
+            KindEditor.ready(function(K) {
+                msg_editor = K.create('[name="content"]',{
+                    themeType:'diy',
+                    items : ['source','undo', 'redo', '|','bold','link','unlink','plainpaste','clearhtml'],
+                    filterMode : true,
+										htmlTags:{
+											font : ['id', 'class', 'color', 'size', 'face', '.background-color'],
+											a : ['href', 'target', 'name']
+										}
+                });
+            });
+            $(document).ready(function(){
+                $('.main-select').change(function(){
+                    $(this).attr('checked')==='checked'?$('.sub-select').attr('checked','checked'):$('.sub-select').removeAttr('checked');
+                })
+                $('.sub_ajax').click(function(){
+                    var action = $(this).attr('id'),
+                    gmer = $('[name="gmer"]').val(),
+                    data = [];
+                    switch(action){
+                        case 'add':
+                            var sub_data = {};
+                            sub_data.start = $('[name="start"]').val();
+                            sub_data.end = $('[name="end"]').val();
+                            sub_data.span = $('[name="span"]').val();
+                            sub_data.type = $('[name="type"]').val();
+                            sub_data.content = msg_editor.html();
+                            sub_data.msgId = $('[name="msgid"]').val();
+                            if(sub_data.start==''||sub_data.end==''||sub_data.span==''||sub_data.content==''){
+                                $('.ajax_result').html('<{t}>请确认消息参数<{/t}>');
+                                return;
+                            }
+                            data[0] = sub_data;
+                            break;
+                        case 'del':
+                            var ids = [];
+                            $('.sub-select:checked').each(function(i){
+                                ids[i] = $(this).attr('id');
+                            })
+                            if(ids.length<1){
+                                $('.ajax_result').html('<{t}>请选择消息<{/t}>');
+                                return;
+                            }
+                            data.ids = ids;
+                            break;
+                        case 'start':
+                        case 'stop':
+                            var ids = [],
+                            j = 0,
+                            ts = Math.round(new Date().getTime()/1000),
+                            status = action=='start'?0:1;
+                            $('.sub-select:checked').each(function(i){
+                                if($(this).attr('status')==status){
+                                    if($(this).attr('start')<ts && $(this).attr('end')>ts){
+                                        ids[j] = $(this).attr('id');
+                                        j++;
+                                    }
+                                }
+                            });
+                            if(ids.length<1){
+                                $('.ajax_result').html('<{t}>请选择消息<{/t}>');
+                                return;
+                            }
+                            data.ids = ids;
+                            break;
+
+                    }
+                    var phprpc_client = new PHPRPC_Client('../interface/pm_api.php', ['pm_broadcasting']);
+                    phprpc_client.pm_broadcasting(
+                    {action:action,data:data,gmer:gmer},
+                    function (result, args, output, warning) {
+                        if(result.status=='ok'){
+                            switch(action){
+                                case 'del':
+                                    for(id in ids){
+                                        $('#tr_'+ids[id]).detach();
+                                    }
+                                    break;
+                                case 'start':
+                                case 'stop':
+                                    for(id in ids){
+                                        status_v = action=='start'?1:0;
+                                        status_html = action=='start'?'<span class="badge badge-success"><{t}>运行中<{/t}></span>':'<span class="badge badge-info"><{t}>停播<{/t}></span>';
+                                        $('#'+ids[id]).attr('status',status_v);
+                                        $('#'+ids[id]).parent('td').siblings('.msg_status').html(status_html);
+                                    }
+                                    break;
+                                case 'add':
+                                    $('[name="start"]').val('');
+                                    $('[name="end"]').val('');
+                                    $('[name="span"]').val('');
+                                    msg_editor.html('');
+                                    $('[name="msgid"]').val('');
+                                    break;
+                            }
+                        }
+                        $('.ajax_result').html(result.info);
+                    }, true);
+                });
+                $('.edit').click(function(){
+                    $('.nav-tabs li').removeClass('active');
+                    $('.tab-pane').removeClass('active');
+                    $('#li_tab1').addClass('active');
+                    $('#tab1').addClass('active');
+                    var msg_time = $(this).parent('td').siblings('.msg_time').text(),
+                    msg_content = $(this).parent('td').siblings('.msg_content').html(),
+                    msg_id = $(this).attr('msg_id'),
+                    msg_type = $(this).attr('msg_type'),
+                    msg_span = $(this).parent('td').siblings('.msg_span').text(),
+                    time_arr = msg_time.split('~');
+                    $('[name="start"]').val(time_arr[0]);
+                    $('[name="end"]').val(time_arr[1]);
+                    $('[name="span"]').val(msg_span);
+                    msg_editor.html(msg_content);
+                    $('[name="msgid"]').val(msg_id);
+                    $('[name="type"] option[value="'+msg_type+'"]').attr('selected','selected');
+                })
+            })
+        </script>
+    </head>
+    <body>
+            <div class="tabbable">
+                <ul class="nav nav-tabs">
+                    <li id="li_tab1" class="<{if $type neq 'log' and $type neq 'syslog'}>active<{/if}>"><a href="#tab1" data-toggle="tab"><{t}>手动广播<{/t}></a></li>
+                    <li <{if $type eq 'log'}>class="active"<{/if}>><a href="?type=log"><{t}>广播日志<{/t}></a></li>
+                    <li <{if $type eq 'syslog'}>class="active"<{/if}>><a href="?type=syslog"><{t}>系统广播<{/t}></a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="row tab-pane<{if $type neq 'log' and $type neq 'syslog'}> active<{/if}>" id="tab1">
+                        <dl class="dl-horizontal">
+                            <dt><{t}>开始时间<{/t}></dt>
+                            <dd>
+                                <input type="hidden" name="msgid" value="">
+                                <input type="text" class="input-medium" name="start" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" placeholder="<{t}>开始时间<{/t}>"></dd>
+                            <dt><{t}>结束时间<{/t}></dt>
+                            <dd><input type="text" class="input-medium" name="end" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" placeholder="<{t}>结束时间<{/t}>"></dd>
+                            <dt><{t}>时间间隔<{/t}></dt>
+                            <dd><input type="text" class="input-mini" name="span" value="30" maxlength="8"> <{t}>分钟<{/t}></dd>
+                            <dt><{t}>广播类型<{/t}></dt>
+                            <dd>
+                                <select class="span2" name="type">
+                                    <option value="2"><{t}>聊天+置顶[系统]<{/t}></option>
+                                    <option value="3"><{t}>聊天[传闻]<{/t}></option>
+                                    <option value="6"><{t}>聊天+置顶[传闻]<{/t}></option>
+                                </select>
+                            </dd>
+                            <dt><{t}>广播内容<{/t}></dt>
+                            <dd><textarea class="span2" name="content" style="width:100px; height: 300px;"></textarea></dd>
+                            <dd style="margin-top:10px;">
+														<input type="hidden" name="gmer" value="<{$gmer}>">
+														<button type="button" class="btn btn-primary sub_ajax" id="add"><i class="icon-pencil icon-white"></i><{t}>设置<{/t}></button>
+														<span class="badge badge-warning ajax_result"></span></dd>
+                        </dl>
+                    </div>
+                    <{if $type eq 'log'}>
+                    <div class="tab-pane active" id="log">
+                        <table class="table table-hover table-bordered table-condensed">
+                            <thead>
+                                <tr>
+                                    <th width="160px">ID</th>
+                                    <th width="100px"><{t}>类型<{/t}></th>
+                                    <th style="width:400px;"><{t}>内容<{/t}></th>
+                                    <th><{t}>时间<{/t}></th>
+                                    <th><{t}>间隔<{/t}>(min)</th>
+                                    <th>GMER</th>
+                                    <th><{t}>状态<{/t}></th>
+                                    <th width="60px"><{t}>操作<{/t}></th>
+                                </tr>
+                            </thead>
+                            <tbody class="form-inline">
+                                <{foreach $broadcasts as $broadcast}>
+                                <tr id="tr_<{$broadcast['msgId']}>">
+                                    <td style="text-align:left"><input class="sub-select" type="checkbox" id="<{$broadcast['msgId']}>" start="<{$broadcast['startTm']}>" end="<{$broadcast['overTm']}>" status="<{$broadcast['status']}>"> <label for="<{$broadcast['msgId']}>"><{$broadcast['msgId']}></label></td>
+                                    <td><{if $broadcast['typeid'] eq 2}><{t}>聊天+置顶[系统]<{/t}><{else if $broadcast['typeid'] eq 3}><{t}>聊天[传闻]<{/t}><{else}><{t}>聊天+置顶[传闻]<{/t}><{/if}></td>
+                                    <td class="msg_content" style="text-align:left"><{$broadcast['content']}></td>
+                                    <td class="msg_time"><{$broadcast['startTm']|date_format:'%Y-%m-%d %T'}>~<{$broadcast['overTm']|date_format:'%Y-%m-%d %T'}></td>
+
+                                    <td class="msg_span"><{$broadcast['span']/60}></td>
+                                    <td><{$broadcast['gmer']}></td>
+                                    <td class="msg_status">
+                                        <{if $broadcast['status'] eq 1}>
+                                        <{if $broadcast['overTm']<time()}>
+                                            <span class="badge badge-error"><{t}>失效<{/t}></span>
+                                            <{elseif $broadcast['startTm']>time()}>
+                                            <span class="badge badge-warning"><{t}>未开启<{/t}></span>
+                                            <{else}>
+                                            <span class="badge badge-success"><{t}>运行中<{/t}></span>
+                                            <{/if}>
+                                            <{else}>
+                                            <span class="badge badge-info"><{t}>停播<{/t}></span>
+                                            <{/if}>
+                                    </td>
+                                    <td><a class="btn btn-primary edit" msg_id="<{$broadcast['msgId']}>" msg_type="<{$broadcast['typeid']}>" href="#"><{t}>Sửa<{/t}></a></td>
+                                </tr>
+                                <{/foreach}>
+                                <tr>
+                                    <td colspan="8" style="text-align:left"><input class="main-select" type="checkbox" id="selectall"><label for="selectall">全选/全不选</label>     <input type="button" class="btn btn-primary sub_ajax" id="start" value="<{t}>批量播放<{/t}>">   <input type="button" class="btn btn-primary sub_ajax" id="stop" value="<{t}>批量停播<{/t}>">    <input type="button" class="btn btn-primary sub_ajax" id="del" value="<{t}>批量Xóa<{/t}>"> <span class="badge badge-warning ajax_result"></span> </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination pagination-centered">
+                            <{$page}>
+                        </div>
+                    </div>
+                    <{elseif $type eq 'syslog'}>
+                    <div class="tab-pane active" id="syslog">
+                        <table class="table table-striped table-bordered table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th><{t}>内容<{/t}></th>
+                                    <th><{t}>时间<{/t}></th>
+                                    <th><{t}>开服时段<{/t}></th>
+                                    <th><{t}>有效时段<{/t}></th>
+                                    <th><{t}>间隔<{/t}>(min)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="form-inline">
+                                <{foreach $broadcasts as $broadcast}>
+                                <tr>
+                                    <td><{$broadcast['id']}></td>
+                                    <td style="text-align:left"><{$broadcast['content']}></td>
+                                    <td>
+                                        <a class="accordion-toggle btn" data-toggle="collapse" href="#msg_<{$broadcast['id']}>"><i class="icon-search"></i></a>
+                                        <div id="msg_<{$broadcast['id']}>" class="accordion-body collapse">
+                                            <{if isset($broadcast['year'])}>year<{foreach $broadcast['year'] as $year}>
+                                            <{$year}>
+                                            <{/foreach}>
+                                            <br>
+                                            <{/if}>
+                                            <{if isset($broadcast['month'])}>
+                                            month<{foreach $broadcast['month'] as $month}>
+                                            <{$month}>
+                                            <{/foreach}>
+                                            <br>
+                                            <{/if}>
+                                            <{if isset($broadcase['day'])}>
+                                            day<{foreach $broadcast['day'] as $day}>
+                                            <{$day}>
+                                            <{/foreach}>
+                                            <br>
+                                            <{/if}>
+                                            <{if isset($broadcast['hour'])}>
+                                            hour<{foreach $broadcast['hour'] as $hour}>
+                                            <{$hour}>
+                                            <{/foreach}>
+                                            <br>
+                                            <{/if}>
+                                            <{if isset($broadcast['min'])}>
+                                            min<{foreach $broadcast['min'] as $min}>
+                                            <{$min}>
+                                            <{/foreach}>
+                                            <br>
+                                            <{/if}>
+                                            <{if isset($broadcast['sec'])}>
+                                            sec<{foreach $broadcast['sec'] as $sec}>
+                                            <{$sec}>
+                                            <{/foreach}>
+                                            <br>
+                                            <{/if}>
+                                            <{if isset($broadcast['week'])}>
+                                            week<{foreach $broadcast['week'] as $week}>
+                                            <{$week}>
+                                            <{/foreach}>
+                                            <{/if}>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <{if isset($broadcast['open_range'])}>
+                                        <{foreach $broadcast['open_range'] as $open_range}>
+                                        <{$open_range[0]}> - <{$open_range[1]}>
+                                        <br>
+                                        <{/foreach}>
+                                        <{/if}>
+                                    </td>
+                                    <td>
+                                        <{if isset($broadcast['time_range'])}>
+                                        <{foreach $broadcast['time_range'] as $time_range}>
+                                        <{$time_range[0]}> - <{$time_range[1]}>
+                                        <br>
+                                        <{/foreach}>
+                                        <{/if}>
+                                    </td>
+                                    <td><{$broadcast['span']|default:''}></td>
+                                </tr>
+                                <{/foreach}>
+                            </tbody>
+                        </table>
+                        <div class="pagination pagination-centered">
+                            <{$page}>
+                        </div>
+                    </div>
+                    <{/if}>
+                </div>
+            </div>
+    </body>
+</html>

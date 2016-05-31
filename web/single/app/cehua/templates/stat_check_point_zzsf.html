@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>征战天下<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+<script language="javascript">
+$(function($){
+	$('.chapter').colorbox({inline:true,fixed:true,width:'750px', height:'250px',opacity:0.1});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well form-search" style="margin:10px 0;">
+	<label><{t}>日期<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"  style="margin-left:5px;"><i class="icon-search icon-white"></i><{t}>搜索<{/t}></button>
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button onClick="javascript:window.location='?start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<table class="table table-bordered table-condensed table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>满足人数<{/t}></th>
+		<th><{t}>参与人数<{/t}></th>
+		<th><{t}>参与度<{/t}></th>
+		<th></th>
+		<{foreach $city_conf as $key=>$value}>
+		<th><{$value}></th>
+		<{/foreach}>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td rowspan="2"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td rowspan="2"><{$row['allow_join']}></td>
+		<td rowspan="2"><{$row['join_count']}></td>
+		<td rowspan="2"><{$row['join_ratio']}>%</td>
+		<td><{t}>数量<{/t}></td>
+		<{foreach $city_conf as $key=>$value}>
+		<td>
+			<a class="chapter" href="#chapter_<{$row['date']}>_<{$key}>"><{$row['city_count'][$key]|default:0}></a>
+			
+			<{if isset($row['chapter_count'][$key])}>
+			<!--章节明细-->
+			<div class="hide">
+				<table class="table table-bordered table-condensed table-hover" id="chapter_<{$row['date']}>_<{$key}>">
+			<thead>
+				<tr>
+					<th colspan="3"><{t}>截止<{/t}><{$row['date']}> 【<{$value}>】<{t}>各章节关卡通关情况<{/t}></th>
+				</tr>
+				<tr>
+					<th></th>
+					<{foreach $row['chapter_count'][$key] as $k=>$count}>
+					<th><{t}>第<{/t}><{$k}><{t}>回<{/t}></th>
+					<{/foreach}>
+				</tr>
+				<tr>
+					<td><{t}>数量<{/t}></td>
+					<{foreach $row['chapter_count'][$key] as $k=>$count}>
+					<td><{$count}></td>
+					<{/foreach}>
+				</tr>
+				<tr>
+					<td><{t}>比例<{/t}></td>
+					<{foreach $row['chapter_count'][$key] as $k=>$count}>
+					<td><{if $row['city_count'][$key]}><{round($count/$row['city_count'][$key],4)*100}><{else}>0<{/if}>%</td>
+					<{/foreach}>
+				</tr>
+			</thead>
+			<tbody>
+			<{foreach $row['ranking_item'] as $key=>$item}>
+				<tr>
+					<td><{$key+1}></td>
+					<td><{t}><{$item['item_id']}><{/t}></td>
+					<td><{$item['item_num']}></td>
+				</tr>
+			<{/foreach}>
+			</tbody>
+			</table>
+			</div>
+			<{/if}>
+			
+		</td>
+		<{/foreach}>
+	</tr>
+	<tr>
+		<td><{t}>比例<{/t}></td>
+		<{foreach $city_conf as $key=>$value}>
+		<td><{if $row['city_total_count']&&isset($row['city_count'][$key])}><{round($row['city_count'][$key]/$row['city_total_count'],4)*100}><{else}>0<{/if}>%</td>
+		<{/foreach}>
+	</tr>	
+	<{/foreach}>
+</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

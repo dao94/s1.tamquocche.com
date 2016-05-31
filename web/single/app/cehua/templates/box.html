@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>开箱子(锦囊)<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+<script language="javascript">
+$(function(){
+	$('.colorbox').click(function(){
+		$(this).colorbox({inline:true,fixed:true,width:'500px', height:'400px',opacity:0.1});	
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well form-search" style="margin-bottom:10px; padding-bottom:10px;">
+	<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button type="button" onClick="javascript:window.location='?start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>使用人数<{/t}></th>
+		<th><{t}>消费金额<{/t}></th>
+		<th><{t}>人均消费<{/t}></th>
+		<th><{t}>道具产出总量<{/t}></th>
+		<th><{t}>当天消费排行<{/t}></th>
+		<th width="300"><{t}>消费总排行<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td><{$row['player']}></td>
+		<td><{$row['money']}></td>
+		<td><{$row['avg_money']}></td>
+		<td><a href="#ranking_item_<{$row['date']}>" class="colorbox"><i class="icon-search"></i>点击查看</a>
+		<{if $row['ranking_item']}>
+			<div class="hide">
+			<table class="table table-bordered table-condensed table-hover" id="ranking_item_<{$row['date']}>">
+			<thead>
+				<tr>
+					<th colspan="3"><{t}>截止<{/t}><{$row['date']}><{t}>道具产出总排行<{/t}></th>
+				</tr>
+				<tr>
+					<th><{t}>排名<{/t}></th>
+					<th><{t}>道具名<{/t}></th>
+					<th><{t}>产出量<{/t}></th>
+				</tr>
+			</thead>
+			<tbody>
+			<{foreach $row['ranking_item'] as $key=>$item}>
+				<tr>
+					<td><{$key+1}></td>
+					<td><{t}><{$item['item_id']}><{/t}></td>
+					<td><{$item['item_num']}></td>
+				</tr>
+			<{/foreach}>
+			</tbody>
+			</table>
+			</div>
+		<{/if}>
+		</td>
+		<td><a href="#ranking_money_<{$row['date']}>" class="colorbox"><i class="icon-search"></i>点击查看</a>
+		<{if $row['ranking_money']}>
+			<div class="hide">
+			<table class="table table-bordered table-condensed table-hover" id="ranking_money_<{$row['date']}>">
+			<thead>
+				<tr>
+					<th colspan="3"><{$row['date']}><{t}>消费排行<{/t}></th>
+				</tr>
+				<tr>
+					<th><{t}>排名<{/t}></th>
+					<th><{t}>角色名<{/t}></th>
+					<th><{t}>消费元宝数<{/t}></th>
+				</tr>
+			</thead>
+			<tbody>
+			<{foreach $row['ranking_money'] as $key=>$item}>
+				<tr>
+					<td><{$key+1}></td>
+					<td><a href="../gm/player.php?id=<{$item['char_id']}>"><{$item['char_name']}></a></td>
+					<td><{$item['money_num']}></td>
+				</tr>
+			<{/foreach}>
+			</tbody>
+			</table>
+			</div>
+		<{/if}>
+		</td>
+		<td><a href="#ranking_history_<{$row['date']}>" class="colorbox"><i class="icon-search"></i>点击查看</a>
+		<{if $row['ranking_history']}>
+			<div class="hide">
+			<table class="table table-bordered table-condensed table-hover" id="ranking_history_<{$row['date']}>">
+			<thead>
+				<tr>
+					<th colspan="3"><{t}>截止<{/t}><{$row['date']}><{t}>消费总排行<{/t}></th>
+				</tr>
+				<tr>
+					<th><{t}>排名<{/t}></th>
+					<th><{t}>角色名<{/t}></th>
+					<th><{t}>消费元宝数<{/t}></th>
+				</tr>
+			</thead>
+			<tbody>
+			<{foreach $row['ranking_history'] as $key=>$item}>
+				<tr>
+					<td><{$key+1}></td>
+					<td><a href="../gm/player.php?id=<{$item['char_id']}>"><{$item['char_name']}></a></td>
+					<td><{$item['money_num']}></td>
+				</tr>
+			<{/foreach}>
+			</tbody>
+			</table>
+			</div>
+		<{/if}>
+		</td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+<div id="nav">
+<ul class="nav nav-tabs">
+	<{foreach $action_conf as $act=>$name}>
+	<li <{if $action==$act}>class="active"<{/if}>><a href="?action=<{$act}>"><{$name}></a></li>
+	<{/foreach}>
+</ul>
+</div>
+
+<{if $action=='pop'}>
+<div class="well form-search">
+	<{t}>总玩家数<{/t}>：<b><{$total_character_count}></b>
+	<{t}>截止时间<{/t}>：<b><{$smarty.now|date_format:"%Y-%m-%d %H:%M:%S"}></b>（<{t}>数据缓存<{/t}><b><{$conditions['cache_lifetime']}></b><{t}>小时<{/t}>）
+</div>
+<table class="table table-bordered" style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th colspan="2"><{t}>类型<{/t}></th>
+			<th><{t}>全部等级<{/t}></th>
+			<{foreach $level_conf as $key=>$item}>
+			<th><{$item}></th>
+			<{/foreach}>
+		</tr>
+	</thead>
+	<tbody>
+		<{$k=0}>
+		<{foreach $gender_conf as $key=>$item}>
+		<{$count=array_sum($data['gender'][$key])}>
+		<tr>
+			<{if $k==0}>
+			<td style="vertical-align:middle" rowspan="<{$gender_conf|count}>"><{t}>性别<{/t}></td>
+			<{/if}>
+			<td><{$item}></td>
+			<td><b><{$count}></b>[<{round($count/$total_character_count,4)*100}>%]</td>
+			<{foreach $level_conf as $level=>$row}>
+			<td>
+				<b><{$data['gender'][$key][$level]|default:0}></b>
+				[<{if isset($data['gender'][$key][$level])}><{round($data['gender'][$key][$level]/$count,4)*100}><{else}>0<{/if}>%]
+			</td>
+			<{/foreach}>
+		</tr>
+		<{$k=$k+1}>
+		<{/foreach}>
+		<{$k=0}>
+		<{foreach $occ_conf as $key=>$item}>
+		<{$count=array_sum($data['occ'][$key])}>
+		<tr>
+			<{if $k==0}>
+			<td style="vertical-align:middle" rowspan="<{$occ_conf|count}>"><{t}>职业<{/t}></td>
+			<{/if}>
+			<td><{$item}></td>
+			<td><b><{$count}></b>
+			[<{round($count/$total_character_count,4)*100}>%]</td>
+			<{foreach $level_conf as $level=>$row}>
+			<td><b><{$data['occ'][$key][$level]|default:0}></b> [<{if isset($data['occ'][$key][$level])}><{round($data['occ'][$key][$level]/$count,4)*100}><{else}>0<{/if}>%]
+			</td>
+			<{/foreach}>
+		</tr>
+		<{$k=$k+1}>
+		<{/foreach}>
+		<{$k=0}>
+		<{foreach $camp_conf as $key=>$item}> <{$count=array_sum($data['camp'][$key])}>
+		<tr>
+			<{if $k==0}>
+			<td style="vertical-align:middle" rowspan="<{$camp_conf|count}>"><{t}>阵营<{/t}></td>
+			<{/if}>
+			<td><{$item}></td>
+			<td><b><{$count}></b>
+			[<{round($count/$total_character_count,4)*100}>%]</td>
+			<{foreach $level_conf as $level=>$row}>
+			<td><b><{$data['camp'][$key][$level]|default:0}></b>
+			[<{if isset($data['camp'][$key][$level])}><{round($data['camp'][$key][$level]/$count,4)*100}><{else}>0<{/if}>%]
+			</td>
+			<{/foreach}>
+		</tr>
+		<{$k=$k+1}>
+		<{/foreach}>
+	</tbody>
+</table>
+
+<table class="table table-bordered" style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th colspan="2"><{t}>类型<{/t}></th>
+			<th><{t}>全部职业<{/t}></th>
+			<{foreach $occ_conf as $key=>$item}>
+			<th><{$item}></th>
+			<{/foreach}>
+		</tr>
+	</thead>
+	<tbody>
+		<{$k=0}>
+		<{foreach $gender_conf as $key=>$item}>
+		<{$count=array_sum($data['gender'][$key])}>
+		<tr>
+			<{if $k==0}>
+			<td style="vertical-align:middle" rowspan="<{$gender_conf|count}>"><{t}>性别<{/t}></td>
+			<{/if}>
+			<td><{$item}></td>
+			<td><b><{$count}></b>[<{round($count/$total_character_count,4)*100}>%]</td>
+			<{foreach $occ_conf as $occ=>$row}>
+			<td><b><{$data['gender'][$occ][$key]|default:0}></b> [<{if isset($data['gender'][$occ][$key])}><{round($data['gender'][$occ][$key]/$count,4)*100}><{else}>0<{/if}>%]
+			</td>
+			<{/foreach}>
+		</tr>
+		<{$k=$k+1}>
+		<{/foreach}>
+		<{$k=0}>
+		<{foreach $camp_conf as $key=>$item}>
+		<{$count=array_sum($data['camp'][$key])}>
+		<tr>
+			<{if $k==0}>
+			<td style="vertical-align:middle" rowspan="<{$camp_conf|count}>"><{t}>阵营<{/t}></td>
+			<{/if}>
+			<td><{$item}></td>
+			<td><b><{$count}></b>[<{round($count/$total_character_count,4)*100}>%]</td>
+			<{foreach $occ_conf as $occ=>$row}>
+			<td><b><{$data['camp'][$occ][$key]|default:0}></b>[<{if isset($data['camp'][$occ][$key])}><{round($data['camp'][$occ][$key]/$count,4)*100}><{else}>0<{/if}>%]
+			</td>
+			<{/foreach}>
+		</tr>
+		<{$k=$k+1}>
+		<{/foreach}>
+	</tbody>
+</table>
+
+<{else if $action=='level'}>
+<form action="?" method="get">
+<div class="well form-search">
+	<label><{t}>是否在线<{/t}>：</label> 
+	<select name="online" class="span1">
+		<option value=""><{t}>全部<{/t}></option>
+		<option value="1"<{if $conditions['online']===1}>selected="selected"<{/if}>><{t}>在线<{/t}></option>
+		<option value="0"<{if $conditions['online']===0}>selected="selected"<{/if}>><{t}>离线<{/t}></option>
+	</select>
+	<label style="margin-left: 10px;"><{t}>阵营<{/t}>：</label>
+	<select name="camp" class="span1">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $camp_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['camp']==$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+	<label style="margin-left: 10px;"><{t}>职业<{/t}>：</label>
+	<select name="occ" class="span1">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $occ_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['occ']==$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+	<label style="margin-left: 10px;"><{t}>性别<{/t}>：</label>
+	<select name="gender" class="span1">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $gender_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['gender']===$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+	<hr style="margin: 5px 0px;">
+	<{t}>查询范围内玩家数<{/t}>：<b><{$total_character_count}></b>
+	<{t}>截止时间<{/t}>：<b><{$smarty.now|date_format:"%Y-%m-%d
+%H:%M:%S"}></b>（<{t}>数据缓存<{/t}><b><{$conditions['cache_lifetime']}></b><{t}>小时<{/t}>）
+</div>
+<input type="hidden" name="action" value="<{$action}>">
+</form>
+<table class="table table-bordered table-hover table-condensed" style="margin-top: 10px;">
+	<thead>
+		<tr>
+			<th><{t}>等级<{/t}></th>
+			<th><{t}>人数<{/t}></th>
+			<th><{t}>比例<{/t}></th>
+			<th><{t}>累计等级比例<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{if $data}>
+		<{$total_count=0}>
+		<{foreach $data as $level=>$count}>
+		<{$total_count=$total_count+$count}>
+		<tr>
+			<td><{$level}></td>
+			<td><{$count}></td>
+			<td style="text-align: left">
+				<img src="../../public/images/baifenbi.gif" style="height:10px;width:<{if $total_character_count}><{round($count/$total_character_count,4)*150}><{else}>0<{/if}>px"/> 
+			<{if $total_character_count}><{round($count/$total_character_count,4)*100}><{else}>0<{/if}>%
+			</td>
+			<td><{if $total_character_count}><{round($total_count/$total_character_count,4)*100}><{else}>0<{/if}>%</td>
+		</tr>
+		<{/foreach}>
+		<{else}>
+		<tr>
+			<td colspan="4"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+		</tr>
+		<{/if}>
+	</tbody>
+</table>
+<{/if}>
+</body>
+</html>

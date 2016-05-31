@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>英雄殿<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well form-search" style="margin:10px 0;">
+	<label><{t}>日期<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"  style="margin-left:5px;"><i class="icon-search icon-white"></i><{t}>搜索<{/t}></button>
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button type="button" onClick="javascript:window.location='?action=<{$conditions['action']}>&start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+<div id="nav">
+	<ul class="nav nav-tabs" style="margin:10px 0;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+
+<{if $conditions['action']=='kill'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>日期<{/t}></th>
+		<{foreach $boss_list as $key=>$item}>
+		<th colspan="5"><{$item}></th>
+		<{/foreach}>
+	</tr>
+	<tr>
+		<{foreach $boss_list as $key=>$item}>
+		<th><{t}>击杀/召唤次数<{/t}></th>
+		<th><{t}>参与人数<{/t}></th>
+		<th><{t}>平均击杀时间<{/t}></th>
+		<th><{t}>最大击杀时间<{/t}></th>
+		<th><{t}>最小击杀时间<{/t}></th>
+		<{/foreach}>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$date}>(<{t}>周<{/t}><{strtotime($date)|date_format:'%w'}>)</td>
+		<{foreach $boss_list as $boss_id=>$boss_name}>
+		<td><{$row[$boss_id]['kill_count']|default:0}>/<{$row[$boss_id]['call_count']|default:0}></td>
+		<td><{$row[$boss_id]['player']|default:0}></td>
+		<td><{round($row[$boss_id]['avg_cost_time']|default:0,0)|format_interval}></td>
+		<td><{round($row[$boss_id]['max_cost_time']|default:0,0)|format_interval}></td>
+		<td><{round($row[$boss_id]['min_cost_time']|default:0,0)|format_interval}></td>
+		<{/foreach}>
+	</tr>
+	<{/foreach}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='call'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>总消耗元宝<{/t}></th>
+		<th><{t}>总召唤人数<{/t}></th>
+		<{foreach $count_list as $item}>
+		<th><{t}>召唤<{$item}>次人数<{/t}></th>
+		<{/foreach}>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$date}>(<{t}>周<{/t}><{strtotime($date)|date_format:'%w'}>)</td>
+		<td><{$row['money']}></td>
+		<td><{$row['player']}></td>
+		<{foreach $count_list as $item}>
+		<td><{$row['call'][$item]|default:0}></td>
+		<{/foreach}>
+	</tr>
+	<{/foreach}>
+</tbody>
+
+</table>
+
+<{/if}>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

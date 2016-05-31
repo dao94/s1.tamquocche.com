@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script lang="javascript">
+$(document).ready(function(){
+	$('.myview').dblclick(function(){
+		var val = $(this).text();
+		$(this).hide().next().val(val).show().focus();
+	})
+	$('.myedit').blur(function(){
+		var oldVal=$.trim($(this).prev('.myview').text()),
+			newVal=$.trim($(this).val()),
+			node=$(this).attr('name')
+			ithis = $(this);
+		if(oldVal==newVal||newVal=='---'){
+			$(this).hide().prev('.myview').show();
+		}else{
+			var phprpc_client = new PHPRPC_Client('../interface/pm_api.php', ['pm_server']);
+			phprpc_client.pm_server({action:node,val:newVal}, function (result, args, output, warning){
+				if(result.status==='ok'){
+					if(newVal===''){
+							newVal='---';
+					}
+					ithis.hide().prev('.myview').text(result.data).show();
+					}else{
+						ithis.hide().prev('.myview').text(oldVal).show();
+					}
+					$('#ips_tab3').html(newVal);
+					ithis.next().text(result.info);
+			}, true);
+		}
+	});
+});
+</script>
+<style>
+.myview{cursor: pointer}
+.myedit{display: none;}
+.dl-horizontal dd,.dl-horizontal dt{line-height:26px;margin:0;}
+</style>
+</head>
+<body>
+<div class="tabbable">
+<ul class="nav nav-tabs">
+	<li class="active"><a href="#tab1" data-toggle="tab"><{t}>服务器配置<{/t}></a></li>
+	<li><a href="#tab2" data-toggle="tab"><{t}>Link<{/t}></a></li>
+	<li><a href="#tab3" data-toggle="tab"><{t}>IP白名单配置<{/t}></a></li>
+</ul>
+<div class="tab-content">
+	<div class="row tab-pane active" id="tab1">
+		<dl class="dl-horizontal form-search">
+			<dt><{t}>区服ID<{/t}>：</dt>
+			<dd><span class="label label-success"><{$smarty.const.SERVER_ID}></span></dd>
+			<dt><{t}>代理平台<{/t}>：</dt>
+			<dd><span class="label label-success"><{$smarty.const.SERVER_AGENT}></span></dd>
+			<dt><{t}>对外端口<{/t}>：</dt>
+			<dd><span class="label label-success"><{$smarty.const.GAME_PORT|default:8000}></span></dd>
+			<dt><{t}>登录端口<{/t}>：</dt>
+			<dd><span class="label label-success"><{$smarty.const.BL_PORT|default:''}></span></dd>
+			<dt><{t}>GM端口<{/t}>：</dt>
+			<dd><span class="label label-success"><{$smarty.const.GM_PORT|default:''}></span></dd>
+			<dt><{t}>区名标题<{/t}>：</dt>
+			<dd><span class="myview"><{$smarty.const.SERVER_TITLE|default:"---"}></span><input type="text" name="server_title" class="span7 myedit" style="display:none">  <span class="badge badge-warning"></span>
+			</dd>
+			<dt><{t}>开服时间<{/t}>：</dt>
+			<dd>
+			<span class="myview"><{$smarty.const.SERVER_OPEN_TIME|date_format:"%Y-%m-%d %H:%M:%S"|default:"---"}></span><input type="text" name="server_open_time" class="input-medium myedit" style="display:none">  <span class="badge badge-warning"></span><span class="badge badge-info"><{t}>时间格式<{/t}>：2008-08-08 08:08:08</span></dd>
+			<dt><{t}>合服区服<{/t}>：</dt>
+			<dd><span class="myview"><{$smarty.const.SERVER_DEPENDENCE|default:"---"}></span><textarea name="server_dependence" style="width:400px;height:100px;display:none" class="myedit"></textarea><span class="badge badge-warning"></span><span class="badge badge-info" style="margin-left:5px;"><{t}>合服后关联服id，转为数字。格式：2,3,4<{/t}></span></dd>
+		</dl>
+		</dl>
+	</div>
+	<div class="row tab-pane" id="tab2">
+		<dl class="dl-horizontal">
+			<dt>&nbsp;</dt>
+			<dd><{t}>链接请自行添加http://或https://前缀;选服页为登陆失败时跳转的页面，为必填选项<{/t}></dd>
+			<dt>&nbsp;</dt>
+			<dd><{t}>链接支持变量引用,规则如下:区ID:{{sid}},玩家账号：{{account}},链接中包含这两个规则时会自动引用玩家的信息,此规则不适用游戏外链<{/t}></dd>
+			<dt>&nbsp;</dt>
+			<dd><{t}>混服配置多个链接,格式如<{/t}>：4399@http://web.4399.com/lwjs##91wan@http://lwjs.91wan.com (<{t}>平台标识@官网##平台标识@官网<{/t}>)</dd>
+			<dt>&nbsp;</dt>
+			<dd>目前混服支持的平台标识：新浪玩玩：wanwan;新浪微游戏：wyx</dd>
+			<dt>*<{t}>官网<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['guan']|default:'---'}></span><input type="text" name="guan" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span></dd>
+			<dt>*<{t}>选服页<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['xuan']|default:'---'}></span><input type="text" name="xuan" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span><span class="label label-important"><{t}>必填<{/t}></span></dd>
+			<dt><{t}>充值<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['pay']|default:'---'}></span><input type="text" name="pay" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span></dd>
+			<dt><{t}>论坛<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['bbs']|default:'---'}></span><input type="text" name="bbs" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span></dd>
+			<dt><{t}>防沉迷<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['fcm']|default:'---'}></span><input type="text" name="fcm" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span><span class="label label-important"><{t}>设置防沉迷链接后，点击按钮将打开此链接而不打开面板<{/t}></span></dd>
+			<dt><{t}>GM客服<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['kefu']|default:'---'}></span><input type="text" name="kefu" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span><span class="label label-important"><{t}>设置客服链接后，GM按钮将打开此链接而不打开面板<{/t}></span></dd>
+			<dt><{t}>专业客服<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['zhuanyekefu']|default:'---'}></span><input type="text" name="zhuanyekefu" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span></dd>
+			<dt><{t}>用户中心<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['userc']|default:'---'}></span><input type="text" name="userc" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span></dd>
+			<dt><{t}>煮酒论剑<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['zhujiu']|default:'---'}></span><input type="text" name="zhujiu" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span></dd>
+			<dt><{t}>首服预约<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['yuyue']|default:'---'}></span><input type="text" name="yuyue" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span></dd>
+			<dt><{t}>开通会员<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['huiyuan']|default:'---'}></span><input type="text" name="huiyuan" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span></dd>
+			<dt><{t}>开通年费<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['nianfei']|default:'---'}></span><input type="text" name="nianfei" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span></dd>
+			<dt><{t}>登陆器下载<{/t}>：</dt>
+			<dd><span class="myview"><{$url_config['launcher']|default:'---'}></span><input type="text" name="launcher" class="myedit span10" style="display:none">  <span class="badge badge-warning"></span></dd>
+		</dl>
+	</div>
+	<div class="row tab-pane" id="tab3">
+		<dl class="dl-horizontal form-inline">
+			<dt>&nbsp;</dt>
+			<dd><span class="label label-info"><{t}>请自行核对ip的有效性,各ip使用“,”或者换行符分割,支持excel格式<{/t}></span></dd>
+			<dt>&nbsp;</dt>
+			<dd><span class="label label-info"><{t}>所有ip白名单以这次提交的为准,直接替换旧的列表,只有确实无效的ip才Xóa,保证名单的完整性,程序会自动过滤重复ip保留一个<{/t}></span></dd>
+			<dt>IP<{t}>白名单<{/t}>：</dt>
+			<dd><span id="ips_tab3" class="myview span6 word-break"><{if isset($ips) and !empty($ips)}><{foreach $ips as $ip}><{$ip}> , <{/foreach}><{else}>---<{/if}></span><textarea name="ips" class="myedit" style="width: 250px;height:300px;display:none"></textarea>  <span class="badge badge-warning"></span>
+			</dd>
+		</dl>
+	</div>
+</div>
+</div>
+</body>
+</html>

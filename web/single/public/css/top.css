@@ -1,0 +1,107 @@
+/* CSS Document */
+body,div,h1,h2,h3,h4,h5,h6,ul,li,span,p {
+	margin: 0px;
+	padding: 0px;
+	font-family: Verdana, Geneva, sans-serif;
+	font-weight: normal
+}
+
+ul {
+	list-style-type: none
+}
+
+.clear:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+.clear {
+	zoom: 1;
+}
+
+body {
+	background: url(../images/img01.jpg) 0 0 repeat-x;
+}
+
+a {
+	text-decoration: none
+}
+
+/* 头部定义 */
+#top {
+	width: 1300px;
+	margin: 0 auto;
+	height: 80px;
+	overflow: hidden;
+	background: url(../images/img04.jpg) 0 0 repeat-x;
+}
+
+#logo {
+	width: 150px;
+	line-height: 80px;
+	float: left;
+	padding-left: 50px
+}
+
+#agents {
+	float: left;
+	padding-top: 30px;
+	overflow: hidden
+}
+
+#sid {
+	float: left;
+	margin-left: 10px;
+	overflow: auto;
+	zoom: 1;
+	width: 860px;
+	padding: 2px;
+	height: 76px;
+}
+
+#sid ul li {
+	float: left;
+	width: 45px;
+	float: left;
+}
+
+#sid ul li .server_id {
+	margin-bottom: 2px;
+	padding: 0px;
+	width: 40px;
+	height: 25px;
+}
+
+#sid ul li .current_server {
+	margin-bottom: 2px;
+	padding: 0px;
+	width: 40px;
+	height: 25px;
+	color: #F00;
+	font-weight: bolder;
+}
+
+#logout {
+	float: right;
+	height: 100px;
+	padding-top: 20px;
+	padding-right: 45px;
+}
+
+/* 欢迎栏 */
+#welcome {
+	height: 25px;
+	*margin-top: -18px;
+	background: #464F54;
+	color: #FFF
+}
+
+#welcome .welcome-word {
+	display: block;
+	margin-left: 130px;
+	line-height: 25px;
+}

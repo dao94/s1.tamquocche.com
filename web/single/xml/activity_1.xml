@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="1" name="Oline Nhận Quà">
+    <show_time>2016-04-08 11:57:25</show_time>
+    <hide_time>2017-04-08 23:59:59</hide_time>
+    <start_time>2016-04-08 11:57:25</start_time>
+    <end_time>2017-04-08 23:59:59</end_time>
+    <info><![CDATA[]]></info>
+  </activity>
+</config>

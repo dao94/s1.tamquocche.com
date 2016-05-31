@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<div id="nav">
+<ul class="nav nav-tabs">
+	<{foreach $action_conf as $key=>$item}>
+	<li <{if $conditions['action']==$key}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+	<{/foreach}>
+</ul>
+</div>
+
+<!--地图流失-->
+<{if $conditions['action']=='map_loss'}>
+<form type="?" method="get">
+<div class="well form-search">
+<{if $conditions['type']=='list'}>
+	<label><{t}>是否在线<{/t}>：</label>
+	<select name="online" class="span1">
+		<option value=""><{t}>全部<{/t}></option>
+		<option value="1"<{if $conditions['online']===1}>selected="selected"<{/if}>><{t}>在线<{/t}></option>
+		<option value="0"<{if $conditions['online']===0}>selected="selected"<{/if}>><{t}>离线<{/t}></option>
+	</select>
+<{/if}>
+	<label style="margin-left: 10px;"><{t}>等级<{/t}>：</label>
+	<input class="input-mini-mini" placeholder="<{t}>最低<{/t}>" type="text" maxlength="4" id="min_level" name="min_level" value="<{$conditions['min_level']}>"/>
+	<i class="icon-minus"></i>
+	<input class="input-mini-mini" placeholder="<{t}>最高<{/t}>" type="text" maxlength="4" id="max_level" name="max_level" value="<{$conditions['max_level']}>"/>
+	<label style="margin-left: 10px;"><{t}>标准流失时长<{/t}>：</label>
+	<select name="day" class="span1">
+	<{foreach $day_options as $day}>
+		<option value="<{$day}>" <{if $conditions['day']==$day}>selected="selected"<{/if}>><{$day}><{t}>天<{/t}></option>
+	<{/foreach}>
+	</select>
+	<button class="btn btn-primary" type="submit"><{t}>搜 索<{/t}></button>
+
+<{if $conditions['type']=='level'}>
+	<button class="btn btn-inverse" type="button" onClick="javascript:window.location='?'"><{t}>返 回<{/t}></button>
+	<hr style="margin: 5px 0px;">
+	<div>
+		<{t}>地图名称<{/t}>：<b><{$conditions['map_name']}></b>
+		<{t}>地图流失人数<{/t}>：<b><{$total_loss_count}></b>
+	</div>
+<{/if}>
+	<hr style="margin: 5px 0px;">
+	<{t}>查询范围内玩家数<{/t}>：<b><{$total_count}></b>
+	<{t}>截止时间<{/t}>：<b><{$smarty.now|date_format:"%Y-%m-%d %H:%M:%S"}></b>（<{t}>数据缓存1小时<{/t}>）
+	<input type="hidden" name="type" value="<{$conditions['type']}>">
+	<input type="hidden" name="map_id" value="<{$conditions['map_id']}>">
+</div>
+</form>
+
+<{if $conditions['type']=='list'}>
+<table class="table table-bordered table-hover" style="margin-top: 10px">
+	<thead>
+		<tr>
+			<th><{t}>地图<{/t}>ID</th>
+			<th><{t}>地图名称<{/t}></th>
+			<th><{t}>人数<{/t}></th>
+			<th><{t}>比例<{/t}></th>
+			<th><{t}>流失人数<{/t}></th>
+			<th><{t}>流失比例<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{if $data}>
+		<{foreach $data as $map_id=>$row}>
+		<tr>
+			<td><{$map_id}></td>
+			<td><a href="?type=level&map_id=<{$map_id}>&min_level=<{$conditions['min_level']}>&max_level=<{$conditions['max_level']}>&day=<{$conditions['day']}>"><{$row['name']}></a></td>
+			<td><{$row['count']}></td>
+			<td style="text-align: left"><img src="../../public/images/baifenbi.gif" style="height: 10px; width:<{$row['ratio']*2}>px;"/><{$row['ratio']}>%</td>
+			<td><{$row['loss_count']}></td>
+			<td style="text-align: left"><img src="../../public/images/baifenbi.gif" style="height: 10px;width:<{$row['loss_ratio']*2}>px;"/><{$row['loss_ratio']}>%</td>
+		</tr>
+		<{/foreach}>
+		<{else}>
+		<tr>
+			<td colspan="6"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+		</tr>
+		<{/if}>
+	</tbody>
+</table>
+<{else if $conditions['type']=='level'}>
+<div align="center">
+	<{if $image_data['status']==1}>
+	<img id="img_loss" src="<{$image_data['data']}>" class="img-rounded">
+	<{else}>
+	<h5><{$image_data['info']}></h5>
+	<{/if}>
+</div>
+<table class="table table-bordered table-hover" style="margin-top: 10px">
+	<thead>
+		<tr>
+			<th><{t}>等级<{/t}></th>
+			<th><{t}>人数<{/t}></th>
+			<th><{t}>等于或超过该等级的人数<{/t}></th>
+			<th><{t}>人数比例<{/t}></th>
+			<th><{t}>流失人数<{/t}></th>
+			<th><{t}>流失比例<{/t}></th>
+		</tr>
+	</thead>
+	<tbody>
+		<{if $data}>
+		<{foreach $data as $level=>$row}>
+		<tr>
+			<td><input type="radio" name="level" value="<{$level}>"/><{$level}></td>
+			<td><{$row['count']}></td>
+			<td><{$row['gte_level_count']}></td>
+			<td style="text-align: left"><img src="../../public/images/baifenbi.gif" style="height: 10px; width:<{$row['ratio']*2}>px;"/><{$row['ratio']}>%</td>
+			<td><{$row['loss_count']}></td>
+			<td style="text-align: left"><img src="../../public/images/baifenbi.gif" style="height: 10px; width:<{$row['loss_ratio']*2}>px;"/><{$row['loss_ratio']}>%</td>
+		</tr>
+		<{/foreach}>
+		<{else}>
+		<tr>
+			<td colspan="6"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+		</tr>
+		<{/if}>
+	</tbody>
+</table>
+<script language="javascript">
+$(document).ready(function(){
+	$("input[name='level']").click(function(){
+		$.get("?type=plot",{map_id:<{$conditions['map_id']}>,day:<{$conditions['day']}>,level:this.value},function(msg){
+			if(msg.status==1){
+				$('#img_loss').attr('src',msg.data);
+			}else{
+				alert(msg.info);
+			}
+		},'json');
+	});
+});
+</script>
+<{/if}>
+<{else if $conditions['action']=='map_mission_loss'}>
+<!--地图任务流失-->
+<script language="javascript">
+$(function($){
+	$('.btn_query').click(function(){
+			window.location='?action=<{$conditions['action']}>&date=<{$conditions['date']}>&map_id='+this.value;
+	});
+});
+</script>
+<div class="well">
+<div class="btn-group">
+<{foreach $map_mission_conf as $key=>$item}>
+	<button type="button" value="<{$key}>" class="btn <{if $conditions['map_id']==$key}>btn-success<{/if}> btn_query"><{$scene_list[$key]['name']|default:''}></button>
+<{/foreach}>
+</div>
+<form method="get" class="form-search" style="margin: 15px 0 10px 0;">
+	<label><{t}>日期<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" name="date" value="<{$conditions['date']}>">
+	<label style="margin-left: 10px;"><{t}>任务名称<{/t}>：</label>
+	<select name="mid" class="input-large">
+	<{foreach $map_mission_conf[$conditions['map_id']] as $key=>$item}>
+		<option value="<{$item}>" <{if $conditions['mid']==$item}>selected="selected"<{/if}>><{$item}>【<{$mission_list[$item]['name']|default:''}>】</option>
+	<{/foreach}>
+	</select>
+	<button type="submit" class="btn btn-primary" style="margin-left: 5px;"><i class="icon-search icon-white"></i><{t}>查 询<{/t}>
+</button>
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+	<input type="hidden" name="map_id" value="<{$conditions['map_id']}>">
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<$conditions['today']}>
+<button onClick="javascript:window.location= '?action=<{$conditions['action']}>&map_id=<{$conditions['map_id']}>&mid=<{$conditions['mid']}>&date=<{$key}>';" class="btn <{if $conditions['date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+</div>
+
+<table width="100%">
+	<tr>
+		<td width="45%" align="center"><img src="<{$image_path}>" class="img-rounded"></td>
+		<td width="45%" valign="top">
+		<table class="table table-bordered table-hover" style="width: 450px;">
+			<thead>
+				<th><{t}>流失场景<{/t}></th>
+				<th><{t}>流失玩家数<{/t}></th>
+				<th><{t}>流失玩家比<{/t}></th>
+			</thead>
+			<tbody>
+				<{foreach $data as $map_id=>$count}>
+				<tr>
+					<td><{$scene_list[$map_id]['name']|default:''}></td>
+					<td><{$count}></td>
+					<td><{if $total_count}><{round($count/$total_count,4)*100}><{else}>0<{/if}>%</td>
+				</tr>
+				<{/foreach}>
+			</tbody>
+		</table>
+		</td>
+	</tr>
+</table>
+<{/if}>
+</body>
+</html>

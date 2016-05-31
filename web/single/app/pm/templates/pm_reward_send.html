@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>奖励发放<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/kindeditor/kindeditor-min.js"></script>
+<script language="javascript" src="../../public/js/lwjsback.js.php"></script>
+<script language="javascript" src="../../public/js/lwjs.typeahead.js"></script>
+<script lang="javascript">
+var same_editor,email_editor;
+KindEditor.ready(function(K) {
+		same_editor = K.create('#same_reward',{
+				themeType:'diy',
+				items : ['money','item','rewardview'],
+				filterMode : false
+		});
+		email_editor = K.create('[name="econtent"]',{
+				themeType:'diy',
+				width:'400px',
+				minWidth:'400px',
+				height:'150px',
+				items : ['source','undo', 'redo', '|','bold','link','unlink'],
+				filterMode : false
+		});
+});
+//日志记录回调函数
+var log_callback = function(res){
+		var html = '',
+		bind = {0:'<{t}>绑定<{/t}>',1:'<{t}>非绑定<{/t}>'},
+		money = {gold:'<{t}>铜币<{/t}>',giftGold:'<{t}>铜券<{/t}>',jade:'<{t}>元宝<{/t}>',giftJade:'<{t}>礼券<{/t}>'};
+		for(var i in res.data.data){
+				html += '<tr>'+
+						//'<td>'+res.data.data[i]['id']+'</td>'+
+						'<td>'+res.data.data[i]['account']+'</td>'+
+						'<td><a href="../gm/player.php?id='+res.data.data[i]['char_id']+'">'+res.data.data[i]['char_name']+'</a></td>'+
+						'<td>'+res.data.data[i]['reason']+'</td>'+
+						'<td style="text-align:left;"><a class="accordion-toggle" data-toggle="collapse" href="#email_'+res.data.data[i]['id']+'">'+res.data.data[i]['email_title']+'</a><div id="email_'+res.data.data[i]['id']+'" class="accordion-body collapse">'+res.data.data[i]['email_content']+'</div></td>'+
+						'<td style="text-align:left"><a class="accordion-toggle btn btn-small" data-toggle="collapse" href="#reward_'+res.data.data[i]['id']+'"><i class="icon-search"></i></a><div id="reward_'+res.data.data[i]['id']+'" class="accordion-body collapse">';
+				for(var j in res.data.data[i]['reward_list']){
+						switch(j){
+								case 'itemList':
+										for(var k in res.data.data[i]['reward_list']['itemList']){
+												html += res.data.data[i]['reward_list']['itemList'][k]['itemId']+'['+
+														res.data.data[i]['reward_list']['itemList'][k]['number']+']'+
+														bind[res.data.data[i]['reward_list']['itemList'][k]['bind']]+'<br/>';
+										}
+										break;
+								case 'moneyList':
+										for(var k in res.data.data[i]['reward_list']['moneyList']){
+												html += money[k]+'['+res.data.data[i]['reward_list']['moneyList'][k]+']<br/>';
+										}
+										break;
+						}
+				}
+				html +='</div></td>'+
+						'<td>'+res.data.data[i]['gm']+'</td>'+
+						'<td>'+res.data.data[i]['send_ts']+'</td>'+
+						'<td>'+res.data.data[i]['get_ts']+'</td></tr>';
+		}
+		$('#log_tbody').html(html);
+		$('#log_page').html(res.data.page);
+};
+
+//tab4查询ajax回调
+var tab4_callback = function(res){
+		var type = {1:'<{t}>在线<{/t}>',2:'<{t}>全服<{/t}>'},
+		occ = {11:'<{t}>破天<{/t}>',21:'<{t}>舞月<{/t}>',31:'<{t}>飞翎<{/t}>',41:'<{t}>幻雪<{/t}>'},
+		camps = {0:'<{t}>无<{/t}>',1:'<{t}>魏<{/t}>',2:'<{t}>蜀<{/t}>',3:'<{t}>吴<{/t}>'},
+		status = {0:'<span class="badge badge-info"><{t}>未更新<{/t}></span>',1:'<span class="badge badge-success"><{t}>进行中<{/t}></span>',2:'<span class="badge"><{t}>已停止<{/t}></span>',3:'<span class="badge badge-inverse"><{t}>已挂起<{/t}></span>'},
+		bind = {0:'<{t}>绑定<{/t}>',1:'<{t}>非绑定<{/t}>'},
+		money = {1:'<{t}>铜币<{/t}>',2:'<{t}>铜券<{/t}>',3:'<{t}>元宝<{/t}>',4:'<{t}>礼券<{/t}>'},
+		html = '';
+		for(var i in res.data.data){
+				html += '<tr id="'+res.data.data[i]['eventid']+'">'+
+						'<td><label><input type="radio" name="eventid" value="'+res.data.data[i]['eventid']+'">'+res.data.data[i]['eventid']+'</label></td>'+
+						'<td>';
+				for(var j in res.data.data[i]['occ']){
+						html += occ[res.data.data[i]['occ'][j]]+',';
+				}
+				html += '</td><td>';
+				for(var k in res.data.data[i]['camps']){
+						html += camps[res.data.data[i]['camps'][k]]+',';
+				}
+				html += '</td>'+
+						'<td>'+res.data.data[i]['level'][0]+'-'+res.data.data[i]['level'][1]+'</td>'+
+						'<td>'+type[res.data.data[i]['type']]+'</td>'+
+						'<td>'+res.data.data[i]['starttime']+'<i class="icon-minus"></i>'+res.data.data[i]['endtime']+'</td>'+
+						'<td class="status">'+status[res.data.data[i]['state']]+'</td>'+
+						'<td>'+res.data.data[i]['title']+'</td>'+
+						'<td><a href="javascript:;" rel="tooltip" data-title="'+res.data.data[i]['content']+'">'+res.data.data[i]['cut_content']+'</a></td>'+
+						'<td style="text-align:left"><a class="accordion-toggle btn btn-small" data-toggle="collapse" href="#reward_'+res.data.data[i]['eventid']+'"><i class="icon-search"></i></a><div id="reward_'+res.data.data[i]['eventid']+'" class="accordion-body collapse">';
+
+				if(res.data.data[i]['itemList']!=undefined){
+						for(var k in res.data.data[i]['itemList']){
+								html += res.data.data[i]['itemList'][k]['itemId']+'['+
+										res.data.data[i]['itemList'][k]['number']+']'+
+										bind[res.data.data[i]['itemList'][k]['bind']]+'<br/>';
+						}
+				}
+				if(res.data.data[i]['moneyList']!=undefined){
+						for(var k in res.data.data[i]['moneyList']){
+								html +=money[res.data.data[i]['moneyList'][k]['moneyType']]+'['+res.data.data[i]['moneyList'][k]['money']+']<br/>';
+						}
+				}
+				html +='</div></td>'+
+						'<td>'+res.data.data[i]['gmer']+'</td>'+
+						'</tr>';
+		}
+		html += '<tr><td colspan="11"><button type="button" class="btn btn-primary" onclick="upboemail(1)"><{t}>更新<{/t}></button>   <button type="button" class="btn btn-primary" onclick="upboemail(2)"><{t}>停止<{/t}></button><span id="tab4_log_ajax_result" class="badge badge-warning"></span></td></tr>';
+		$('#tab4_tbody').html(html);
+		$('#tab4_page').html(res.data.page);
+};
+function upboemail(status){
+		$('#tab4_log_ajax_result').html('');
+		var eventid = $('#tab4_log [name="eventid"]:checked').val();
+		if(eventid==''||eventid==undefined){
+				$('#tab4_log_ajax_result').html('<{t}>请选择ID<{/t}>');
+				return;
+		}
+		var phprpc_client = new PHPRPC_Client('../interface/pm_api.php', ['pm_email']);
+		phprpc_client.pm_email({eventid:eventid,status:status,action:'update'}, function (result, args, output, warning) {
+				if(result.status=='ok'){
+						$('#tab4_log_ajax_result').html(eventid+result.info);
+						$('#'+eventid+' .status').html(status==1?'<span class="badge badge-inverse"><{t}>已挂起<{/t}></span>':'<span class="badge"><{t}>已停止<{/t}></span>');
+				}else{
+						$('#tab4_log_ajax_result').html(eventid+'<{t}>设置失败<{/t}>');
+				}
+		}, true);
+}
+$(document).ready(function(){
+	$('a[rel="tooltip"]').live('mouseover',function(){
+		$(this).tooltip({placement:'top',html:true}).tooltip('show');
+	});
+
+	//角色验证
+	$('#fool_player').blur(function(){
+			var char_type = $('[name="fool_char_type"]:checked').val(),
+				fool_player = $.trim($("#fool_player").val());
+			$("#fool_player_check").empty();
+			if(!fool_player)	return false;
+			$.post('?type=check',{char_type:char_type,player:fool_player},function(msg){
+				var player_check='',is_pass=true;
+				if(msg.status==1){
+					for(var key in msg.data){
+						player_check+=key+"\t";
+						if(msg.data[key]==null){
+							player_check+='not exist';
+							is_pass=false;
+						}else{
+							player_check+='ok';
+						}
+						player_check+="\n";
+					}
+				}
+				$("#fool_player_check").html(player_check);
+				$("#fool_send").attr('disabled',is_pass ? false : true);
+			},'json');
+	});
+
+	//简单模式
+	$('#fool_send').click(function(){
+			var char_type = $('[name="fool_char_type"]:checked').val(),
+			fool_player = $.trim($("#fool_player").val()),
+			fool_reason = $.trim($('[name="reason"]').val()),
+			fool_etitle = $.trim($('[name="etitle"]').val()),
+			fool_econtent = $.trim(email_editor.html()),
+			fool_reward = {};
+			var item_num=0;
+			$('#fool .reward').each(function(i){
+					var type=$(this).val(),
+					num = $(this).siblings('[name="num"]').val();
+					if(type==='item' && num>=1000){
+						//判断item是不是1000个
+						item_num=1;
+					}
+					if(type==='item'){
+							var item_info = $(this).siblings('.item').children('[name=item_info]').val(),
+							item_bind = $(this).siblings('.item').children('[name=item_bind]').attr('checked')==='checked'?1:0;
+							if(item_info!=''){
+							   fool_reward[i]={type:'item',num:num,item:item_info,bind:item_bind};
+							}
+					}else{
+							fool_reward[i]={type:type,num:num};
+					}
+			})
+			$("#fool_ajax_result").html('');
+			if(fool_player === '' || fool_reward==={} ||fool_reason ==='' || fool_etitle ===''||fool_econtent===''){
+					$("#fool_ajax_result").html('<{t}>请设置玩家列表、奖励列表、邮件文本内容<{/t}>');
+					return;
+			}
+			if(item_num==1){
+				alert('<{t}>道具数量必须小于1000个<{/t}>');
+				item_num=0;
+				return false;
+			}
+			$.ajax({
+					type:'POST',
+					url:'?',
+					data:{type:'fool_send',char_type:char_type,player:fool_player,reason:fool_reason,etitle:fool_etitle,econtent:fool_econtent,reward:fool_reward},
+					dataType:'json',
+					success:function(result){
+							if(result.status==='error'){
+									if(result.info==='player_exists'){
+											var player_check = '';
+											for(var key in result.data){
+													player_check += key + "\t ";
+													player_check += result.data[key]===null?'not exist':'ok';
+													player_check += "\n";
+											}
+											$("#fool_player_check").html(player_check);
+									}else{
+											$("#fool_ajax_result").html(result.info);
+									}
+							}else{
+									$("#fool_player").empty();
+									$("#fool_player_check").empty();
+									$("#fool_ajax_result").html(result.info);
+							}
+					}
+			})
+	});
+
+	$('#same_player').blur(function(){
+			var char_type = $('[name="same_char_type"]:checked').val(),
+				same_player = $.trim($("#same_player").val());
+			$("#fool_player_check").empty();
+			if(!same_player)	return false;
+			$.post('?type=check',{char_type:char_type,player:same_player},function(msg){
+				var player_check='',is_pass=true;
+				if(msg.status==1){
+					for(var key in msg.data){
+						player_check+=key+"\t";
+						if(msg.data[key]==null){
+							player_check+='not exist';
+							is_pass=false;
+						}else{
+							player_check+='ok';
+						}
+						player_check+="\n";
+					}
+				}
+				$("#same_player_check").html(player_check);
+				$("#same_send").attr('disabled',is_pass ? false : true);
+			},'json');
+	});
+
+	//高级模式
+	$("#same_send").click(function(){
+			var char_type = $('[name="same_char_type"]:checked').val(),
+			same_player = $.trim($("#same_player").val()),
+			same_reward = $.trim(same_editor.html()),
+			same_reason = $.trim($('[name="reason"]').val()),
+			same_etitle = $.trim($('[name="etitle"]').val()),
+			same_econtent = $.trim(email_editor.html());
+			$("#same_ajax_result").html('');
+			if(same_player === '' || same_reward === '' ||same_reason ===''){
+					$("#same_ajax_result").html('<{t}>请设置奖励玩家列表和奖励列表<{/t}>');
+					return;
+			}
+			$.ajax({
+					type:'POST',
+					url:'?',
+					data:{type:'same_send',char_type:char_type,player:same_player,reason:same_reason,reward:same_reward,etitle:same_etitle,econtent:same_econtent,},
+					dataType:'json',
+					success:function(result){
+							if(result.status==='error'){
+									if(result.info==='player_exists'){
+											var player_check = '';
+											for(var key in result.data){
+													player_check += key + ': ';
+													player_check += result.data[key]===null?'not exist':'exist';
+													player_check += "\n";
+											}
+											$("#same_player_check").html(player_check);
+									}else{
+											$("#same_ajax_result").html(result.info);
+									}
+							}else{
+									$("#same_player").empty();
+									$("#fool_player_check").empty();
+									same_editor.html('');
+									$("#same_ajax_result").html(result.info);
+							}
+					}
+			})
+	})
+	//快速模式
+	$('#diff_send').click(function(){
+			var reward = $.trim($('#diff_reward').val()),
+			diff_reason = $.trim($('[name="reason"]').val()),
+			diff_etitle = $.trim($('[name="etitle"]').val()),
+			diff_econtent = $.trim(email_editor.html()),
+			char_type = $('[name="diff_char_type"]:checked').val();
+			$("#diff_ajax_result").html('');
+			if(reward === ''){
+					$("#diff_ajax_result").html('<{t}>请设置奖励列表<{/t}>');
+					return;
+			}
+			$.ajax({
+					url:'?',
+					type:'POST',
+					data:{type:'diff_send',reward:reward,char_type:char_type,reason:diff_reason,etitle:diff_etitle,econtent:diff_econtent},
+					dataType:'json',
+					success:function(result){
+							if(result.status==='error'){
+									if(result.info==='player_exists'){
+											var player_check = '';
+											for(var key in result.data){
+													player_check += key + ': ';
+													player_check += result.data[key]===null?'not exist':'exist';
+													player_check += "\n";
+											}
+											$("#diff_player_check").val(player_check);
+									}else{
+											$("#diff_ajax_result").html(result.info);
+									}
+							}else{
+									$("#diff_reward").empty();
+									$("#diff_player_check").empty();
+									$("#diff_ajax_result").html(result.info);
+							}
+					}
+			})
+	})
+	//编辑器同步滚动
+	$('.scroll_t').scroll(function(){
+			var id = $(this).attr('id');
+			if(id.match(/.*_check/)){
+					$('#'+id.replace(/_check/,'')).scrollTop($(this).scrollTop());
+			}else{
+					$('#'+id+'_check').scrollTop($(this).scrollTop());
+			}
+	})
+
+	$('a[data-toggle="tab"]').click(function(){
+		switch($(this).attr('href')){
+			case '#log':
+			case '#tab4_log':
+				$('.row-fluid').hide();
+				break;
+			default:
+				$('.row-fluid').fadeIn();
+				break;
+		}
+	});
+
+	//奖励日志
+	$('#myTab a[href="#log"]').click(function(){
+			$.post('?',{type:'log',callback:'log_callback'},log_callback,'json');
+	});
+	//奖励日志查询
+	$('#btn_log').click(function(){
+			var data=$('#form_log').serialize();
+			$.get('?type=log&callback=log_callback',data,log_callback,'json');
+			return false;
+	});
+
+	//条件发放记录
+	$('#myTab a[href="#tab4_log"]').click(function(){
+			$.post('?',{type:'tab4_log',callback:'tab4_callback'},tab4_callback,'json');
+	});
+	//条件发放记录查询
+	$('#btn_tab4_log').click(function(){
+			var data=$('#form_tab4_log').serialize();
+			$.get('?type=tab4_log&callback=tab4_callback',data,tab4_callback,'json');
+			return false;
+	});
+
+	//条件发送
+	$('#tab4_send').click(function(){
+			$('#tab4_ajax_result').html('');
+			var occ = [],
+			camps = [],
+			level = [],
+			reward = {},
+			title = '',
+			content = '',
+			start = '',
+			type = '',
+			end = '';
+			//职业
+			$('#tab4 [name="occ"]:checked').each(function(i){
+					occ[i] = $(this).val();
+			})
+			//阵营
+			$('#tab4 [name="camps"]:checked').each(function(j){
+					camps[j] = $(this).val();
+			})
+			level[0] = parseInt($('#tab4 [name="minlvl"]').val());
+			level[1] = parseInt($('#tab4 [name="maxlvl"]').val());
+			type = $('#tab4 [name="type"]:checked').val();
+			title = $.trim($('[name="etitle"]').val());
+			content = $.trim(email_editor.html());
+			start = $('#tab4 [name="start"]').val();
+			end = $('#tab4 [name="end"]').val();
+			//等级检查
+			if(!level[0] || !level[1] || level[0]>level[1] || level[0]<=0){
+					$('#tab4_ajax_result').html('<{t}>请确认等级<{/t}>');
+					return false;
+			}
+			//标题检查
+			if(title==''||content==''){
+					$('#tab4_ajax_result').html('<{t}>请输入邮件标题和邮件内容<{/t}>');
+					return false;
+			}
+			//职业
+			if(occ.length==0){
+					$('#tab4_ajax_result').html('<{t}>请选择职业<{/t}>');
+					return false;
+			}
+			//职业
+			if(camps.length==0){
+					$('#tab4_ajax_result').html('<{t}>请选择阵营<{/t}>');
+					return false;
+			}
+			$('#tab4_reward .reward').each(function(i){
+					var type=$(this).val(),
+					num = $(this).siblings('[name="num"]').val();
+					if(type==='item'){
+							var item_info = $(this).siblings('.item').children('[name=item_info]').val(),
+							item_bind = $(this).siblings('.item').children('[name=item_bind]').attr('checked')==='checked'?1:0;
+							reward[i]={type:'item',num:num,item:item_info,bind:item_bind};
+					}else{
+							reward[i]={type:type,num:num};
+					}
+			})
+			var data = {
+					occ:occ,
+					camps:camps,
+					level:level,
+					title:title,
+					type:type,
+					content:content,
+					start:start,
+					end:end,
+					reward:reward,
+					action:'set',
+					gmer:'<{$gmer}>'
+			};
+			var phprpc_client = new PHPRPC_Client('../interface/pm_api.php', ['pm_email']);
+			phprpc_client.pm_email(data, function (result, args, output, warning) {
+					$('#tab4_ajax_result').html(result.info);
+					if(result.status=='ok'){
+							$('#tab4 [name="minlvl"]').val('');
+							$('#tab4 [name="maxlvl"]').val('');
+							$('#tab4 [name="etitle"]').val('');
+							$('#tab4 [name="start"]').val('');
+							$('#tab4 [name="end"]').val('');
+					}
+			}, true);
+	});
+});
+</script>
+</head>
+<body>
+<div class="container-fluid" style="margin-top:5px;padding:0;">
+	<div class="row-fluid">
+		<div class="span5">
+			<table style="margin-left:10px;">
+				<tr>
+					<td><{t}>奖励原因<{/t}>：</td>
+					<td><input type="text" name="reason" value="系统奖励"> <span class="label label-important"><{t}>条件发送为非必填<{/t}></span></td>
+				</tr>
+				<tr>
+					<td><{t}>邮件标题<{/t}>：</td>
+					<td><input type="text" name="etitle" value="系统奖励"> <span class="label label-important"><{t}>必填<{/t}></span></td>
+				</tr>
+				<tr>
+					<td><{t}>邮件内容<{/t}>：<br/> <span class="label label-important"><{t}>必填<{/t}></span></td>
+					<td><textarea name="econtent"><{t}>恭喜获得系统奖励，感谢您对《乱舞江山》的支持！<{/t}></textarea></td>
+				</tr>
+			</table>
+		</div>
+		<div class="span7">
+				<ol>
+						<li><{t}>账号格式为“区id:账号名”，如1服test账号则为 1:test。<{/t}></li>
+						<li><{t}>角色信息框每行一个角色信息，使用键盘“ENTER”键换行，自动剔除重复的角色。<{/t}></li>
+						<li><{t}>奖励列表设置，道具的项数加上游戏币的项数不能超过10个，一个道具算一项，所有游戏币算一项。<{/t}></li>
+						<li><{t}>相同的游戏币不要设置多项，如果设置了多项采取后面的覆盖前面的方法而不是相加，道具则是会叠加。<{/t}></li>
+				</ol>
+		</div>
+	</div>
+	<div class="tabbable" style=" margin-top: 10px;">
+			<ul class="nav nav-tabs" id="myTab">
+					<li class="active"><a href="#fool" data-toggle="tab"><{t}>简单模式<{/t}></a></li>
+					<li><a href="#diff" data-toggle="tab"><{t}>快速模式<{/t}></a></li>
+					<li><a href="#same" data-toggle="tab"><{t}>高级模式<{/t}></a></li>
+					<li><a href="#tab4" data-toggle="tab"><{t}>条件发送<{/t}></a></li>
+					<li><a href="#log" data-toggle="tab"><{t}>奖励日志<{/t}></a></li>
+					<li><a href="#tab4_log" data-toggle="tab"><{t}>条件发送记录<{/t}></a></li>
+			</ul>
+			<div class="tab-content">
+					<div class="tab-pane active" id="fool">
+							<form class="form-inline">
+									<table class="table table-striped table-bordered table-condensed">
+											<thead>
+													<tr>
+															<th width="230px" class="form-inline" style="text-align:left">
+																<input type="radio" name="fool_char_type" value="3" id="char_type_3" checked="checked" style="margin-left:5px;">
+																<label for="char_type_3"><{t}>角色名<{/t}></label>
+																<input type="radio" name="fool_char_type" value="1" id="char_type_1" style="margin-left:5px;">
+																<label for="char_type_1"><{t}>角色id<{/t}></label>
+																<input type="radio" name="fool_char_type" value="2" id="char_type_2" style="margin-left:5px;">
+																<label for="char_type_2"><{t}>账号<{/t}></label></th>
+															<th width="230px"><{t}>角色验证<{/t}></th>
+															<th style="text-align:left"><{t}>奖励列表<{/t}></th>
+													</tr>
+											</thead>
+											<tbody>
+													<tr>
+															<td>
+																	<textarea id="fool_player" class="scroll_t" style="width: 200px; height: 250px; resize: none;" placeholder="<{t}>输入角色名或角色id以回车区分<{/t}>"></textarea>
+															</td>
+															<td>
+																	<textarea id="fool_player_check" readonly  class="scroll_t" style="width: 200px; height: 250px; resize: none;"></textarea>
+
+															<td style="text-align:left; vertical-align:top">
+																	<ul class="unstyled" id="fool_reward">
+																			<li style="margin:5px 0;">
+																			<select class="span1 reward" onchange="lwjsback.rewardSet.reward_change(this)">
+																				<option value="item"><{t}>道具<{/t}></option>
+																				<option value="gold"><{t}>铜币<{/t}></option>
+																				<option value="giftGold"><{t}>铜券<{/t}></option>
+																				<option value="jade">元宝</option>
+																				<option value="giftJade"><{t}>礼券<{/t}></option>
+																			</select>
+																			<{t}>数量<{/t}>：<input type="text" name="num" class="span1">
+																			<span class="item"><{t}>道具<{/t}>：<input type="text" name="item_info" class="span3" onkeyup="lwjsback.itemSearch.searchItem(this)">
+																			<input type="checkbox" name="item_bind">
+																			<{t}>非绑定<{/t}></span>
+																			<button type="button" class="btn btn-mini" onclick="lwjsback.rewardSet.reward_add(this)"><i class="icon-plus"></i></button></li>
+																	</ul>
+															</td>
+													</tr>
+													<tr>
+															<td colspan="2" style="text-align:right"><span id="fool_ajax_result" class="badge badge-warning"></span></td>
+															<td style="text-align:left"><input type="button" value="<{t}>发送<{/t}>" id="fool_send" class="btn btn-primary"></td>
+													</tr>
+											</tbody>
+									</table>
+							</form>
+					</div>
+					<div class="tab-pane" id="same">
+							<form class="form-inline">
+									<table class="table table-striped table-bordered table-condensed">
+											<thead>
+													<tr>
+															<th width="200px" class="form-inline" style="text-align:left">
+																<input type="radio" name="same_char_type" value="3" id="char_type_31" checked="checked" style="margin-left:5px;">
+																<label for="char_type_31"><{t}>角色名<{/t}></label>
+																<input type="radio" name="same_char_type" value="1" id="char_type_11" style="margin-left:5px;">
+																<label for="char_type_11"><{t}>角色id<{/t}></label>
+																<input type="radio" name="same_char_type" value="2" id="char_type_21" style="margin-left:5px;">
+																<label for="char_type_21"><{t}>账号<{/t}></label></th>
+															<th width="200px"><{t}>角色验证<{/t}></th>
+															<th><{t}>奖励列表<{/t}></th>
+													</tr>
+											</thead>
+											<tbody>
+													<tr>
+															<td>
+																	<textarea id="same_player" class="scroll_t" style=" width: 200px; height: 270px; resize: none;" placeholder="<{t}>输入角色名或者角色id以回车区分<{/t}>"></textarea>
+															</td>
+															<td>
+																	<textarea id="same_player_check" readonly class="scroll_t" style=" width: 200px; height: 270px; resize: none;"></textarea>
+															</td>
+															<td>
+																	<textarea id="same_reward" style=" width: 100%;height: 280px; resize: none;"></textarea>
+															</td>
+													</tr>
+													<tr>
+															<td style="text-align:right" colspan="2"><span id="same_ajax_result" class="badge badge-warning"></span></td>
+															<td style="text-align:left"><input type="button" value="<{t}>发送<{/t}>" id="same_send" class="btn btn-primary"></td>
+													</tr>
+											</tbody>
+									</table>
+							</form>
+					</div>
+					<div class="tab-pane" id="diff">
+							<form class="form-inline">
+									<table class="table table-striped table-bordered table-condensed">
+											<thead>
+												<tr>
+													<th><span class="label label-info"><{t}>格式：角色信息,物品id(1:铜币2:铜券3:元宝4:礼券),数量,是否绑定(0:绑定1非绑定，默认为0绑定)<{/t}></span></th>
+												</tr>
+												<tr>
+													<td width="350px" style="text-align:left">
+														<input type="radio" name="diff_char_type" value="3" id="char_type_32" checked="checked" style="margin-left:5px;">
+														<label for="char_type_32"><{t}>角色名<{/t}></label>
+														<input type="radio" name="diff_char_type" value="1" id="char_type_12" style="margin-left:5px;">
+														<label for="char_type_12"><{t}>角色id<{/t}></label>
+														<input type="radio" name="diff_char_type" value="2" id="char_type_22" style="margin-left:5px;">
+														<label for="char_type_22"><{t}>账号<{/t}></label></td>
+													<td><{t}>角色验证<{/t}></td>
+												</tr>
+												</thead>
+												<tbody>
+													<tr>
+															<td>
+																	<textarea id="diff_reward" style=" width: 90%;height: 300px; resize: none;"></textarea>
+															</td>
+															<td>
+																	<textarea id="diff_player_check" style=" width: 90%;height: 300px; resize: none;"></textarea>
+															</td>
+													</tr>
+													<tr>
+															<td style="text-align:right"><span id="diff_ajax_result" class="badge badge-warning"></span></td>
+															<td style="text-align:left"><input type="button" value="<{t}>发送<{/t}>" id="diff_send" class="btn btn-primary"></td>
+													</tr>
+											</tbody>
+									</table>
+							</form>
+					</div>
+					<div class="tab-pane" id="tab4">
+							<dl class="dl-horizontal">
+									<dt><{t}>职业<{/t}></dt>
+									<dd class="form-inline" style="margin-bottom: 5px;"><label><input type="checkbox" name="occ" value="11" checked="checked"> <{t}>破天<{/t}> </label><label><input type="checkbox" name="occ" value="21" checked="checked" style="margin-left:10px;"> <{t}>舞月<{/t}> </label><label><input type="checkbox" name="occ" value="31" checked="checked" style="margin-left:10px;"> <{t}>飞翎<{/t}> </label><label><input type="checkbox" name="occ" value="41" checked="checked"  style="margin-left:10px;"> <{t}>幻雪<{/t}> </label></dd>
+									<dt><{t}>阵营<{/t}></dt>
+									<dd class="form-inline" style="margin-bottom: 5px;"><label><input type="checkbox" name="camps" value="0" checked="checked" > <{t}>无<{/t}> </label><label><input type="checkbox" name="camps" value="1" checked="checked" style="margin-left:10px;"> <{t}>魏<{/t}> </label><label><input type="checkbox" name="camps" value="2" checked="checked" style="margin-left:10px;"> <{t}>蜀<{/t}> </label><label><input type="checkbox" name="camps" value="3" checked="checked" style="margin-left:10px;"> <{t}>吴<{/t}> </label></dd>
+									<dt><{t}>等级<{/t}></dt>
+									<dd class="form-inline" style="margin-bottom: 5px;">
+											<input type="text" name="minlvl" class="span1" value="1" maxlength=3""> <i class="icon-minus"></i> <input type="text" name="maxlvl" class="span1" value="100" maxlength=3"">
+									</dd>
+									<dt><{t}>在线情况<{/t}></dt>
+									<dd class="form-inline" style="margin-bottom: 5px;">
+											<label><input type="radio" name="type" value="1" checked="checked"> <{t}>在线<{/t}> </label><label><input type="radio" name="type" value="2" style="margin-left:10px;"> <{t}>全服<{/t}> </label>
+									</dd>
+									<dt><{t}>时间<{/t}></dt>
+									<dd class="form-inline" style="margin-bottom: 5px;"><input type="text" id="d1" name="start" class="span2" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d %H:{%m+5}:%s'})"> <i class="icon-minus"></i> <input type="text" id="d2" name="end" class="span2" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'d1\')}'})">   <span class="label label-info"><{t}>请至少提前5分钟设置<{/t}></span></dd>
+									<dt><{t}>邮件奖励<{/t}></dt>
+									<dd>
+											<ul class="unstyled form-inline" id="tab4_reward">
+													<li style="margin:5px 0;"><select class="span1 reward" onchange="lwjsback.rewardSet.reward_change(this)"><option value="item"><{t}>道具<{/t}></option><option value="gold"><{t}>铜币<{/t}></option><option value="giftGold"><{t}>铜券<{/t}></option><option value="jade">元宝</option><option value="giftJade"><{t}>礼券<{/t}></option></select> <{t}>数量<{/t}>：<input type="text" name="num" class="span1"> <span class="item"><{t}>道具<{/t}>：<input type="text" name="item_info" class="span3" onkeyup="lwjsback.itemSearch.searchItem(this)"> <input type="checkbox" name="item_bind"> <{t}>非绑定<{/t}></span> <button type="button" class="btn btn-mini" onclick="lwjsback.rewardSet.reward_add(this)"><i class="icon-plus"></i></button></li>
+											</ul>
+									</dd>
+									<dd><input type="button" class="btn btn-primary" id="tab4_send" value="<{t}>设置<{/t}>">              <span id="tab4_ajax_result" class="badge badge-warning"></span></dd>
+							</dl>
+					</div>
+					<div class="tab-pane" id="log">
+							<form class="well well-small form-search" id="form_log">
+								<label><{t}>发放时间<{/t}>：<input class="input-medium" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm',minDate:'<{$smarty.const.SERVER_OPEN_TIME|date_format:"%Y-%m-%d 00:00"}>'})" name="start_date"> <i class="icon-minus"></i>
+	<input class="input-medium" placeholder="<{t}>输入结束日期<{/t}>" type="text"  onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm',minDate:'<{$smarty.const.SERVER_OPEN_TIME|date_format:"%Y-%m-%d 00:00"}>'})" name="end_date"></label>
+							<label style="margin-left:5px;"><{t}>角色名<{/t}>：
+							<div class="input-append">
+								<input name="name" class="input-medium" placeholder="<{t}>请输入角色名<{/t}>..." data-provide="typeahead" type="text" maxlength="20"><span class="add-on"><i class="icon-search"></i></span>
+							</div>
+							</label>
+							<label>GM:<input type="text" class="input-medium" name="gm"></label>
+							<button type="button" class="btn btn-primary" id="btn_log"><{t}>查询<{/t}></button>
+							</form>
+							<table class="table table-striped table-bordered table-condensed">
+									<thead>
+											<tr>
+													<!--<th><{t}>邮件<{/t}>ID</th>-->
+													<th><{t}>账号<{/t}></th>
+													<th><{t}>角色<{/t}></th>
+													<th><{t}>原因<{/t}></th>
+													<th style="width:250px"><{t}>邮件<{/t}></th>
+													<th><{t}>奖励<{/t}></th>
+													<th>GM</th>
+													<th><{t}>发放<{/t}></th>
+													<th><{t}>领取<{/t}></th>
+											</tr>
+									</thead>
+									<tbody id="log_tbody"></tbody>
+							</table>
+							<div class="pagination pagination-centered" id="log_page"></div>
+					</div>
+					<div class="tab-pane" id="tab4_log">
+							<form class="well well-small form-search" id="form_tab4_log">
+								<label><{t}>开始时间<{/t}>：<input class="input-medium" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm',minDate:'<{$smarty.const.SERVER_OPEN_TIME|date_format:"%Y-%m-%d 00:00"}>'})" name="start_date"> <i class="icon-minus"></i>
+	<input class="input-medium" placeholder="<{t}>输入结束日期<{/t}>" type="text"  onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm',minDate:'<{$smarty.const.SERVER_OPEN_TIME|date_format:"%Y-%m-%d 00:00"}>'})" name="end_date"></label>
+							<label>
+								<{t}>状态<{/t}>：
+								<select name="status" class="input-small">
+									<option value=""><{t}>所有<{/t}></option>
+									<option value="0"><{t}>未更新<{/t}></option>
+									<option value="1"><{t}>进行中<{/t}></option>
+									<option value="2"><{t}>已停止<{/t}></option>
+									<option value="3"><{t}>已挂起<{/t}></option>
+								</select>
+							</label>
+							<label>GM:<input type="text" class="input-medium" name="gm"></label>
+							<button type="button" class="btn btn-primary" id="btn_tab4_log"><{t}>查询<{/t}></button>
+							</form>
+							<table class="table table-striped table-bordered table-hover">
+									<thead>
+											<tr>
+													<th>ID</th>
+													<th><{t}>职业列表<{/t}></th>
+													<th><{t}>阵营列表<{/t}></th>
+													<th><{t}>等级<{/t}></th>
+													<th><{t}>在线情况<{/t}></th>
+													<th><{t}>时间<{/t}></th>
+													<th><{t}>状态<{/t}></th>
+													<th><{t}>邮件标题<{/t}></th>
+													<th><{t}>邮件内容<{/t}></th>
+													<th><{t}>奖励列表<{/t}></th>
+													<th>GMER</th>
+											</tr>
+									</thead>
+									<tbody id="tab4_tbody">
+									</tbody>
+							</table>
+							<div class="pagination pagination-centered" id="tab4_page"></div>
+					</div>
+			</div>
+	</div>
+</div>
+</body>
+</html>

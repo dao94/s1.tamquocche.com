@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>锻造流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+
+<style type="text/css">
+#type_list_fire{
+padding:0px 0px 20px 0px;
+}
+#type_list{
+padding:0px 0px 20px 0px;
+}
+
+#type_list_gem{
+padding:0px 0px 20px 0px;
+}
+
+.span2{
+	width:122px;
+	height:20px;
+	line-height:20px;
+	overflow:hidden;
+}
+
+</style>
+
+<script language="javascript">
+$(function($){
+
+	$('#item_name').typeahead({
+		items:200,
+		minLength:1,
+		source: function(value, process) {
+			var client = new PHPRPC_Client('http://<{$smarty.const.CENTER_DOMAIN}>/center/app/interface/item_info.php', ['search']);
+			client.search(value,'<{$smarty.session.__single_LANG}>', function (result, args, output, warning) {
+				result=jQuery.parseJSON(result);
+				var data=new Array();
+				var length=result.length;
+				length==0 ? $("input[name='item_id']").val('') : '';
+				$(result).each(function(i,obj){
+					data.push(obj[1]+"-"+obj[0]);
+					length==1 ? $("input[name='item_id']").val(obj[0]) : '';
+				});
+				var reg=new RegExp("^[0-9]*$");
+				reg.test(value) ? $("input[name='item_id']").val(value) : '';
+				process(data);
+			});
+		},
+		updater:function(data){
+			var arr=data.split('-');
+			$("input[name='item_id']").val(arr[1]);
+			return arr[0];
+		},
+	});
+
+	$('#item_name').blur(function(){
+		this.value=='' ? $("input[name='item_id']").val('') : '';
+	}).next().click(function(){
+		$(this).prevAll(':input').keyup();
+	});
+
+	//项目类型多选择
+	$('#btn_type').toggle(function(){
+		$('#type_list').fadeIn();
+	},function(){
+		$('#type_list').fadeOut();
+	});
+
+	$('#cb_all').click(function(){
+		$('.type').attr('checked',this.checked);
+	});
+
+	$('.btn_selected').click(function(){
+		$("input[name='type[]'][value='"+this.value+"']").attr('checked',false);
+		var rPort = document.getElementsByName("part[]");
+	　　for(i=0;i<rPort.length;i++)
+	　　{
+			 if(rPort[i].checked){
+			 	 var ip=rPort[i].value;
+			 	 $("input[name='part[]'][value='"+ip+"']").attr('checked',true);
+			 } 　　
+	　　}
+
+		$('#btn_search').click();
+	});
+
+	//部位多选择
+	$('#btn_type_part').toggle(function(){
+		$('#type_list_part').fadeIn();
+	},function(){
+		$('#type_list_part').fadeOut();
+	});
+
+	$('#cb_all_part').click(function(){
+		$('.type_part').attr('checked',this.checked);
+	});
+
+	$('.btn_selected_part').click(function(){
+		$("input[name='part[]'][value='"+this.value+"']").attr('checked',false);
+		var rPort = document.getElementsByName("fire[]");
+	　　for(i=0;i<rPort.length;i++)
+	　　{
+			 if(rPort[i].checked){
+			 	 var ip=rPort[i].value;
+			 	 $("input[name='fire[]'][value='"+ip+"']").attr('checked',true);
+			 } 　　
+	　　}
+
+		$('#btn_search').click();
+	});
+
+
+	//炉火多选择
+	$('#btn_type_fire').toggle(function(){
+		$('#type_list_fire').fadeIn();
+	},function(){
+		$('#type_list_fire').fadeOut();
+	});
+
+	$('#cb_all_fire').click(function(){
+		$('.type_fire').attr('checked',this.checked);
+	});
+
+	$('.btn_selected_fire').click(function(){
+		$("input[name='fire[]'][value='"+this.value+"']").attr('checked',false);
+		var rPort = document.getElementsByName("part[]");
+	　　for(i=0;i<rPort.length;i++)
+	　　{
+	    　　 if(rPort[i].checked){
+	    	  var ip=rPort[i].value;
+	          $("input[name='part[]'][value='"+ip+"']").attr('checked',true);
+	    	}
+	       　　
+	　　}
+
+		$('#btn_search').click();
+	});
+
+	//宝石多选择
+	$('#btn_type_gem').toggle(function(){
+		$('#type_list_gem').fadeIn();
+	},function(){
+		$('#type_list_gem').fadeOut();
+	});
+
+	$('#cb_all_gem').click(function(){
+		$('.type_gem').attr('checked',this.checked);
+	});
+
+	$('.btn_selected_gem').click(function(){
+		$("input[name='gem[]'][value='"+this.value+"']").attr('checked',false);
+		var rPort = document.getElementsByName("part[]");
+	　　for(i=0;i<rPort.length;i++)
+	　　{
+	    　　 if(rPort[i].checked){
+	    	  var ip=rPort[i].value;
+	          $("input[name='part[]'][value='"+ip+"']").attr('checked',true);
+	    	}
+	       　　
+	　　}
+
+		$('#btn_search').click();
+	});
+
+	<{if $conditions['type']}>
+		$('#type_list').fadeIn();
+	<{/if}>
+
+	<{if $conditions['fire']}>
+		$('#type_list_fire').fadeIn();
+	<{/if}>
+
+	<{if $conditions['part']}>
+		$('#type_list_part').fadeIn();
+	<{/if}>
+
+	<{if $conditions['gem']}>
+		$('#type_list_gem').fadeIn();
+	<{/if}>
+
+	$('*[rel="tooltip"]').live('mouseover',function(){
+		$(this).tooltip({placement:'top',html:true}).tooltip('show');
+	});
+
+});
+</script>
+
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" id="char_id" name="char_id" class="input-small" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+
+	<label style="margin-left:5px;"><{t}>装备名称<{/t}>：
+	<div class="input-append">
+		<input id="item_name" class="input-medium" placeholder="<{t}>请输入装备名称<{/t}>..." data-provide="typeahead" type="text" maxlength="16" value="<{t}><{$conditions['item_id']}><{/t}>"><span class="add-on"><i class="icon-search"></i></span>
+	</div>
+	</label>
+
+	<{if $conditions['action']=='strong' || $conditions['action']=='gem'}>
+	<label><input type="checkbox" name="is_grade" value="1" <{if $conditions['is_grade']}>checked="checked"<{/if}> > <{t}>升级<{/t}></label>
+	<{/if}>
+
+	<{if $conditions['action']=='strong'}>
+	<button id="btn_type_fire" type="button" class="btn btn-link"><{t}>炉火<{/t}></button>
+	<{/if}>
+
+	<{if $conditions['action']=='wash'}>
+	<button id="btn_type" type="button" class="btn btn-link"><{t}>项目类型<{/t}></button>
+	<{/if}>
+
+	<{if $conditions['action']=='gem'}>
+	<button id="btn_type_gem" type="button" class="btn btn-link"><{t}>宝石<{/t}></button>
+	<{/if}>
+
+	<button id="btn_type_part" type="button" class="btn btn-link"><{t}>部位<{/t}></button>
+
+	<{if $conditions['action']=='gem'}>
+	<label style="margin-left:5px;"><{t}>操作<{/t}>：
+	<select name="io" class="input-small">
+		<option value=""><{t}>全部...<{/t}></option>
+	<{foreach $io_conf as $key=>$item}>
+		<option value="<{$key}>"  <{if $conditions['io']===$key}>selected="selected"<{/if}>><{$item}></option>
+	<{/foreach}>
+	</select>
+	</label>
+<{/if}>
+
+
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+<!-- 炉火 -->
+<{if $conditions['fire']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['fire'] as $item}>
+		<button class="btn btn-mini btn_selected_fire" type="button" value="<{$item}>"><{$fire_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list_fire" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all_fire"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $fire_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="fire[]" value="<{$key}>" class="type_fire" <{if in_array($key,$conditions['fire'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+
+<!-- 项目类型 -->
+<{if $conditions['type']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['type'] as $item}>
+		<button class="btn btn-mini btn_selected" type="button" value="<{$item}>"><{$type_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $type_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="type[]" value="<{$key}>" class="type" <{if in_array($key,$conditions['type'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+
+<!-- 宝石 -->
+<{if $conditions['gem']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['gem'] as $item}>
+		<button class="btn btn-mini btn_selected_gem" type="button" value="<{$item}>"><{$gem_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list_gem" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all_gem"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $gem_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="gem[]" value="<{$key}>" class="type_gem" <{if in_array($key,$conditions['gem'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+
+<!-- 部位 -->
+<{if $conditions['part']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['part'] as $item}>
+		<button class="btn btn-mini btn_selected_part" type="button" value="<{$item}>"><{$part_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list_part" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all_part"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $part_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="part[]" value="<{$key}>" class="type_part" <{if in_array($key,$conditions['part'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+
+
+
+<input type="hidden" name="item_id"  value="<{$conditions['item_id']}>">
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<div id="nav">
+	<ul class="nav nav-tabs" style="margin-bottom:10px;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>&char_id=<{$conditions['char_id']}>&from=<{$conditions['from']}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+
+<div class="pagination pagination-right" style="margin:0;"><{$page}></div>
+<{if $conditions['action']=='strong'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th rowspan="2">角色名</th>
+		<th rowspan="2">装备部位</th>
+		<th rowspan="2">装备名称</th>
+		<th rowspan="2">炉火类型</th>
+		<th colspan="5">强化结果</th>
+		<th rowspan="2">是否升级</th>
+		<th rowspan="2">完美程度</th>
+		<th rowspan="2">时间</th>
+	</tr>
+	<tr>
+		<th>凡火</th>
+		<th>灵火</th>
+		<th>仙火</th>
+		<th>神火</th>
+		<th>圣火</th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>" target="_parent"><{$row['char_name']}></a></td>
+		<td><{$part_conf[$row['equip_part']]|default:$row['equip_part']}></td>
+		<td><{t}><{$row['item_id']}><{/t}></td>
+		<td><{$fire_conf[$row['fire']]|default:$row['fire']}></td>
+		<{foreach $row['strong_level'] as $keys=>$item}>
+		 <{if $row['fire']==($keys+1)}>
+		 	<td><span class="badge badge-important"><{$item}></span></td>
+		 <{else}>
+			<td><{$item}></td>
+		 <{/if}>
+		<{/foreach}>
+		<td>
+			<{if $row['is_grade']==1}>
+				<span class="badge badge-success"><{t}>是<{/t}></span>
+			<{else}>
+				<{t}>否<{/t}>
+			<{/if}>
+		</td>
+		<td><{$row['perfect']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+<{else}>
+<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据!<{/t}></td></font></tr>
+<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='wash'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th>角色名</th>
+		<th>装备部位</th>
+		<th>装备名称</th>
+		<th>项目</th>
+		<th>属性</th>
+		<th>时间</th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $k=>$row}>
+<tr>
+	<td><a href="../gm/player.php?id=<{$row['char_id']}>" target="_parent"><{$row['char_name']}></a></td>
+	<td ><{$part_conf[$row['equip_part']]|default:$row['equip_part']}></td>
+	<td ><{t}><{$row['item_id']}><{/t}></td>
+	<td ><{$type_conf[$row['type']]|default:$row['type']}></td>
+	<td>
+		<{if isset($row['attr'])}>
+		<{foreach $row['attr'] as $keys=>$item}>
+			<{$item}>
+		<{/foreach}>
+		<{/if}>
+	</td>
+	<td><{$row['time']}></td>
+</tr>
+<{/foreach}>
+<{else}>
+<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='gem'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th rowspan="2">角色名</th>
+		<th rowspan="2">装备部位</th>
+		<th rowspan="2">装备名称</th>
+		<th rowspan="2">操作</th>
+		<th rowspan="2">宝石</th>
+		<th colspan="3">宝石等级</th>
+		<th rowspan="2">是否升级</th>
+		<th rowspan="2">完美程度</th>
+		<th rowspan="2">时间</th>
+	</tr>
+	<tr>
+		<th>宝石1</th>
+		<th>宝石2</th>
+		<th>宝石3</th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>" target="_parent"><{$row['char_name']}></a></td>
+		<td><{$part_conf[$row['equip_part']]|default:$row['equip_part']}></td>
+		<td><{t}><{$row['equip_id']}><{/t}></td>
+		<td><{$io_conf[$row['io']]|default:$row['io']}></td>
+		<td><{t}><{$row['gem_id']}><{/t}></td>
+		<{foreach $row['gem_level'] as $keys=>$item}>
+		 <{if $row['location']==($keys+1)}>
+		 	<td><span class="badge badge-important"><{$item}></span></td>
+		 <{else}>
+			<td><{$item}></td>
+		 <{/if}>
+		<{/foreach}>
+		<td>
+			<{if $row['is_grade']==1}>
+				<span class="badge badge-success"><{t}>是<{/t}></span>
+			<{else}>
+				<{t}>否<{/t}>
+			<{/if}>
+		</td>
+		<td><{$row['perfect']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+<{else}>
+<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='up'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th rowspan="2">角色名</th>
+		<th rowspan="2">装备部位</th>
+		<th colspan="3">升阶前</th>
+		<th rowspan="2"></th>
+		<th colspan="3">升阶后</th>
+		<th rowspan="2">时间</th>
+	</tr>
+	<tr>
+		<th>装备名称</th>
+		<th>装备品质</th>
+		<th>装备等级</th>
+		<th>装备名称</th>
+		<th>装备品质</th>
+		<th>装备等级</th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $k=>$row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>" target="_parent"><{$row['char_name']}></a></td>
+		<td><{$part_conf[$row['equip_part']]|default:$row['equip_part']}></td>
+		<td>
+			<a href="javascript:;"
+			<{if isset($row['attr_before'])}>
+			rel="tooltip" data-placement="right"
+	        data-title="
+		        <{foreach $row['attr_before'] as $list}>
+		        <{t}><{$list}><{/t}><br />
+		        <{/foreach}>
+	        "
+	        <{/if}>
+	        >
+	        <{t}><{$row['equip_id_before']}><{/t}></a>
+		</td>
+		<td><{$colour_conf[$row['equip_type_before']]|default:$row['equip_type_before']}></td>
+		<td><{$row['equip_leve_before']}></td>
+		<td style="border-top:none"></td>
+		<td>
+			<a href="javascript:;"
+			<{if isset($row['attr_after'])}>
+			rel="tooltip" data-placement="right"
+	        data-title="
+		        <{foreach $row['attr_after'] as $list}>
+		        <{t}><{$list}><{/t}><br />
+		        <{/foreach}>
+	        "
+	        <{/if}>
+	        >
+	        <{t}><{$row['equip_id_after']}><{/t}></a>
+		</td>
+		<td><{$colour_conf[$row['equip_type_after']]|default:$row['equip_type_after']}></td>
+		<td><{$row['equip_leve_after']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+<{else}>
+<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+<{/if}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='deify'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>角色名称<{/t}></th>
+		<th rowspan="2"><{t}>装备部位<{/t}></th>
+		<th rowspan="2"><{t}>装备名称<{/t}></th>
+		<th colspan="2"><{t}>神化结果<{/t}></th>
+		<th rowspan="2"><{t}>是否使用保底符<{/t}></th>
+		<th rowspan="2"><{t}>时间<{/t}></th>
+	</tr>
+	<tr>
+		<th><{t}>神化前品数<{/t}></th>
+		<th><{t}>神化后品数<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+		<td><{$part_conf[$row['part']]|default:$row['part']}></td>
+		<td><{t}><{$row['item_id']}><{/t}></td>
+		<td><{$row['prev_level']}></td>
+		<td><{$row['curr_level']}></td>
+		<td><{if $row['is_protect']}><{t}>是<{/t}><{else}><{t}>否<{/t}><{/if}></td>
+		<td><{$row['time']}></td>
+	</tr>	
+<{/foreach}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='sculpture'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>角色名称<{/t}></th>
+		<th rowspan="2"><{t}>装备部位<{/t}></th>
+		<th rowspan="2"><{t}>装备名称<{/t}></th>
+		<th colspan="2"><{t}>宝石雕刻结果<{/t}></th>
+		<th rowspan="2"><{t}>是否使用祝福符<{/t}></th>
+		<th rowspan="2"><{t}>时间<{/t}></th>
+	</tr>
+	<tr>
+		<th><{t}>神化前品数<{/t}></th>
+		<th><{t}>神化后品数<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+		<td><{$part_conf[$row['part']]|default:$row['part']}></td>
+		<td><{t}><{$row['item_id']}><{/t}></td>
+		<td><{$row['prev_level']}></td>
+		<td><{$row['curr_level']}></td>
+		<td><{if $row['is_protect']}><{t}>是<{/t}><{else}><{t}>否<{/t}><{/if}></td>
+		<td><{$row['time']}></td>
+	</tr>	
+<{/foreach}>
+</tbody>
+</table>
+
+<{/if}>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+</body>
+</html>

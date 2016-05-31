@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>刷蛋分布<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="accordion-group" style="margin-bottom:10px; padding-bottom:10px;">
+	<div class="accordion-heading">
+	 	<span class="accordion-toggle" data-toggle="collapse" href="#collapse">
+				<a href="javascript:;"><{t}>定义说明<{/t}></a>
+		</span>
+	</div>
+	<div id="collapse" class="accordion-body in collapse">
+		<div class="accordion-inner">
+			<ol>
+				<li><{t}>人均次数：刷蛋次数/刷蛋人数<{/t}></li>
+				<li><{t}>参与度：刷蛋人数/登陆人数<{/t}></li>
+				<li><{t}>稀有蛋比例：开出稀有蛋的次数/刷蛋次数<{/t}></li>
+			</ol>
+		</div>
+	</div>
+	<div class="form-search">
+		<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+		<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+		<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+	</div>
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button type="button" onClick="javascript:window.location='?start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>刷蛋次数<{/t}></th>
+		<th><{t}>刷蛋人数<{/t}></th>
+		<th><{t}>人均次数<{/t}></th>
+		<th><{t}>登录人数<{/t}></th>
+		<th><{t}>参与度<{/t}></th>
+		<th><{t}>总花费元宝<{/t}></th>
+		<th><{t}>开出稀有蛋次数<{/t}></th>
+		<th><{t}>开出稀有蛋人数<{/t}></th>
+		<th><{t}>稀有蛋比例<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td><{$row['count']}></td>
+		<td><{$row['player']}></td>
+		<td><{$row['avg_count']}></td>
+		<td><{$row['login_player']}></td>
+		<td><{$row['use_ratio']}>%</td>
+		<td><{$row['money_num']}></td>
+		<td><{$row['rare_count']}></td>
+		<td><{$row['rare_player']}></td>
+		<td><{$row['rare_ratio']}>%</td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

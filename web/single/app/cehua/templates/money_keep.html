@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>货币滞留率<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+<script language="javascript">
+$(function($){
+	$('.detail').click(function(){
+		$(this).colorbox({iframe:true,fixed:true,width:'900px', height:'500px',opacity:0});	
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<{if $conditions['action']=='list' || $conditions['action']==''}>
+<div class="accordion-heading">
+	<span class="accordion-toggle" data-toggle="collapse" href="#collapse">
+			<a href="javascript:;"><{t}>定义说明<{/t}></a>
+	</span>
+</div>
+<div id="collapse" class="accordion-body in collapse">
+	<div class="accordion-inner">
+		<ol>
+			<li><{t}>今日理论存量：昨日实际存量 + 今日产出 - 今日消耗<{/t}></li>
+			<li><{t}>今日实际存量：所有玩家身上的货币总值<{/t}></li>
+			<li><{t}>实际理论差：今日实际存量-今日理论存量<{/t}></li>
+			<li><{t}>非流失存量：三天内有登陆玩家身上实际存量<{/t}></li>
+			<li><{t}>当日滞留率：（1-当天消耗/当天产出)*100%<{/t}></li>
+			<li><{t}>总滞留率：（1-总消耗/总产出）*100%<{/t}></li>
+			<li><{t}>非流失玩家滞留率：( 1 - 总消耗 / (总产量 - 今日实际存量 + 非流失存量) ) * 100%<{/t}></li>
+		</ol>
+	</div>
+</div>
+<form class="well form-search" method="get" style="margin-bottom:10px;">
+	<label><{t}>日期<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	
+	<label style="margin-left:10px;"><{t}>货币类型：<{/t}></label>
+	<label>
+		<select name="type" class="input-medium">
+		<{foreach $money_class_conf as $key=>$item}>
+			<option value="<{$key}>" <{if $conditions['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+		</select>
+	</label>
+	<button class="btn btn-primary" type="submit" id="btn_search"  style="margin-left:5px;"><{t}>搜 索<{/t}></button>
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button onClick="javascript:window.location='?start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<table class="table table-bordered table-hover" style="margin-top:10px; width:100%">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>产出量<{/t}></th>
+		<th><{t}>消耗量<{/t}></th>
+		<th><{t}>平均产出<{/t}></th>
+		<th><{t}>平均消耗<{/t}></th>
+		<th><{t}>总产量<{/t}></th>
+		<th><{t}>总消耗量<{/t}></th>
+		<th><{t}>昨日实际存量<{/t}></th>
+		<th><{t}>理论存量<{/t}></th>
+		<th><{t}>实际存量<{/t}></th>
+		<th><{t}>实际理论差<{/t}></th>
+		<th><{t}>非流失存量<{/t}></th>
+		<th><{t}>滞留率<{/t}></th>
+		<th><{t}>总滞留率<{/t}></th>
+		<th><{t}>非流失滞留率<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><a class="detail" href="?action=detail&date=<{$date}>&type=<{$conditions['type']}>"><{$date}>(<{t}>周<{/t}><{$row['week']}>)</a></td>
+		<td><{$row['list'][1]['money_num']|default:0}></td>
+		<td><{$row['list'][0]['money_num']|default:0}></td>
+		<td><{$row['list'][1]['avg_money_num']|default:0}></td>
+		<td><{$row['list'][0]['avg_money_num']|default:0}></td>
+		<td><{$row['list'][1]['total_money_num']|default:0}></td>
+		<td><{$row['list'][0]['total_money_num']|default:0}></td>
+		<td><{$row['yesterday_real_money_num']|default:0}></td>
+		<td><span class="<{if $row['alarm']>0.001 || $row['alarm']<-0.001}>badge badge-warning<{/if}>"><{$row['ideal_money']|default:0}></span></td>
+		<td><{$row['real_money_num']|default:0}></td>
+		<td><{$row['diff_money_num']|default:0}></td>
+		<td><{$row['not_loss_money_num']|default:0}></td>
+		<td><{$row['keep_ratio']|truncate:6:''|default:0}>%</td>
+		<td><{$row['total_keep_ratio']|default:0}>%</td>
+		<td><{$row['not_loss_keep_ratio']|default:0}>%</td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="50"><font color="red"><{t}>暂时搜索不到数据<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+
+<!--产出和消耗明细-->
+<{else if $conditions['action']=='detail'}>
+<form class="well form-search" method="get" style="margin-bottom:10px;">
+	<label><{t}>日期<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入查询日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" name="date" value="<{$conditions['date']}>">
+	
+	<label style="margin-left:10px;"><{t}>货币类型：<{/t}></label>
+	<label>
+		<select name="type" class="input-medium">
+		<{foreach $money_class_conf as $key=>$item}>
+			<option value="<{$key}>" <{if $conditions['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+		</select>
+	</label>
+	<button class="btn btn-primary" type="submit" id="btn_search"  style="margin-left:5px;"><{t}>搜 索<{/t}></button>
+	<div>
+		<{t}>消耗量<{/t}>：<b><{$conditions['consume']}></b> 
+		<{t}>产出量<{/t}>：<b><{$conditions['output']}></b>
+		<{t}>当日滞留率<{/t}>：<b><{if $conditions['consume']}><{round($conditions['output']/$conditions['consume'],4)*100}><{else}>0<{/if}>%</b>
+	</div> 
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<table width="100%">
+	<tr>
+	<{if !empty($data[0])}>
+		<td valign="top" style="padding-right:20px;">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th><{t}>消耗渠道<{/t}></th>
+						<th><{t}>消耗数量<{/t}></th>
+						<th><{t}>参与玩家数<{/t}></th>
+						<th><{t}>人均消耗<{/t}></th>
+					</tr>
+				</thead>
+				<{foreach $data[0] as $row}>
+					<tr>
+						<td><{$row['type']}></td>
+						<td><{$row['money_num']}></td>
+						<td><{$row['count']}></td>
+						<td><{$row['avg_money_num']}></td>
+					</tr>
+				<{/foreach}>
+			</table>
+		</td>
+	<{/if}>
+	
+	<{if !empty($data[1])}>
+		<td valign="top">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th><{t}>产出渠道<{/t}></th>
+						<th><{t}>产出数量<{/t}></th>
+						<th><{t}>参与玩家数<{/t}></th>
+						<th><{t}>人均产出<{/t}></th>
+					</tr>
+				</thead>
+				<{foreach $data[1] as $type=>$row}>
+					<tr>
+						<td><{if $row['type']}><{$row['type']}><{else}><span class="label label-warning"><{t}>数据缺失<{/t}></span><{/if}></td>
+						<td><{$row['money_num']}></td>
+						<td><{$row['count']}></td>
+						<td><{$row['avg_money_num']}></td>
+					</tr>
+				<{/foreach}>
+			</table>
+		</td>
+	<{/if}>
+	</tr>
+</table>
+
+<{/if}>
+</div>
+</body>
+</html>

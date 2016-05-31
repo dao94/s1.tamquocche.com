@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>帮派资源流水<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<style type="text/css">
+#type_list .span2{
+	width:122px;
+	height:20px;
+	line-height:20px;
+	overflow:hidden;
+}
+</style>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function($){
+	$('#btn_type').toggle(function(){
+		$('#type_list').fadeIn();
+	},function(){
+		$('#type_list').fadeOut();
+	});
+
+	$('#cb_all').click(function(){
+		$('.type').attr('checked',this.checked);
+	});
+
+	$('.btn_selected').click(function(){
+		$("input[name='type[]'][value='"+this.value+"']").attr('checked',false);
+		$('#btn_search').click();
+	});
+
+	<{if $conditions['type']}>
+		$('#type_list').fadeIn();
+	<{/if}>
+});
+</script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>帮派ID<{/t}>：
+	<input type="text" name="faction_id" class="input-xlarge" maxlength="36" value="<{$conditions['faction_id']}>">
+	</label>
+
+	<label for="fight_char_name"><{t}>角色名<{/t}>：</label>
+    <input class="input-small" placeholder="<{t}>输入角色名<{/t}>" type="text" id="char_name" name="char_name" value="<{$conditions['char_name']}>" maxlength="32">
+
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+<{if $conditions['action']=='resource'}>
+	<label style="margin-left:5px;"><{t}>操作<{/t}>：</label>
+	<select name="io" class="input-small">
+		<option value=""><{t}>全部<{/t}></option>
+		<{foreach $faction_io_conf as $key=>$item}>
+		<option value="<{$key}>" <{if $conditions['io']===$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+	</select>
+	<button id="btn_type" type="button" class="btn btn-link"><{t}>项目类型<{/t}></button>
+<{/if}>
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+<{if $conditions['type']}>
+	<hr style="margin:5px 0;"/>
+	<div style="margin:5px 0; line-height:22px;">
+		<b><{t}>已选项目<{/t}>：</b>
+	<{foreach $conditions['type'] as $item}>
+		<button class="btn btn-mini btn_selected" type="button" value="<{$item}>"><{$faction_type_conf[$item]}><i class="icon-remove"></i></button>
+	<{/foreach}>
+	</div>
+<{/if}>
+	<div id="type_list" class="row hide">
+		<div class="span2"><input type="checkbox" id="cb_all"> <span class="label label-success"><{t}>全选<{/t}></span></div>
+	<{foreach $faction_type_conf as $key=>$item}>
+		<div class="span2"><input type="checkbox" name="type[]" value="<{$key}>" class="type" <{if in_array($key,$conditions['type'])}>checked="checked"<{/if}>> <{$item}></div>
+	<{/foreach}>
+	</div>
+
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<div id="nav">
+	<ul class="nav nav-tabs" style="margin-bottom:10px;">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>&faction_id=<{$conditions['faction_id']}>&from=<{$conditions['from']}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+
+<div class="pagination pagination-right" style="margin:0;"><ul><{$page}></ul></div>
+<{if $conditions['action']=='resource'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>类型<{/t}></th>
+		<th><{t}>操作<{/t}></th>
+		<th><{t}>资金<{/t}></th>
+		<th><{t}>建材<{/t}></th>
+		<th><{t}>科技<{/t}></th>
+		<th><{t}>剩余<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>"><{$row['char_name']|default:''}></a></td>
+		<td><{$faction_type_conf[$row['type']]|default:''}></td>
+		<td><span class="badge <{if $row['io']==1}>badge-important<{else if $row['io']==2}>badge-info<{/if}>"><{$faction_io_conf[$row['io']]|default:''}></span></td>
+		<td><{$row['money']|default:0}></td>
+		<td><{$row['material']|default:0}></td>
+		<td><{$row['technology']|default:0}></td>
+		<td><{t}>资金<{/t}>:<{$row['left_money']|default:0}>,&nbsp;&nbsp;<{t}>建材<{/t}>:<{$row['left_material']|default:0}>,&nbsp;&nbsp;<{t}>科技<{/t}>:<{$row['left_technology']|default:0}></td>
+		<td><{$row['time']|date_format:'%Y-%m-%d %H:%M:%S'}></td>
+	</tr>
+<{/foreach}>
+<{else}>
+<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='copy'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>开启角色名<{/t}></th>
+		<th><{t}>帮派名称<{/t}></th>
+		<th><{t}>达到波数<{/t}></th>
+		<th><{t}>开启时间<{/t}></th>
+		<th><{t}>结束时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>"><{$row['char_name']|default:''}></a></td>
+		<td><{$row['faction_name']}></td>
+		<td><{$row['end_wave_num']}></td>
+		<td><{$row['start_time']|date_format:'%Y-%m-%d %H:%M:%S'}></td>
+		<td><{$row['end_time']|date_format:'%Y-%m-%d %H:%M:%S'}></td>
+	</tr>
+<{/foreach}>
+<{else}>
+<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+<{/if}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='skill'}>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>帮派名称<{/t}></th>
+		<th><{t}>技能<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td><a href="../gm/player.php?id=<{$row['char_id']}>"><{$row['char_name']|default:''}></a></td>
+		<td><{$row['faction_name']}></td>
+		<td><{$row['skill_name']|default:$row['skill_id']}></td>
+		<td><{$row['time']|date_format:'%Y-%m-%d %H:%M:%S'}></td>
+	</tr>
+<{/foreach}>
+<{else}>
+<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+<{/if}>
+</tbody>
+</table>
+<{/if}>
+<div class="pagination pagination-centered"><{$page}></div>
+
+</body>
+</html>

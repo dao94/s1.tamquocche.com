@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>等级分析<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<div id="nav">
+<ul class="nav nav-tabs">
+	<{foreach $action_conf as $key=>$item}>
+	<li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+	<{/foreach}>
+</ul>
+</div>
+<{if $conditions['action']=='level_loss'}>
+<form class="form-search accordion-group">
+	<div class="accordion-heading"><span class="accordion-toggle" data-toggle="collapse" href="#collapse"> <a href="javascript:;"><{t}>定义说明<{/t}></a></span></div>
+<div id="collapse" class="accordion-body in collapse">
+	<div class="accordion-inner">
+	<ol>
+		<li><{t}>等级玩家人数：如等级为0，指已创号但未进入游戏的人数；如等级为1，指进入游戏1级玩家数<{/t}></li>
+		<li><{t}>总玩家数：所有等级玩家总和(注册数)<{/t}></li>
+		<li><{t}>玩家比例：如等级为1，指1级玩家总数占总玩家数的比例<{/t}></li>
+		<li><{t}>等级流失人数：连续流失时长（默认3天）内未登录判定为流失，如等级为1，指连续三天未登录的1级玩家流失的人数<{/t}></li>
+		<li><{t}>等级流失率：等级流失人数÷等级玩家人数×100%<{/t}></li>
+		<li><{t}>流失率：流失角色数÷(等于或大于该等级的角色数)×100%<{/t}></li>
+		<li><{t}>标准流失时长：是以今天为基线在时长天数内流失情况分析<{/t}></li>
+	</ol>
+	</div>
+</div>
+<div class="form-search">
+<{foreach $time_type as $key=>$item}>
+	<button class="btn <{if $key==$conditions['date']}>btn-inverse<{/if}>" type="button" onClick="javascript:window.location='?date=<{$key}>'"><{$item}></button>
+<{/foreach}>
+	<hr style="margin: 5px 0px">
+	<span><{t}>总玩家数<{/t}>：<b><{$total_character_count}></b></span>
+	<label style="margin-left: 10px;"><{t}>时间<{/t}>：</label> 
+	<input class="input-small" placeholder="<{t}>输入日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="date" name="date" value="<{$conditions['date']}>">
+<{if $conditions['date']==date('Y-m-d')}> <label style="margin-left: 10px;"><{t}>标准流失时长<{/t}>：</label>
+	<select name="day" class="span1">
+	<{foreach $day_options as $day}>
+	<option value="<{$day}>" <{if $conditions['day']==$day}>selected="selected"<{/if}>><{$day}><{t}>天<{/t}></option>
+	<{/foreach}>
+	</select> 
+	<{t}>截止时间<{/t}>：<b><{$smarty.now|date_format:"%H:%M"}></b>（<{t}>数据缓存<{/t}><b><{$conditions['cache_lifetime']}></b><{t}>小时<{/t}>）
+<{/if}>
+	<button class="btn btn-primary" type="submit"><{t}>搜 索<{/t}></button>
+</div>
+</form>
+
+<table class="table table-bordered table-hover"
+	style="margin-top: 10px;">
+	<tr>
+		<th><{t}>等级<{/t}></th>
+		<th><{t}>等级玩家人数<{/t}></th>
+		<th><{t}>玩家比例<{/t}></th>
+		<th><{t}>等级流失人数<{/t}></th>
+		<th><{t}>等级流失率<{/t}></th>
+		<th><{t}>流失率<{/t}></th>
+	</tr>
+	<{foreach $data as $row}>
+	<tr>
+		<td><{$row['level']}></td>
+		<td><{$row['count']}></td>
+		<td><{$row['count_ratio']|default:0}>%</td>
+		<td><{$row['loss_count']|default:0}></td>
+		<td style="text-align: left"><img src="../../public/images/baifenbi.gif" style="height:10px;width:<{$row['loss_ratio']*2}>px;"><{$row['loss_ratio']|default:0}>%</td>
+		<td style="text-align: left"><img src="../../public/images/baifenbi.gif" style="height: 10px; width: "<{if $total_character_count}><{round($row['loss_count']/$total_character_count,4)*200}><{else}>0<{/if}>px;">
+		<{if $total_character_count}><{round($row['loss_count']/$total_character_count,4)*100}><{else}>0<{/if}>%</td>
+	</tr>
+	<{$total_character_count=$total_character_count-$row['count']}>
+	<{/foreach}>
+</table>
+
+<{else if $conditions['action']=='stat_upgrade'}>
+<form class="well form-search" action="?" method="get">
+	<div class="btn-group">
+		<{foreach $time_conf as $key=>$item}>
+		<{if $key<=$conditions['today']}>
+			<button type="button" onClick="javascript:window.location= '?action=<{$conditions['action']}>&date=<{$key}>';" class="btn <{if $conditions['date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+		<{/if}>
+		<{/foreach}>
+	</div>
+	<label style="margin-left: 10px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="date" name="date" value="<{$conditions['date']}>">
+	<button class="btn btn-primary" type="submit"><{t}>搜 索<{/t}></button>
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<table width="100%">
+	<tr>
+		<{foreach $data as $key=>$items}>
+		<td valign="top" style="padding-right: 20px;">
+		<table class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<th><{t}>等级<{/t}></th>
+					<th><{t}>最快时间<{/t}></th>
+					<th><{t}>平均时间(分钟)<{/t}></th>
+				</tr>
+			</thead>
+			<{if $key==0}>
+			<tr>
+				<td>1</td>
+				<td>--</td>
+				<td>--</td>
+			</tr>
+			<{/if}>
+			<{foreach $items as $item}>
+			<tr>
+				<td><{$item['level']}></td>
+				<td><{$item['min_time']}></td>
+				<td><{$item['avg_time']}></td>
+			</tr>
+			<{/foreach}>
+		</table>
+		</td>
+		<{/foreach}>
+	</tr>
+</table>
+<{/if}>
+</body>
+</html>

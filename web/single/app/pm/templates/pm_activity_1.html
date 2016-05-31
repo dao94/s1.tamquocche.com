@@ -1,0 +1,404 @@
+<{if $tpl=='set'}>
+<!--在线活动-->
+<script language="javascript" src="../../public/js/kindeditor/kindeditor.js"></script>
+<script language="javascript">
+var info_editor;
+KindEditor.ready(function(K) {
+	info_editor = K.create('#info',{
+		themeType:'diy',
+		items : ['source', '|', 'undo', 'redo', '|', 'fontsize', 'forecolor','bold','underline'],
+		fontSizeTable : ['9', '10', '12','14','16','18','24','32'],
+		filterMode : true,
+		newlineTag:'br',
+		htmlTags : {
+			font : ['id', 'class', 'color', 'size', 'face', '.background-color'],
+			div : [
+				'id', 'class', 'align', '.border', '.margin', '.padding', '.text-align', '.color',
+				'.background-color', '.font-size', '.font-family', '.font-weight', '.background',
+				'.font-style', '.text-decoration', '.vertical-align', '.margin-left'
+			],
+			a : ['id', 'class', 'href', 'target', 'name'],
+			img : ['id', 'class', 'src', 'width', 'height', 'border', 'alt', 'title', 'align', '.width', '.height', '.border'],
+			'p,ol,ul,li,blockquote,h1,h2,h3,h4,h5,h6' : [
+				'id', 'class', 'align', '.text-align', '.color', '.background-color', '.font-size', '.font-family', '.background',
+				'.font-weight', '.font-style', '.text-decoration', '.vertical-align', '.text-indent', '.margin-left'
+			],
+			pre : ['id', 'class'],
+			hr : ['id', 'class', '.page-break-after'],
+			'br,tbody,tr,b,sub,sup,em,i,u,strike,s,del' : ['id', 'class'],
+		},
+		afterBlur:function(){
+			this.sync();
+		},
+	});
+});
+$(function($){
+	$('select[name="reward_type"]').live('change',function(){
+		$(this).find('option[value="'+this.value+'"]').attr('selected',true);
+		$(this).find('option[value!="'+this.value+'"]').attr('selected',false);
+		$(this).parents('table').find('.items').hide();
+		var reward_item=this.value>0 ? 1 : 0;
+		$(this).parents('table').find('.items_'+reward_item).fadeIn();
+	});
+});
+
+function getParam(){
+	var reward_list=[],index_list=[],check_result=true;
+		minlv=parseInt($.trim($('[name="minlv"]').val())),maxlv=parseInt($.trim($('[name="maxlv"]').val())),
+		active_day=parseInt($.trim($('[name="active_day"]').val()));
+
+	if(isNaN(minlv)||minlv<1){
+		$('[name="minlv"]').focus();
+		alert('<{t}>最小等级为正整数<{/t}>');
+		check_result=false;
+		return false;
+	}else if(isNaN(maxlv)||maxlv<1){
+		$('[name="maxlv"]').focus();
+		alert('<{t}>最大等级为正整数<{/t}>');
+		check_result=false;
+		return false;
+	}
+
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		$(control_group).each(function(b,control){
+			var item_list=[],money_list=[],
+			time_flag_sec=parseInt($(control).find('[name="time_flag_sec"]').val())*60,
+			occ=parseInt($(control).find('[name="occ"]').val());
+			if(isNaN(time_flag_sec)||time_flag_sec<1){
+				$(control).find('[name="time_flag_sec"]').focus();
+				alert('<{t}>累积在线为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if(jQuery.inArray(time_flag_sec,index_list)>=0){
+				$(control).find('[name="time_flag_sec"]').focus();
+				alert('<{t}>累积在线不能相同<{/t}>');
+				check_result=false;
+				return false;
+			}
+			index_list.push(time_flag_sec);
+
+			$($(control).find('.controls')).each(function(c,controls){
+				var reward_type=parseInt($(controls).find('[name="reward_type"]').val());
+				switch(reward_type){
+					case 0:
+						//道具奖励
+						$($(controls).find('.sub_item')).each(function(d,sub_item){
+							var item_val=$.trim($(sub_item).find('[name="item"]').val()).split('|');
+							var num=parseInt($.trim($(sub_item).find('[name="num"]').val()));
+							var bind=$(sub_item).find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+							var item_id=$.trim(item_val[0]);
+							if(item_id==''){
+								$(sub_item).find('[name="item"]').focus();
+								alert('<{t}>道具为必填项<{/t}>');
+								check_result=false;
+								return false;
+							}else if(isNaN(num)||num<1){
+								$(sub_item).find('[name="num"]').focus();
+								alert('<{t}>数量为必填,且是大于0的整字<{/t}>');
+								check_result=false;
+								return false;
+							}
+								item_list.push({0:item_id,1:num,2:bind});
+
+						});
+						break;
+
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+						//金钱奖励
+						var num=parseInt($.trim($(controls).find('.items_1').find('[name="num"]').val()));
+						if(isNaN(num)||num<1){
+							$(controls).find('.items_1').find('[name="num"]').focus();
+							alert('<{t}>数量为必填,且是大于1的数字<{/t}>');
+							check_result=false;
+							return false;
+						}
+						money_list.push({0:reward_type,1:num});
+						break;
+
+					default:
+						alert('<{t}>选择错误<{/t}>');
+						check_result=false;
+						return false;
+						break;
+				}
+			});
+			//判断 假如  职业选择
+			var items_list = new Array();
+			if(item_list.length>0 && money_list.length>0 ){
+				items_list={"item":item_list,"money":money_list};
+			}else if(item_list.length>0 && money_list.length==0){
+				items_list={"item":item_list};
+			}else if(item_list.length==0 && money_list.length==0){
+				items_list={"money":money_list};
+			}
+			if(occ==0){
+				//所有职业
+				reward_list.push({minlv:minlv,maxlv:maxlv,time_flag_sec:time_flag_sec,occ:occ,typeid:1,11:items_list,21:items_list,31:items_list,41:items_list});
+			}else{
+				if(occ==11){
+					//破天
+					reward_list.push({minlv:minlv,maxlv:maxlv,time_flag_sec:time_flag_sec,occ:occ,typeid:1,11:items_list});
+				}else if(occ==21){
+					//舞月
+					reward_list.push({minlv:minlv,maxlv:maxlv,time_flag_sec:time_flag_sec,occ:occ,typeid:1,21:items_list});
+				}else if(occ==31){
+					//飞翔
+					reward_list.push({minlv:minlv,maxlv:maxlv,time_flag_sec:time_flag_sec,occ:occ,typeid:1,31:items_list});
+				}else if(occ==41){
+					//幻雪
+					reward_list.push({minlv:minlv,maxlv:maxlv,time_flag_sec:time_flag_sec,occ:occ,typeid:1,41:items_list});
+				}
+			}
+
+		});
+	});
+
+	var param={minlv:minlv,maxlv:maxlv,rule_list:reward_list};
+	return check_result ? param : check_result;
+}
+
+//获取xml配置
+function getXml(){
+	var show_start_date=$.trim($('#show_start_date').val()),
+			show_end_date=$.trim($('#show_end_date').val()),
+			name=$.trim($('#name').val()),
+			info=$.trim(info_editor.html());
+	if(!show_start_date || !show_end_date || show_start_date>=show_end_date){
+		$('#show_start_date').focus();
+		alert('<{t}>请正确选择图标显示时间<{/t}>');
+		return false;
+	}else if(name==''){
+		$('#name').focus();
+		alert('<{t}>活动名称不能为空<{/t}>');
+		return false;
+	}
+	var xml_config={show_start_date:show_start_date,show_end_date:show_end_date,name:name,info:info};
+	return xml_config;
+}
+</script>
+
+<input type="hidden" name="is_xml"  value="1"/>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="show_start_date"><{t}>图标显示时间<{/t}></label>
+	<div class="controls">
+		<input type="text" id="show_start_date" name="show_start_date" class="input-medium" value="<{$data['xml_config']['show_time']|default:''}>" placeholder="<{t}>图标显示时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+		<i class="icon-minus"></i>
+		<input type="text" id="show_end_date" name="show_end_date" class="input-medium" value="<{$data['xml_config']['hide_time']|default:''}>" placeholder="<{t}>图标隐藏时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+	</div>
+</div>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="name"><{t}>活动名称<{/t}></label>
+	<div class="controls">
+		<input type="text" id="name" name="name" class="input-xlarge" value="<{$data['xml_config']['name']|default:''}>" maxlength="50" placeholder="<{t}>长度在50个字符之内<{/t}>">
+	</div>
+</div>
+<div class="control-group">
+	<label class="control-label" for="min_count"><{t}>等级<{/t}></label>
+	<div class="controls">
+	<input type="text" name="minlv" class="input-mini" maxlength="6" placeholder="<{t}>最小等级<{/t}>" value="<{$data['param']['minlv']|default:''}>" />
+	<i class="icon-minus"></i>
+	<input type="text" class="input-mini" maxlength="6" name="maxlv" placeholder="<{t}>最大等级<{/t}>" value="<{$data['param']['maxlv']|default:''}>" />
+	</div>
+</div>
+
+<div class="control-group" style="margin-bottom:10px;display:none;">
+	<label class="control-label" for="info"><{t}>活动描述<{/t}></label>
+	<div class="controls">
+		<textarea id="info" style="height:180px"><{$data['xml_config']['info']|default:''}></textarea>
+	</div>
+</div>
+
+
+<{* "设置"功能默认一个元素，"更新"根据数据展现 *}>
+<{if isset($data['param']['rule_list'])}>
+	<{$reward_list=$data['param']['rule_list']}>
+<{else}>
+	<{$reward_list=array(1)}>
+<{/if}>
+<{foreach $reward_list as $rewards}>
+<!-- 声明-->
+
+<!-- 声明-->
+<{$lists=array(1)}>
+<{$occ=0}><{$set_online=''}>
+<{$occ_array=array(11,21,31,41)}>
+	<{foreach $activity_config['occ_type'] as $key=>$value}>
+	<{if $key!=''}>
+		<{if isset($rewards['11']) && !isset($rewards['21']) && !isset($rewards['31']) && !isset($rewards['41'])}>
+			<{$occ=11}><{$occ_array=array(11)}>
+		<{else if !isset($rewards['11'])  && isset($rewards['21']) && !isset($rewards['31']) && !isset($rewards['41']) }>
+			<{$occ=21}><{$occ_array=array(21)}>
+		<{else if isset($rewards['31']) && !isset($rewards['11']) && !isset($rewards['21']) && !isset($rewards['41'])}>
+			<{$occ=31}><{$occ_array=array(31)}>
+		<{else if !isset($rewards['11']) && !isset($rewards['21']) && !isset($rewards['31']) && isset($rewards['41'])}>
+			<{$occ=41}><{$occ_array=array(41)}>
+		<{else if isset($rewards['11']) && isset($rewards['21']) && isset($rewards['31']) && isset($rewards['41'])}>
+			<{$occ=0}><{$occ_array=array(11,21,31,41)}>
+		<{/if}>
+	<{/if}>
+	<{/foreach}>
+	<!-- 职业判断-->
+	<{if $occ==0}>
+		<{if isset($rewards['11'])}><{$lists=$rewards['11']}><{$set_online=1}><{/if}>
+	<{else if $occ==11}>
+		<{$lists=$rewards['11']}><{$set_online=1}>
+	<{else if $occ==21}>
+		<{$lists=$rewards['21']}><{$set_online=1}>
+	<{else if $occ==31}>
+		<{$lists=$rewards['31']}><{$set_online=1}>
+	<{else if $occ==41}>
+		<{$lists=$rewards['41']}><{$set_online=1}>
+	<{/if}>
+
+<div class="control-group">
+	<div class="control-label">
+		<div>
+			<button type="button" class="btn btn-mini btn-inverse btn_add_config"><i class="icon-plus icon-white"></i></button>
+			<button type="button" class="btn btn-mini btn-inverse btn_del_config"><i class="icon-minus icon-white"></i></button>
+			<{t}>奖励列表<{/t}>
+		</div>
+	</div>
+
+	<div style="margin-left: 180px;">
+		<{t}>累积在线(min)<{/t}>：<input type="text" name="time_flag_sec" value="<{$rewards['time_flag_sec']/60|default:''}>" class="input-mini" maxlength="6" placeholder="<{t}>正整数<{/t}>"/>
+		<{t}>职业限制<{/t}>：
+		<select name="occ" class="input-small">
+		<{foreach $activity_config['occ_type'] as $key=>$item}>
+			<option value="<{$key}>"  <{if $occ==$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+		</select>
+	</div>
+
+		<{foreach $occ_array as $value}>
+				<{foreach $lists as $rows}>
+					<{foreach $rows as $items}>
+
+						<div class="controls form-search" style="margin-bottom:5px; margin-top:5px;">
+							<table>
+								<tr>
+									<td valign="top">
+										<select name="reward_type" class="input-small" >
+										<{foreach $activity_config['money_type'] as $key=>$item}>
+											<option value="<{$key}>" <{if isset($items[2]) && $items[2]==$key}>selected="selected"<{else if $items[0]==$key}>selected="selected"<{/if}>><{$item}></option>
+										<{/foreach}>
+										</select>
+									</td>
+									<td class="items items_0 <{if (isset($items[2]) && $set_online==1) || $set_online==''}><{else}>hide<{/if}>">
+									<ul class="unstyled" style="margin:0;">
+										<li class="sub_item">
+											<{t}>道具<{/t}>：
+											<div class="input-append">
+												<input type="text" class="input-large" name="item" value="<{if isset($items[0])}><{$items[0]}>|<{t}><{$items[0]}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+												<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+											</div>
+											<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$items[1]|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+											<label><input type="checkbox" name="bind" <{if isset($items[2])&&$items[2]==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+										</li>
+									</ul>
+									</td>
+									<td class="items items_1 <{if (isset($items[2]) && $set_online==1) || $set_online==''}>hide<{/if}>">
+										<{t}>数量<{/t}>：<input type="text" class="input-small" name="num" maxlength="8" value="<{$items[1]|default:''}>" placeholder="<{t}>正整数<{/t}>">
+									</td>
+									<td valign="top">
+										<button type="button" class="btn btn-small btn-primary btn_add_items"><i class="icon-plus icon-white"></i></button>
+										<button type="button" class="btn btn-small btn-primary btn_del_items"><i class="icon-minus icon-white"></i></button>
+									</td>
+								</tr>
+							</table>
+						</div>
+
+					<{/foreach}>
+				<{/foreach}>
+			<{break}>
+		<{/foreach}>
+
+
+</div>
+<{/foreach}>
+<{else if $tpl=='show'}>
+<!--在线活动-->
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"><{t}>显示时间<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['show_time']}> <i class="icon-minus"></i> <{$row['xml_config']['hide_time']}></dd>
+	<dt style="width:80px;"><{t}>活动名称<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['name']}></dd>
+	<dt style="width:80px;display:none;"><{t}>活动描述<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;display:none;"><{$row['xml_config']['info']}></dd>
+	<dt style="width:80px;"></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<span><{t}>最小等级<{/t}>：<{$row['param']['minlv']}></span>
+		<span style="margin-left:10px;"><{t}>最大等级<{/t}>：<{$row['param']['maxlv']}></span>
+	</dd>
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+
+<{if isset($row['param']['rule_list'])}>
+	<{$reward_list=$row['param']['rule_list']}>
+<{else}>
+	<{$reward_list=array(1)}>
+<{/if}>
+<{foreach $reward_list as $rewards}>
+<!-- 声明-->
+<{$lists=array(1)}>
+<{$occ=''}><{$set_online=''}>
+<{$occ_array=array(11,21,31,41)}>
+	<{foreach $activity_config['occ_type'] as $key=>$value}>
+	<{if $key!=''}>
+		<{if isset($rewards['11']) && !isset($rewards['21']) && !isset($rewards['31']) && !isset($rewards['41'])}>
+			<{$occ='11'}><{$occ_array=array(11)}>
+		<{else if !isset($rewards['11'])  && isset($rewards['21']) && !isset($rewards['31']) && !isset($rewards['41']) }>
+			<{$occ='21'}><{$occ_array=array(21)}>
+		<{else if isset($rewards['31']) && !isset($rewards['11']) && !isset($rewards['21']) && !isset($rewards['41'])}>
+			<{$occ='31'}><{$occ_array=array(31)}>
+		<{else if !isset($rewards['11']) && !isset($rewards['21']) && !isset($rewards['31']) && isset($rewards['41'])}>
+			<{$occ='41'}><{$occ_array=array(41)}>
+		<{else if isset($rewards['11']) && isset($rewards['21']) && isset($rewards['31']) && isset($rewards['41'])}>
+			<{$occ=''}><{$occ_array=array(11,21,31,41)}>
+		<{/if}>
+	<{/if}>
+	<{/foreach}>
+	<!-- 职业判断-->
+	<{if $occ==''}>
+		<{if isset($rewards['11'])}><{$lists=$rewards['11']}><{$set_online=1}><{/if}>
+	<{else if $occ=='11'}>
+		<{$lists=$rewards['11']}><{$set_online=1}>
+	<{else if $occ=='21'}>
+		<{$lists=$rewards['21']}><{$set_online=1}>
+	<{else if $occ=='31'}>
+		<{$lists=$rewards['31']}><{$set_online=1}>
+	<{else if $occ=='41'}>
+		<{$lists=$rewards['41']}><{$set_online=1}>
+	<{/if}>
+
+		<div>
+			<{t}>在线时长(min)<{/t}>：<{$rewards['time_flag_sec']/60}>
+			<{t}>职业限制<{/t}>：<{if $occ==''}><{t}>无<{/t}><{else if $occ=='11'}><{t}>破天<{/t}><{else if $occ=='21'}><{t}>舞月<{/t}><{else if $occ=='31'}><{t}>飞翎<{/t}><{else if $occ=='41'}><{t}>幻雪<{/t}><{/if}>
+		</div>
+		<ul class="unstyled">
+				<{foreach $lists as $rows}>
+					<{foreach $rows as $item}>
+						<{if isset($item[2])}>
+						<li>
+							<{t}>道具<{/t}>：<{t}><{$item[0]}><{/t}>(<{if $item[2]==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+							<{t}>数量<{/t}>：<{$item[1]}>
+						</li>
+						<{else}>
+						<li>
+							<{t}><{$activity_config['money_type'][$item[0]]}><{/t}>：<{t}><{$item[1]}><{/t}>
+						</li>
+						<{/if}>
+					<{/foreach}>
+				<{/foreach}>
+		</ul>
+		<hr style="margin:2px 0 5px 0"/>
+	<{/foreach}>
+	</dd>
+</dl>
+
+<{/if}>

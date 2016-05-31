@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />   
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <script language="javascript" src="../../public/js/jquery.js"></script>
+        <script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+        <script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+        <script lang="javascript">
+            $(document).ready(function(){
+                $('.main-select').change(function(){
+                    $(this).attr('checked')==='checked'?$('.sub-select').attr('checked','checked'):$('.sub-select').removeAttr('checked');
+                })
+                $('.mutil-action').click(function(){
+                    var status = $(this).attr('data'),
+                    ids = [],
+                    gmer = $('[name="gmer"]').val(),
+                    type = $('[name="type"]').val();
+                    $('.sub-select:checked').each(function(i){
+                        ids[i] = $(this).val();  
+                    });
+                    if(ids.length===0){
+                        alert('<{t}>请选择玩家列表<{/t}>');
+                        return;
+                    }
+                    var client = new PHPRPC_Client('../interface/pm_api.php', ['pm_gmer']);
+                    client.pm_gmer({id:ids,type:type,status:status,gmer:gmer}, function (result, args, output, warning) {  
+                        if(result.status==='ok'){
+                            var span = '';
+                            if(status ==1){
+                                span = '<span class="label label-info"><{t}>在任<{/t}></span>';
+                            }else{
+                                span = '<span class="label"><{t}>卸任<{/t}></span>';
+                            }
+                            for(i in ids){
+                                $('#tr_'+ids[i]+' .status').html(span);
+                            }
+                        }
+                        $('#verify_ajax').html(result.info);
+                    }, true);
+                })
+            })
+        </script>   
+    </head>
+    <body>
+            <div class="tabbable">
+                <ul class="nav nav-tabs">
+                    <li<{if $type eq 1}> class="active"<{/if}>><a href="?type=1"><{t}>内部号<{/t}></a></li>
+                    <li<{if $type eq 2}> class="active"<{/if}>><a href="?type=2"><{t}>新指<{/t}>GM</a></li>
+                </ul>
+                <div class="tab-content">
+                    <{if $type eq 1}>
+                    <table class="table table-striped table-bordered table-condensed form-inline">
+                        <thead>
+                            <tr>
+                                <th><{t}>账号<{/t}></th>
+                                <th><{t}>角色<{/t}></th>
+                                <th><{t}>真实姓名<{/t}></th>
+                                <th><{t}>职位<{/t}></th>
+                                <th><{t}>来源<{/t}></th>
+                                <th><{t}>状态<{/t}></th>
+                                <th><{t}>提交人<{/t}></th>
+                                <th><{t}>申请时间<{/t}></th>
+                                <th><{t}>审核人<{/t}></th>
+                                <th><{t}>审核时间<{/t}></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <{while $row = $query->fetch_assoc()}>
+                            <tr id="tr_<{$row['char_id']}>">
+                                <td style="text-align:left"><input type="checkbox" class="sub-select" name="char_id" value="<{$row['char_id']}>" id="char_<{$row['char_id']}>"><label for="char_<{$row['char_id']}>"><{$row['account']}></label></td>
+                                <td><a href="../gm/player.php?id=<{$row['char_id']}>"><{$row['char_name']}></a></td>
+                                <td><{$row['true_name']}></td>
+                                <td><{$row['job']}></td>
+                                <td><{$row['source']}></td>
+                                <td class="status"><{if $row['status'] eq 2}>
+                                    <span class="label"><{t}>卸任<{/t}></span>
+                                    <{else if $row['status'] eq 1}><span class="label label-info"><{t}>在任<{/t}></span><{else}><span class="label label-warning"><{t}>未处理<{/t}></span><{/if}></td>
+                                <td><{$row['applyer']}></td>
+                                <td><{$row['apply_ts']|date_format:'%Y-%m-%d %T'}></td>
+                                <td><{$row['verifyer']}></td>
+                                <td><{$row['verify_ts']|default:''|date_format:'%Y-%m-%d %T'}></td>
+                            </tr>
+                            <{/while}>
+                            <tr>
+                                <td colspan="10">
+                                    <input type="hidden" name="type" value="1">
+                                    <input type="hidden" name="gmer" value="<{$gmer}>">
+                                    <input type="checkbox" class="main-select" id="selectall"><label for="selectall"><{t}>全选/全不选<{/t}></label>
+                                    <input type="button" class="btn btn-primary mutil-action add-internal" data="1" value="<{t}>批量委任<{/t}>"> <input class="btn btn-primary mutil-action" data="2" type="button" value="<{t}>批量卸任<{/t}>">  <span id="verify_ajax" class="badge badge-warning"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination pagination-centered">
+                        <{$page}>
+                    </div>
+                    <{else}>
+                    <table class="table table-striped table-bordered table-condensed form-inline">
+                        <thead>
+                            <tr>
+                                <th><{t}>账号<{/t}></th>
+                                <th><{t}>角色<{/t}></th>
+                                <th><{t}>状态<{/t}></th>
+                                <th><{t}>提交人<{/t}></th>
+                                <th><{t}>申请类型<{/t}></th>
+                                <th><{t}>申请时间<{/t}></th>
+                                <th><{t}>审核人<{/t}></th>
+                                <th><{t}>审核时间<{/t}></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <{while $row = $query->fetch_assoc()}>
+                            <tr id="tr_<{$row['char_id']}>">
+                                <td style="text-align:left"><input type="checkbox" class="sub-select" name="char_id" value="<{$row['char_id']}>" id="char_<{$row['char_id']}>"> <label for="char_<{$row['char_id']}>"><{$row['account']}></label></td>
+                                <td><a href="../gm/player.php?id=<{$row['char_id']}>"><{$row['char_name']}></a></td>
+                                <td class="status"><{if $row['status'] eq 2}>
+                                    <span class="label"><{t}>卸任<{/t}></span>
+                                    <{else if $row['status'] eq 1}><span class="label label-info"><{t}>在任<{/t}></span><{else}><span class="label label-warning"><{t}>未处理<{/t}></span><{/if}></td>
+                                <td><{$row['applyer']}></td>
+                                <td><{if $row['apply_type'] eq 1}>GM<{else}>新手指导员<{/if}></td>
+                                <td><{$row['apply_ts']|date_format:'%Y-%m-%d %T'}></td>
+                                <td><{$row['verifyer']}></td>
+                                <td><{$row['verify_ts']|default:''|date_format:'%Y-%m-%d %T'}></td>
+                            </tr>
+                            <{/while}>
+                            <tr>
+                                <td colspan="8">
+                                    <input type="hidden" name="type" value="2">
+                                    <input type="hidden" name="gmer" value="<{$gmer}>">
+                                    <input type="checkbox" class="main-select" id="selectall"><label for="selectall"><{t}>全选/全不选<{/t}></label>
+                                    <input type="button" class="btn btn-primary mutil-action add-internal" data="1" value="<{t}>批量委任<{/t}>"> <input class="btn btn-primary mutil-action" data="2" type="button" value="<{t}>批量卸任<{/t}>">  <span id="verify_ajax" class="badge badge-warning"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination pagination-centered">
+                        <{$page}>
+                    </div>
+                    <{/if}>
+                </div>
+            </div>
+    </body>
+</html> 

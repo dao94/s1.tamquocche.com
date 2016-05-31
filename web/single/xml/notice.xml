@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+notice   id:为后面添加的预览功能预留，1为日常公告
+         subNotice  id:现为日常公告id，0是增加，1是优化，2是修复
+         title:标题
+          content:公告内容
+-->
+<config>
+<notice id="1">
+	<subNotice id="0">
+		<title><![CDATA[<u><li>新增</li></u>]]></title>
+		<content><![CDATA[<p class="p0">
+	<p class="p0">
+		<font color="#EE33EE">一、等级上限更新为90</font><font color="#EE33EE" face="Tahoma">级</font><font color="#EE33EE">。</font>
+	</p>
+	<p class="p0">
+		<font color="#EE33EE">二、新增</font><font color="#EE33EE" face="Times New Roman">90</font><font color="#EE33EE" face="Tahoma">级传说、绝世套装，可通过</font><font color="#EE33EE" face="Times New Roman">80</font><font color="#EE33EE" face="Tahoma">级装备升阶或铸魂获得。</font>
+	</p>
+</p>]]></content>
+	</subNotice>
+	<subNotice id="1">
+		<title><![CDATA[<u><li>优化</li></u>]]></title>
+		<content><![CDATA[<p class="p0">
+	<font color="#E53333">一、帮派争霸总决赛时间更改：</font>
+</p>
+<p class="p0">
+	&nbsp;&nbsp;&nbsp;&nbsp;现在改成淘汰赛结束后十分钟开始进入总决赛等待场景，等待五分钟后正式入场比赛。
+</p>
+<p class="p0">
+	二、帮派争霸比赛场景新增双方帮派信息显示面板。
+</p>
+<p class="p0">
+	二、挑战心魔优化，新增挑战成功的面板显示，并新增“继续挑战”功能。
+</p>
+<p class="p0">
+	<font color="#E53333">四、帝王挑战调整</font>
+</p>
+<p class="p0">
+	<font color="#E53333">玩家头衔重置，怪物等级清零；现在只可以挑战高等级的头衔了</font>
+</p>
+<br />]]></content>
+
+	</subNotice>
+	<subNotice id="2">
+	<title><![CDATA[<u><li>修复</li></u>]]></title>
+	<content><![CDATA[<p class="p0">
+	<p class="p0">
+		修复心魔系统在个别情况下战力显示不正确的问题
+	</p>
+</p>
+<p class="p0">
+	<br />
+</p>
+<p class="p0">
+	<font face="Tahoma"></font>
+</p>
+<p>
+	<br />
+</p>
+<br />]]></content>
+	</subNotice>
+	</notice>
+</config>

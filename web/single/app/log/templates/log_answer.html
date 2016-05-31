@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><{t}>答题流水<{/t}></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+	<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+	<script language="javascript" src="../../public/js/jquery.js"></script>
+	<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+	<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<form action="?" method="get" class="well form-search" style="margin-bottom:10px;">
+	<label <{if $conditions['from']=='info'}>class="hide"<{/if}>><{t}>角色ID<{/t}>：
+	<input type="text" name="char_id" class="input-mini" maxlength="20" value="<{$conditions['char_id']}>">
+	</label>
+	<label style="display:none"><{t}>boss名称<{/t}>：
+	<input type="text" name="entry_name" style="display:none" class="input-medium" maxlength="32" value="<{$conditions['entry_name']}>">
+	</label>
+	<label style="margin-left:5px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" id="btn_search"><{t}>搜 索<{/t}></button>
+<input type="hidden" name="from" value="<{$conditions['from']}>">
+</form>
+
+<div class="pagination pagination-right" style="margin:0;"><ul><{$page}></ul></div>
+<table class="table table-bordered table-hover">
+<thead>
+	<tr>
+		<th><{t}>角色名<{/t}></th>
+		<th><{t}>总答题数<{/t}></th>
+		<th><{t}>答对数<{/t}></th>
+		<th><{t}>答错数<{/t}></th>
+		<th><{t}>得分<{/t}></th>
+		<th><{t}>时间<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['char_name']}></td>
+		<td><{$row['total_count']}></td>
+		<td><{$row['right_count']}></td>
+		<td><{$row['error_count']}></td>
+		<td><{$row['score']}></td>
+		<td><{$row['time']}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+</body>
+</html>

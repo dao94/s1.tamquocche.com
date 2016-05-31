@@ -1,0 +1,239 @@
+<!--充值返利-->
+<{if $tpl=='set'}>
+<script language="javascript" src="../../public/js/kindeditor/kindeditor.js"></script>
+<script language="javascript">
+var info_editor;
+/*
+KindEditor.ready(function(K) {
+	info_editor = K.create('#info',{
+		themeType:'diy',
+		items : ['source', '|', 'undo', 'redo', '|', 'fontsize', 'forecolor','bold','underline'],
+		fontSizeTable : ['9', '10', '12','14','16','18','24','32'],
+		filterMode : true,
+		newlineTag:'br',
+		htmlTags : {
+			font : ['id', 'class', 'color', 'size', 'face', '.background-color'],
+			div : [
+				'id', 'class', 'align', '.border', '.margin', '.padding', '.text-align', '.color',
+				'.background-color', '.font-size', '.font-family', '.font-weight', '.background',
+				'.font-style', '.text-decoration', '.vertical-align', '.margin-left'
+			],
+			a : ['id', 'class', 'href', 'target', 'name'],
+			img : ['id', 'class', 'src', 'width', 'height', 'border', 'alt', 'title', 'align', '.width', '.height', '.border'],
+			'p,ol,ul,li,blockquote,h1,h2,h3,h4,h5,h6' : [
+				'id', 'class', 'align', '.text-align', '.color', '.background-color', '.font-size', '.font-family', '.background',
+				'.font-weight', '.font-style', '.text-decoration', '.vertical-align', '.text-indent', '.margin-left'
+			],
+			pre : ['id', 'class'],
+			hr : ['id', 'class', '.page-break-after'],
+			'br,tbody,tr,b,sub,sup,em,i,u,strike,s,del' : ['id', 'class'],
+		},
+		afterBlur:function(){
+			this.sync();
+		},
+	});
+});
+*/
+$(function($){
+	$('select[name="reward_type"]').live('change',function(){
+		$(this).find('option[value="'+this.value+'"]').attr('selected',true);
+		$(this).find('option[value!="'+this.value+'"]').attr('selected',false);
+		$(this).parents('table').find('.items').hide();
+		var reward_item=this.value>0 ? 1 : 0;
+		$(this).parents('table').find('.items_'+reward_item).fadeIn();
+	});
+});
+
+
+function getParam(){
+	var reward_list=[],index_list=[],check_result=true;
+
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		$(control_group).each(function(b,control){
+			var item_list=[],money_list=[],
+			totalRebate=parseInt($(control).find('[name="totalRebate"]').val()),
+			rebatePer=parseInt($(control).find('[name="rebatePer"]').val());
+			//level=(type-1)*10+chong;//宠物等级 11 表示凡境1重
+			//index=parseInt($(control).find('[name="index"]').val());
+			if(isNaN(totalRebate)){
+				totalRebate='0';
+			}
+			if(isNaN(rebatePer)||rebatePer<1){
+				$(control).find('[name="rebatePer"]').focus();
+				alert('<{t}>返利比例为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}
+			/*
+			else if(isNaN(index)||index<1){
+				$(control).find('[name="index"]').focus();
+				alert('<{t}>序号为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if(jQuery.inArray(index,index_list)>=0){
+				$(control).find('[name="index"]').focus();
+				alert('<{t}>序号不能相同<{/t}>');
+				check_result=false;
+				return false;
+			}
+			*/
+
+			//index_list.push(index);
+			/*
+			$($(control).find('.controls')).each(function(c,controls){
+				var reward_type=parseInt($(controls).find('[name="reward_type"]').val());
+				switch(reward_type){
+					case 0:
+						//道具奖励
+						$($(controls).find('.sub_item')).each(function(d,sub_item){
+							var item_val=$.trim($(sub_item).find('[name="item"]').val()).split('|');
+							var num=parseInt($.trim($(sub_item).find('[name="num"]').val()));
+							var bind=$(sub_item).find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+							var item_id=$.trim(item_val[0]);
+							if(item_id==''){
+								$(sub_item).find('[name="item"]').focus();
+								alert('<{t}>道具为必填项<{/t}>');
+								check_result=false;
+								return false;
+							}else if(isNaN(num)||num<1){
+								$(sub_item).find('[name="num"]').focus();
+								alert('<{t}>数量为必填,且是大于0的整字<{/t}>');
+								check_result=false;
+								return false;
+							}
+							item_list.push({itemId:item_id,number:num,bind:bind});
+						});
+						break;
+
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+						//金钱奖励
+						var num=parseInt($.trim($(controls).find('.items_1').find('[name="num"]').val()));
+						if(isNaN(num)||num<1){
+							$(controls).find('.items_1').find('[name="num"]').focus();
+							alert('<{t}>数量为必填,且是大于1的数字<{/t}>');
+							check_result=false;
+							return false;
+						}
+						money_list.push({money:num,type:reward_type});
+						break;
+
+					default:
+						alert('<{t}>选择错误<{/t}>');
+						check_result=false;
+						return false;
+						break;
+				}
+			});
+			*/
+				reward_list.push({totalRebate:totalRebate,rebatePer:rebatePer});
+
+
+		});
+	});
+	return check_result ? reward_list[0] : check_result;
+}
+
+//获取xml配置
+function getXml(){
+	var show_start_date=$.trim($('#show_start_date').val()),
+			show_end_date=$.trim($('#show_end_date').val()),
+			name=$.trim($('#name').val());
+			//info=$.trim(info_editor.html());
+	if(!show_start_date || !show_end_date || show_start_date>=show_end_date){
+		$('#show_start_date').focus();
+		alert('<{t}>请正确选择图标显示时间<{/t}>');
+		return false;
+	}else if(name==''){
+		$('#name').focus();
+		alert('<{t}>活动名称不能为空<{/t}>');
+		return false;
+	}
+	var xml_config={show_start_date:show_start_date,show_end_date:show_end_date,name:name};
+	return xml_config;
+}
+</script>
+<input type="hidden" name="is_xml"  value="1"/>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="show_start_date"><{t}>图标显示时间<{/t}></label>
+	<div class="controls">
+		<input type="text" id="show_start_date" name="show_start_date" class="input-medium" value="<{$data['xml_config']['show_time']|default:''}>" placeholder="<{t}>图标显示时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+		<i class="icon-minus"></i>
+		<input type="text" id="show_end_date" name="show_end_date" class="input-medium" value="<{$data['xml_config']['hide_time']|default:''}>" placeholder="<{t}>图标隐藏时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+	</div>
+</div>
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="name"><{t}>活动名称<{/t}></label>
+	<div class="controls">
+		<input type="text" id="name" name="name" class="input-xlarge" value="<{$data['xml_config']['name']|default:''}>" maxlength="50" placeholder="<{t}>长度在50个字符之内<{/t}>">
+	</div>
+</div>
+<!--
+<div class="control-group" style="margin-bottom:10px;">
+	<label class="control-label" for="info"><{t}>活动描述<{/t}></label>
+	<div class="controls">
+		<textarea id="info" style="height:180px"><{$data['xml_config']['info']|default:''}></textarea>
+	</div>
+</div>
+-->
+
+<{* "设置"功能默认一个元素，"更新"根据数据展现 *}>
+<{if isset($data['param'])}>
+	<{$rewards=$data['param']}>
+<{else}>
+	<{$reward_list=array(1)}>
+<{/if}>
+
+<div class="control-group">
+	<div class="control-label">
+		<div>
+
+			<button type="button" class="btn btn-mini btn-inverse btn_add_config"><i class="icon-plus icon-white"></i></button>
+			<button type="button" class="btn btn-mini btn-inverse btn_del_config"><i class="icon-minus icon-white"></i></button>
+
+		<{t}>奖励列表<{/t}>
+		</div>
+	</div>
+
+	<div style="margin-left: 180px;" class="form-search">
+		<{t}>充值返利上限(可不填)<{/t}>：
+		<input type="text" name="totalRebate" value="<{$rewards['totalRebate']|default:''}>" class="input-mini" maxlength="6" placeholder="<{t}>正整数<{/t}>"/><{t}> <{/t}>
+		<{t}>充值返利比例<{/t}>：
+		<input type="text" name="rebatePer" value="<{$rewards['rebatePer']|default:''}>" class="input-mini" maxlength="6" placeholder="<{t}>正整数<{/t}>"/><{t}> <{/t}>
+	</div>
+
+</div>
+
+
+<{else if $tpl=='show'}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"><{t}>显示时间<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['show_time']}> <i class="icon-minus"></i> <{$row['xml_config']['hide_time']}></dd>
+	<dt style="width:80px;"><{t}>活动名称<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><{$row['xml_config']['name']}></dd>
+
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+	<{if isset($row['param'])}>
+	<{$reward_list=$row['param']}>
+	<{else}>
+	<{$reward_list=array(1)}>
+	<{/if}>
+		<div>
+			<{t}>充值返利上限<{/t}>：<{$reward_list['totalRebate']}>
+			<{t}>充值返利比例<{/t}>：<{$reward_list['rebatePer']}>
+		</div>
+		<ul class="unstyled">
+
+		</ul>
+		<hr style="margin:2px 0 5px 0"/>
+
+	</dd>
+</dl>
+
+<{/if}>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title><{t}>道具查询<{/t}></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="Bookmark" href="../../../../favicon.ico">
+<link rel="Shortcut Icon" href="../../../favicon.ico" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript">
+$(function($){
+	$('input[name="name"]').keyup(function(){
+		window.location="?name="+this.value;
+	}).focus().val('<{$name}>');
+
+	$('#btn_export').click(function(){
+		window.location="?name=<{$name}>&type=export";
+	});
+});
+</script>
+</head>
+<body>
+<div class="well well-small form-search">
+	<{t}>道具<{/t}>：<input type="text" class="input-large" name="name">
+	<span style="margin:0 5px;" class="badge badge-success"><{t}><{if $name != ''}>搜索<{/if}>道具<{/t}>： <b><{$count}></b>
+	</span>
+	<button type="button" class="btn btn-inverse pull-right" id="btn_export"><i class="icon-arrow-down icon-white"></i>导出到Excel</button>
+</div>
+<{if $data}>
+<div class="pagination pagination-right" style="margin:0;"><ul><{$page}></ul></div>
+<table class="table table-bordered table-hover">
+<thead>
+	<th><{t}>序号<{/t}></th>
+	<th>ID</th>
+	<th style="border-left:none"><{t}>名称<{/t}></th>
+</thead>
+<tbody>
+<{foreach $data as $key=>$row}>
+	<tr>
+		<td><{$row['num']|default:''}></td>
+		<td><{$row[0]|default:''}></td>
+		<td><{$row[1]|default:''}></td>
+	</tr>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered" style="margin:0;"><{$page}></div>
+<{/if}>
+</body>
+</html>

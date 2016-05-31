@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>用户留存统计<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(document).ready(function(){
+	$('.time_type').click(function(){
+			$('#start_date').val($(this).attr('start-date'));
+			$('#end_date').val($(this).attr('end-date'));
+			$('#type').val($(this).attr('name'));
+			$('#btn_search').click();
+	});
+});
+</script>
+</head>
+
+<body>
+<div id="nav">
+<ul class="nav nav-tabs">
+	<{foreach $action_conf as $key=>$item}>
+	<li <{if $action==$key}>class="active"<{/if}>><a href="?action=<{$key}>&action_player=<{$action_player}>"><{$item}></a></li>
+	<{/foreach}>
+</ul>
+</div>
+<form class="accordion-group" style="padding-bottom:10px;">
+<div class="accordion-heading">
+	<span class="accordion-toggle" data-toggle="collapse" href="#collapse"><a href="#"><{t}>定义说明<{/t}></a></span>
+</div>
+<div id="collapse" class="accordion-body in collapse">
+	<div class="accordion-inner">
+		<ol>
+			<{if $action=='keep_day'}>
+			<li><{t}>新注册用户：某具体日期内的新注册用户数量（即创号数量）。<{/t}></li>
+			<li><{t}>X日留存量：某一具体日期内的新注册用户在除当天注册日外的第X日内还有登录游戏的玩家数量。<{/t}></li>
+			<li><{t}>X日留存率：X日留存量÷新注册用户×100%<{/t}></li>
+			<{else if $action=='keep_ratio'}>
+			<li><{t}>第N天留存：注册后第N天有登录，算入第N天留存，只统计玩家最后登录那一天，并且N大于等于1。<{/t}></li>
+			<li><{t}>留存率：留存数÷总注册数×100%<{/t}></li>
+			<{/if}>
+		</ol>
+	</div>
+</div>
+
+<{if $action=='keep_day'}>
+<div id="nav">
+<ul class="nav nav-tabs">
+	<{foreach $action_player_conf as $key=>$item}>
+	<li <{if $action_player==$key}>class="active"<{/if}>><a href="?action=<{$action}>&action_player=<{$key}>"><{$item}></a></li>
+	<{/foreach}>
+</ul>
+</div>
+<div class="form-search">
+	<div class="btn-group">
+	<{foreach $time_type as $type=>$item}>
+		<button class="btn time_type <{if $type==$conditions['type']}>btn-inverse<{/if}>" type="button" name="<{$type}>" start-date="<{$item[1]}>" end-date="<{$item[2]}>"><{$item[0]}></button>
+	<{/foreach}>
+	</div>
+	<label style="margin-left: 10px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜索<{/t}></button>
+<{/if}>
+<input type="hidden" id="type" name="type" value="<{$type|default:''}>">
+<input type="hidden" id="action" name="action" value="<{$action}>">
+<input type="hidden" id="action_player" name="action_player" value="<{$action_player}>">
+</div>
+</form>
+
+<{if $action=='keep_day'}>
+<{if $action_player=='all_player'}>
+<table class="table table-bordered table-hover table-striped" style="margin-top: 10px;">
+<thead>
+	<tr>
+		<th rowspan="2">
+			<a href="?action=<{$action}>&type=<{$conditions['type']}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>&sort=<{if $conditions['sort']==1}>0<{else}>1<{/if}>"><{t}>统计日期<{/t}></a>
+			<i class="<{if $conditions['sort']==1}>icon-arrow-up<{else}>icon-arrow-down<{/if}>"></i>
+		</th>
+		<th rowspan="2"><{t}>总注册数<{/t}></th>
+		<th rowspan="2"><{t}>新注册用户<{/t}></th>
+		<th colspan="10"><{t}>X日留存率<{/t}></th>
+	</tr>
+	<tr>
+		<th><{t}>1日<{/t}></th>
+		<th><{t}>2日<{/t}></th>
+		<th><{t}>3日<{/t}></th>
+		<th><{t}>4日<{/t}></th>
+		<th><{t}>5日<{/t}></th>
+		<th><{t}>6日<{/t}></th>
+		<th><{t}>7日<{/t}></th>
+		<th><{t}>14日<{/t}></th>
+		<th><{t}>21日<{/t}></th>
+		<th><{t}>30日<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['date']}></td>
+		<td><{$row['total_character_count']}></td>
+		<td><{$row['character_count']}></td>
+		<td><{$row['day1_ratio']}>%</td>
+		<td><{$row['day2_ratio']}>%</td>
+		<td><{$row['day3_ratio']}>%</td>
+		<td><{$row['day4_ratio']}>%</td>
+		<td><{$row['day5_ratio']}>%</td>
+		<td><{$row['day6_ratio']}>%</td>
+		<td><{$row['day7_ratio']}>%</td>
+		<td><{$row['day14_ratio']}>%</td>
+		<td><{$row['day21_ratio']}>%</td>
+		<td><{$row['day30_ratio']}>%</td>
+	</tr>
+<{/foreach}>
+<{else}>
+	<tr>
+		<td colspan="13"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+	</tr>
+<{/if}>
+</tbody>
+</table>
+<{else if $action_player=='new_player'}>
+<table class="table table-bordered table-hover table-striped" style="margin-top: 10px;">
+<thead>
+	<tr>
+		<th rowspan="2">
+			<a href="?action=<{$action}>&type=<{$conditions['type']}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>&sort=<{if $conditions['sort']==1}>0<{else}>1<{/if}>"><{t}>统计日期<{/t}></a>
+			<i class="<{if $conditions['sort']==1}>icon-arrow-up<{else}>icon-arrow-down<{/if}>"></i>
+		</th>
+		<th rowspan="2"><{t}>总注册数<{/t}></th>
+		<th rowspan="2"><{t}>新注册用户<{/t}></th>
+		<th colspan="10"><{t}>X日留存率<{/t}></th>
+	</tr>
+	<tr>
+		<th><{t}>1日<{/t}></th>
+		<th><{t}>2日<{/t}></th>
+		<th><{t}>3日<{/t}></th>
+		<th><{t}>4日<{/t}></th>
+		<th><{t}>5日<{/t}></th>
+		<th><{t}>6日<{/t}></th>
+		<th><{t}>7日<{/t}></th>
+		<th><{t}>14日<{/t}></th>
+		<th><{t}>21日<{/t}></th>
+		<th><{t}>30日<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['date']}></td>
+		<td><{$row['total_character_count']}></td>
+		<td><{$row['character_count']}></td>
+		<td><{$row['day1_ratio']}>%</td>
+		<td><{$row['day2_ratio']}>%</td>
+		<td><{$row['day3_ratio']}>%</td>
+		<td><{$row['day4_ratio']}>%</td>
+		<td><{$row['day5_ratio']}>%</td>
+		<td><{$row['day6_ratio']}>%</td>
+		<td><{$row['day7_ratio']}>%</td>
+		<td><{$row['day14_ratio']}>%</td>
+		<td><{$row['day21_ratio']}>%</td>
+		<td><{$row['day30_ratio']}>%</td>
+	</tr>
+<{/foreach}>
+<{else}>
+	<tr>
+		<td colspan="13"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+	</tr>
+<{/if}>
+</tbody>
+</table>
+<{else}>
+<table class="table table-bordered table-hover table-striped" style="margin-top: 10px;">
+<thead>
+	<tr>
+		<th rowspan="2">
+			<a href="?action=<{$action}>&type=<{$conditions['type']}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>&sort=<{if $conditions['sort']==1}>0<{else}>1<{/if}>"><{t}>统计日期<{/t}></a>
+			<i class="<{if $conditions['sort']==1}>icon-arrow-up<{else}>icon-arrow-down<{/if}>"></i>
+		</th>
+		<th rowspan="2"><{t}>总注册数<{/t}></th>
+		<th rowspan="2"><{t}>新注册用户<{/t}></th>
+		<th colspan="10"><{t}>X日留存率<{/t}></th>
+	</tr>
+	<tr>
+		<th><{t}>1日<{/t}></th>
+		<th><{t}>2日<{/t}></th>
+		<th><{t}>3日<{/t}></th>
+		<th><{t}>4日<{/t}></th>
+		<th><{t}>5日<{/t}></th>
+		<th><{t}>6日<{/t}></th>
+		<th><{t}>7日<{/t}></th>
+		<th><{t}>14日<{/t}></th>
+		<th><{t}>21日<{/t}></th>
+		<th><{t}>30日<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td><{$row['date']}></td>
+		<td><{$row['total_character_count']}></td>
+		<td><{$row['character_count']}></td>
+		<td><{$row['day1_ratio']}>%</td>
+		<td><{$row['day2_ratio']}>%</td>
+		<td><{$row['day3_ratio']}>%</td>
+		<td><{$row['day4_ratio']}>%</td>
+		<td><{$row['day5_ratio']}>%</td>
+		<td><{$row['day6_ratio']}>%</td>
+		<td><{$row['day7_ratio']}>%</td>
+		<td><{$row['day14_ratio']}>%</td>
+		<td><{$row['day21_ratio']}>%</td>
+		<td><{$row['day30_ratio']}>%</td>
+	</tr>
+<{/foreach}>
+<{else}>
+	<tr>
+		<td colspan="13"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+	</tr>
+<{/if}>
+</tbody>
+</table>
+<{/if}>
+
+
+<{else if $action=='keep_ratio'}>
+<table class="table table-bordered table-hover table-striped" style="margin-top: 10px;">
+<thead>
+	<tr>
+		<th><{t}>留存天数<{/t}></th>
+		<th><{t}>留存数<{/t}></th>
+		<th><{t}>留存率<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{if $data}>
+<{foreach $data as $row}>
+	<tr>
+		<td><{t}>第<{/t}><{$row['day']}><{t}>天<{/t}></td>
+		<td><{$row['count']}></td>
+		<td><{$row['ratio']}>%</td>
+	</tr>
+<{/foreach}>
+<{else}>
+	<tr>
+		<td colspan="3"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td>
+	</tr>
+<{/if}>
+</tbody>
+</table>
+<{/if}>
+<div class="pagination pagination-centered"><{$page}></div>
+</body>
+</html>

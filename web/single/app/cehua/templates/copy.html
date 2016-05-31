@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>副本分析<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+
+<script language="javascript">
+$(function($){
+	$('.show_detail').toggle(function(){
+		$('.detail_'+this.name).fadeIn();
+		//$('.collect_'+this.name).attr({style:"font-weight:bold;font-size:14px;background-color:#F5F5F5"});
+	},function(){
+		$('.detail_'+this.name).hide();;
+	});
+	
+	$('.colorbox').colorbox({inline:true,fixed:true,width:'750px', height:'300px',opacity:0.1});
+});
+</script>
+
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $conditions['action']==$key}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<form class="accordion-group" style="margin-bottom:10px; padding-bottom:10px;">
+	<div class="accordion-heading">
+	 	<span class="accordion-toggle" data-toggle="collapse" href="#collapse">
+				<a href="javascript:;"><{t}>定义说明<{/t}></a>
+		</span>
+	</div>
+	<div id="collapse" class="accordion-body in collapse">
+		<div class="accordion-inner">
+			<ol>
+			<{if $conditions['action']=='304000'}>
+				<li><{t}>类型：分为两种，总体和分级。第一行为总体，第二行开始为分级别进行统计<{/t}></li>
+				<li><{t}>开启等级：默认第一行为最低段的乾坤八卦的开启等级。从第二行开始，按照不同等级段进行统计<{/t}></li>
+				<li><{t}>进入人数：进入副本的玩家数，一个玩家多次进入只算1人<{/t}></li>
+				<li><{t}>满足人数：当天登陆的玩家大于等于开启等级的人数<{/t}></li>
+				<li><{t}>参与度：进入人数/满足人数*100%<{/t}></li>
+				<li><{t}>开启次数：副本开启的次数<{/t}></li>
+				<li><{t}>平均进入：开启次数/进入人数<{/t}></li>
+				<li><{t}>通关n层比例：当天登录并满足≥37级的玩家中，最高挑战到第一层的玩家数A1,最高挑战到第一层的比例B1=A1/（A1+A2+…+A12）<{/t}></li>
+			<{else if $conditions['action']=='600100' }>
+				<li><{t}>类型：分为三种，总类型是指普通+精英，即该行统计的是普通+精英的总体情况，默认为第一行；普通即为统计普通模式数据，精英即为统计精英数据。<{/t}></li>
+				<li><{t}>开启等级：默认第一行为最低段的普通版兵临城下的开启等级。从第二行开始，按照不同等级段进行统计。<{/t}></li>
+				<li><{t}>进入人数：进入副本的玩家数，一个玩家多次进入只算1人<{/t}></li>
+				<li><{t}>满足人数：当天登陆的玩家大于等于开启等级的人数<{/t}></li>
+				<li><{t}>开启次数：副本开启的次数<{/t}></li>
+				<li><{t}>平均进入：开启次数/进入人数（保留两位小数）<{/t}></li>
+				<li><{t}>祝福1、2、3：各种祝福的使用次数，只在总项里统计(普通)<{/t}></li>
+				<li><{t}>消耗元宝：使用各种祝福的总消耗元宝，只在总项里统计(普通)<{/t}></li>
+				<li><{t}>人均消费：消耗元宝/进入人数，只在总项里统计(普通)<{/t}></li>
+				<li><{t}>N阶boss击杀比例：击杀第n个boss的次数/开启次数*100%<{/t}></li>
+			<{else if $conditions['action']=='700100'}>
+				<li><{t}>类型：分为三种，总类型是指普通+精英，即该行统计的是普通+精英的总体情况，默认为第一行；普通即为统计普通模式数据，精英即为统计精英数据。<{/t}></li>
+				<li><{t}>开启等级：默认第一行为最低段的普通版兵临城下的开启等级。从第二行开始，按照不同等级段进行统计。<{/t}></li>
+				<li><{t}>进入人数：进入副本的玩家数，一个玩家多次进入只算1人<{/t}></li>
+				<li><{t}>满足人数：当天登陆的玩家大于等于开启等级的人数<{/t}></li>
+				<li><{t}>开启次数：副本开启的次数<{/t}></li>
+				<li><{t}>平均进入：开启次数/进入人数（保留两位小数）<{/t}></li>
+				<li><{t}>祝福1、2、3：各种祝福的使用次数，只在总项里统计(普通)<{/t}></li>
+				<li><{t}>消耗元宝：使用各种祝福的总消耗元宝，只在总项里统计(普通)<{/t}></li>
+				<li><{t}>人均消费：消耗元宝/进入人数，只在总项里统计(普通)<{/t}></li>
+				<li><{t}>N阶boss击杀比例：击杀第n个boss的次数/开启次数*100%<{/t}></li>
+			<{elseif $conditions['action']=='800100'}>
+				<li><{t}>开启等级：开启等级<{/t}></li>
+				<li><{t}>进入人数：进入副本的玩家数，一个玩家多次进入只算1人<{/t}></li>
+				<li><{t}>满足人数：当天登陆的玩家大于等于开启等级的人数<{/t}></li>
+				<li><{t}>参与度：进入人数/满足人数*100%<{/t}></li>
+				<li><{t}>开启次数：副本开启的次数<{/t}></li>
+				<li><{t}>平均进入：开启次数/进入人数（保留两位小数）<{/t}></li>
+				<li><{t}>第n关通关比例：当天登录玩家中，以该玩家最高通关的关卡来计算，通关第一关的玩家数A1，通关第二关的玩家数A2…….每一关占所有通关的通关比例B1= A1/（A1+A2+…+A100）B2= A2/（A1+A2+…+A100）以此类推<{/t}></li>
+			<{else if $conditions['action']=='900100'}>
+				<li><{t}>开启次数：当日该副本开启总数<{/t}></li>
+				<li><{t}>进入人数：当日所有进入副本的玩家数量<{/t}></li>
+				<li><{t}>平均进入：进入人数/开启次数<{/t}></li>
+				<li><{t}>最大进入：当日单次副本进入玩家最多的玩家数<{/t}></li>
+				<li><{t}>最小进入：当日单次副本进入玩家最少的玩家数<{/t}></li>
+				<li><{t}>平均在线：当日服务器平均在线人数<{/t}></li>
+				<li><{t}>最大波数：当日所有副本最大到达波数<{/t}></li>
+				<li><{t}>最小波数：当日所有副本最小到达波数<{/t}></li>
+				<li><{t}>平均波数：当日所有到达波数相加/开启次数<{/t}></li>
+			<{else if $conditions['action']=='330100'}>
+				<li><{t}>满足人数：等级>=43级，军衔>=二阶校尉<{/t}></li>
+				<li><{t}>参与度：参与人数/当天登陆且满足条件人数<{/t}></li>
+			<{else if $conditions['action']=='900300'}>
+				<li><{t}>进入人数：进入帮战的玩家人数<{/t}></li>
+				<li><{t}>平均进入：进入人数/开启次数<{/t}></li>
+				<li><{t}>登陆玩家：当天登陆的玩家数量<{/t}></li>
+				<li><{t}>参与度：进入人数/满足人数*100%<{/t}></li>
+				<li><{t}>进入帮派：参与帮战的帮派数量<{/t}></li>
+				<li><{t}>北/西/南门破门时间：从帮战开始到各个门被破的时间，如果门没破则显示“无”<{/t}></li>
+				<li><{t}>城主权像被破时间：从帮战开始到城主权像被破消耗的时间，如果没破则显示“无”<{/t}></li>
+				<li><{t}>洛阳归属：帮战获胜的帮派，可点击查看资料<{/t}></li>
+				<li><{t}>铜钱/元宝鼓舞、振奋人数：在当次帮战中有使用过铜钱/元宝鼓舞、振奋的玩家<{/t}></li>
+				<li><{t}>铜钱/元宝鼓舞、振奋次数：在当次帮战中有使用过铜钱/元宝鼓舞、振奋的次数（1个玩家可能有多次）<{/t}></li>
+			<{else if $conditions['action']=='500100'}>
+				<li><{t}>开启等级：开启等级<{/t}></li>
+				<li><{t}>进入人数：进入副本的玩家数，一个玩家多次进入只算1人<{/t}></li>
+				<li><{t}>满足人数：当天登陆的玩家大于等于开启等级的人数<{/t}></li>
+				<li><{t}>参与度：进入人数/满足人数*100%<{/t}></li>
+				<li><{t}>开启次数：副本开启的次数<{/t}></li>
+				<li><{t}>平均进入：开启次数/进入人数（保留两位小数）<{/t}></li>
+				<li><{t}>N阶boss击杀比例：击杀第n个boss的次数/开启次数*100%<{/t}></li>
+			<{else if $conditions['action']=='560100'}>
+				<li><{t}>类型：分为三种，总类型是指普通+精英，即该行统计的是普通+精英的总体情况，默认为第一行；普通即为统计普通模式数据，精英即为统计精英数据。<{/t}></li>
+				<li><{t}>开启等级：默认第一行为最低段的普通版蜀道试炼的开启等级。从第二行开始，按照不同等级段进行统计。<{/t}></li>
+				<li><{t}>进入人数：进入副本的玩家数，一个玩家多次进入只算1人<{/t}></li>
+				<li><{t}>满足人数：当天登陆的玩家大于等于开启等级的人数<{/t}></li>
+				<li><{t}>参与度：进入人数/满足人数*100%<{/t}></li>
+				<li><{t}>开启次数：副本开启的次数<{/t}></li>
+				<li><{t}>平均进入：开启次数/进入人数（保留两位小数）<{/t}></li>
+				<li><{t}>N阶boss击杀比例：击杀第n个boss的次数/开启次数*100%<{/t}></li>
+			<{else if $conditions['action']=='630100'}>
+				<li><{t}>开启时间：活动开启时间，精确到分。如果是副本则显示无<{/t}></li>
+				<li><{t}>进入人数：当日进入该副本/该次活动的玩家数（1个玩家多次进入计为1）<{/t}></li>
+				<li><{t}>开启时满足人数：活动开启时，全服在线的，等级大于等于活动开启等级的玩家个数<{/t}></li>
+				<li><{t}>完成任务：以玩家在当次活动中获得的积分来算，小于4分是未完成任务，4-7是1个任务，8-15是两个任务，16-31是3个任务，32或以上是4个任务<{/t}></li>
+				<li><{t}>参与度：进入人数/满足人数*100%<{/t}></li>
+				<li><{t}>登陆玩家：当日登陆的玩家数<{/t}></li>
+				<li><{t}>当日最高在线：当日最高在线<{/t}></li>
+				<li><{t}>当日平均在线：当日平均在线<{/t}></li>
+				<li><{t}>开启时在线：活动开启时在线玩家数，如果是副本则直接给予当天的最高在线数<{/t}></li>
+			<{else if $conditions['action']=='205500'}>
+				<li><{t}>开启等级：40级<{/t}></li>
+				<li><{t}>进入人数：每天每场活动的进入玩家数 X（每个ID只算为一次）<{/t}></li>
+				<li><{t}>满足人数：活动开启时，全服在线的，等级大于等于活动开启等级的玩家个数<{/t}></li>
+				<li><{t}>参与度：进入人数/满足人数*100%<{/t}></li>
+				<li><{t}>N擒孟获：当日第n个boss被击杀的次数（1或0）<{/t}></li>
+			<{else if $conditions['action']=='510100'}>
+				<li><{t}>开启等级：50级<{/t}></li>
+				<li><{t}>进入人数：每天每场活动的进入玩家数 X（每个ID只算为一次）<{/t}></li>
+				<li><{t}>满足人数：当天登陆并且满足副本进入等级的玩家数<{/t}></li>
+				<li><{t}>参与度：进入人数/满足人数*100%<{/t}></li>
+				<li><{t}>击杀BOSS的比例：击杀第N个BOSS的次数/ 开启次数*100%<{/t}></li>
+			<{/if}>
+			</ol>
+		</div>
+	</div>
+
+	<div class="form-search">
+
+		<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+		<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+		<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+	</div>
+<input type="hidden" id="action" name="action" value="<{$conditions['action']}>">
+<input type="hidden" name="type" value="<{$conditions['type']}>">
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+	<{if $key<=$conditions['today']}>
+		<button type="button" onClick="javascript:window.location='?action=<{$conditions['action']}>&type=<{$key}>&start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+	<{/if}>
+<{/foreach}>
+</div>
+<{if $conditions['action']=='600100' || $conditions['action']=='700100' || $conditions['action']=='560100'}>
+<div class="tabbable">
+<ul class="nav nav-tabs">
+	<{foreach $type_conf as $key=>$item}>
+	<li <{if $conditions['type']==$key}>class="active"<{/if}>><a href="?action=<{$conditions['action']}>&type=<{$key}>&start_date=<{$conditions['start_date']}>&end_date=<{$conditions['end_date']}>"><{$item}></a></li>
+	<{/foreach}>
+</ul>
+<div class="tab-content">
+<{/if}>
+
+<{if $conditions['action']=='304000'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>日期<{/t}></th>
+		<th rowspan="2"><{t}>类型<{/t}></th>
+		<th rowspan="2"><{t}>开启等级<{/t}></th>
+		<th rowspan="2"><{t}>进入人数<{/t}></th>
+		<th rowspan="2"><{t}>满足人数<{/t}></th>
+		<th rowspan="2"><{t}>参与度<{/t}></th>
+		<th rowspan="2"><{t}>开启次数<{/t}></th>
+		<th rowspan="2"><{t}>平均进入<{/t}></th>
+		<th colspan="12"><{t}>通关n层比例<{/t}></th>
+	</tr>
+	<tr>
+		<{for $foo=1 to 12}>
+		<th><{t}><{$foo}>层<{/t}></th>
+		<{/for}>
+	</tr>
+
+
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $key=>$items}>
+	<tr>
+		<td  rowspan="<{$items|count}>"><{$key}></td>
+	  <{foreach $items as $k=>$row}>
+	  <{if $k!=0}><tr><{/if}>
+        <td><{if $row['type']==0}><{t}>总<{/t}><{else}><{t}>分<{/t}><{/if}></td>
+        <td><{t}><{$row['level']}><{/t}></td>
+		<td><{$row['player']}></td>
+		<td><{$row['allow_player']}></td>
+		<td><{$row['avg_count']}>%</td>
+		<td><{$row['count']}></td>
+		<td><{$row['avg_player']}></td>
+		<{for $foo=1 to 12}>
+	 		<td><{t}><{$row[$foo|cat:'_boss']|default:0}>%<{/t}></td>
+		<{/for}>
+		<{if $k+1!=count($items)}></tr><{/if}>
+		<{/foreach}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='600100'}>
+<table class="table table-bordered table-hover" >
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>日期<{/t}></th>
+		<th rowspan="2"><{t}>开启等级<{/t}></th>
+		<th rowspan="2"><{t}>进入人数<{/t}></th>
+		<th rowspan="2"><{t}>满足人数<{/t}></th>
+		<th rowspan="2"><{t}>参与度<{/t}></th>
+		<th rowspan="2"><{t}>开启次数<{/t}></th>
+		<th rowspan="2"><{t}>平均进入<{/t}></th>
+		<th rowspan="2"><{t}>祝福值1<{/t}></th>
+		<th rowspan="2"><{t}>祝福值2<{/t}></th>
+		<th rowspan="2"><{t}>祝福值3<{/t}></th>
+		<th rowspan="2"><{t}>消耗元宝<{/t}></th>
+		<th rowspan="2"><{t}>人均消费<{/t}></th>
+		<th colspan="6"><{t}>n阶boss击杀比例<{/t}></th>
+	</tr>
+	<tr>
+        <{for $foo=1 to 6}>
+	 		<th><{t}><{$foo}>阶<{/t}></th>
+		<{/for}>
+	</tr>
+</thead>
+<tbody>
+
+	<{if $data}>
+	<{foreach $data as $key=>$items}>
+	<tr>
+		<td  rowspan="<{$items|count}>"><{$key}></td>
+	  <{foreach $items as $k=>$row}>
+	  <{if $k!=0}><tr><{/if}>
+        <td><{if $row['type']==0 || $row['type']==10}><{t}>总体<{/t}><{else}><{t}><{$row['level_start']}><{/t}>-<{t}><{$row['level_end']}><{/t}><{/if}></td>
+		<td><{$row['player']}></td>
+		<td><{$row['allow_player']}></td>
+		<td><{$row['avg_count']}>%</td>
+		<td><{$row['count']}></td>
+		<td><{$row['avg_player']}></td>
+		<{if $row['type']==0}>
+		<{foreach $row['row_hope_value'] as $key=>$value}>
+			<td><{$value|default:0}></td>
+		<{/foreach}>
+		<td><{$row['money_num']|default:0}></td>
+		<td><{$row['avg_money']|default:0}></td>
+		<{else if $row['type']>0}>
+			<{for $foo=1 to 5}>
+				<td></td>
+			<{/for}>
+		<{/if}>
+		<{for $foo=0 to 5}>
+			<td ><{if $row['count']==0}>0%<{else}><{round($row[$foo+1|cat:'_boss']|default:0/$row['count'],4)*100}>%<{/if}></td>
+	    <{/for}>
+		<{if $k+1!=count($items)}></tr><{/if}>
+		<{/foreach}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='700100'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>日期<{/t}></th>
+		<th rowspan="2"><{t}>开启等级<{/t}></th>
+		<th rowspan="2"><{t}>进入人数<{/t}></th>
+		<th rowspan="2"><{t}>满足人数<{/t}></th>
+		<th rowspan="2"><{t}>参与度<{/t}></th>
+		<th rowspan="2"><{t}>开启次数<{/t}></th>
+		<th rowspan="2"><{t}>平均进入<{/t}></th>
+		<th rowspan="2"><{t}>祝福值1<{/t}></th>
+		<th rowspan="2"><{t}>祝福值2<{/t}></th>
+		<th rowspan="2"><{t}>祝福值3<{/t}></th>
+		<th rowspan="2"><{t}>消耗元宝<{/t}></th>
+		<th rowspan="2"><{t}>人均消费<{/t}></th>
+		<th colspan="10"><{t}>n阶boss击杀比例<{/t}></th>
+	</tr>
+	<tr>
+        <{for $foo=1 to 10}>
+	 		<th><{t}><{$foo}>阶<{/t}></th>
+		<{/for}>
+	</tr>
+</thead>
+<tbody>
+
+	<{if $data}>
+	<{foreach $data as $key=>$items}>
+	<tr>
+		<td  rowspan="<{$items|count}>"><{$key}></td>
+	  <{foreach $items as $k=>$row}>
+	  <{if $k!=0}><tr><{/if}>
+        <td><{if $row['type']==0  || $row['type']==10}><{t}>总体<{/t}><{else}><{t}><{$row['level_start']}><{/t}>-<{t}><{$row['level_end']}><{/t}><{/if}></td>
+		<td><{$row['player']}></td>
+		<td><{$row['allow_player']}></td>
+		<td><{$row['avg_count']}>%</td>
+		<td><{$row['count']}></td>
+		<td><{$row['avg_player']}></td>
+		<{if $row['type']==0}>
+		<{foreach $row['row_hope_value'] as $key=>$value}>
+			<td><{$value|default:0}></td>
+		<{/foreach}>
+		<td><{$row['money_num']|default:0}></td>
+		<td><{$row['avg_money']|default:0}></td>
+		<{else if $row['type']>0}>
+			<{for $foo=1 to 5}>
+				<td></td>
+			<{/for}>
+		<{/if}>
+		<{for $foo=0 to 9}>
+			<td ><{if $row['count']==0}>0%<{else}><{round($row[$foo+1|cat:'_boss']|default:0/$row['count'],4)*100}>%<{/if}></td>
+	    <{/for}>
+		<{if $k+1!=count($items)}></tr><{/if}>
+		<{/foreach}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='800100'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>日期<{/t}></th>
+		<th rowspan="2"><{t}>开启等级<{/t}></th>
+		<th rowspan="2"><{t}>进入人数<{/t}></th>
+		<th rowspan="2"><{t}>满足人数<{/t}></th>
+		<th rowspan="2"><{t}>参与度<{/t}></th>
+		<th rowspan="2"><{t}>开启次数<{/t}></th>
+		<th rowspan="2"><{t}>平均进入<{/t}></th>
+		<th colspan="9"><{t}>通关比例<{/t}></th>
+		<th colspan="13"><{t}>精英模式通关人数<{/t}></th>
+	</tr>
+	<tr>
+        <{foreach $official_conf as $key=>$item}>
+			<{foreach $boss_level_conf as $k=>$v}>
+			<th class="hide detail_<{$key}>"><{$v}></th>
+			<{/foreach}>
+			<th class="collect_<{$key}>"><a href="javascript:;" class="show_detail" name="<{$key}>"><{$official_conf[$key]}></a></th>
+		<{/foreach}>
+
+		<{foreach $official_jy_conf as $key=>$item}>
+			<{foreach $boss_level_jy_conf as $k=>$v}>
+			<th class="hide detail_<{$key}>"><{$v}></th>
+			<{/foreach}>
+			<th class="collect_<{$key}>"><a href="javascript:;" class="show_detail" name="<{$key}>"><{$official_jy_conf[$key]}></a></th>
+		<{/foreach}>
+
+		<{foreach $official_jy_2_conf as $key=>$item}>
+			<{foreach $boss_level_jy_2_conf as $k=>$v}>
+			<th class="hide detail_<{$key}>"><{$v}></th>
+			<{/foreach}>
+			<th class="collect_<{$key}>"><a href="javascript:;" class="show_detail" name="<{$key}>"><{$official_jy_2_conf[$key]}></a></th>
+		<{/foreach}>
+	</tr>
+</thead>
+<tbody>
+<!-- 定义两个变量 $i=0 为循环boss被击杀的比例 $boss_ten为每10的统计 -->
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<{$i=0}><{$j=0}><{$m=0}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td><{$row['level']}></td>
+		<td><{$row['player']}></td>
+		<td><{$row['allow_player']}></td>
+		<td><{$row['avg_count']}>%</td>
+		<td><{$row['count']}></td>
+		<td><{$row['avg_player']}></td>
+		<{foreach $official_conf as $key=>$item}>
+		    <{$boss_ten=0}>
+			<{foreach $boss_level_conf as $v}>
+			<td class="hide detail_<{$key}>"><{$i=$i+1}><{$boss_ten=$boss_ten+$row[$i-1]}><{$row[$i-1]}>%</td>
+			<{/foreach}>
+			<td class="collect_<{$key}>"><{$boss_ten}>%</td>
+		<{/foreach}>
+
+		<{foreach $official_jy_conf as $key=>$item}>
+			<{$boss_eight=0}>
+			<{foreach $boss_level_jy_conf as $k=>$v}>
+			<th class="hide detail_<{$key}>"><{$j=$j+1}><{$boss_eight=$boss_eight+$row[$j-1|cat:'_jy_boss']|default:0}><{$row[$j-1|cat:'_jy_boss']|default:0}></th>
+			<{/foreach}>
+			<th class="collect_<{$key}>"><{$boss_eight}></th>
+		<{/foreach}>
+
+		<{foreach $official_jy_2_conf as $key=>$item}>
+			<{$boss_five=0}>
+			<{foreach $boss_level_jy_2_conf as $k=>$v}>
+			<th class="hide detail_<{$key}>"><{$m=$m+1}><{$boss_five=$boss_five+$row[$m-1|cat:'_jy_2_boss']|default:0}><{$row[$m-1|cat:'_jy_2_boss']|default:0}></th>
+			<{/foreach}>
+			<th class="collect_<{$key}>"><{$boss_five}></th>
+		<{/foreach}>
+
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='900100'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>开启次数<{/t}></th>
+		<th><{t}>进入人数<{/t}></th>
+		<th><{t}>平均进入<{/t}></th>
+		<th><{t}>最大进入<{/t}></th>
+		<th><{t}>最小进入<{/t}></th>
+		<th><{t}>平均在线<{/t}></th>
+		<th><{t}>最大波数<{/t}></th>
+		<th><{t}>最小波数<{/t}></th>
+		<th><{t}>平均波数<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td><{$row['count']}></td>
+		<td><{$row['join_in']}></td>
+		<td><{$row['avg_join_in']|default:0}>%</td>
+		<td><{$row['max_join_in']}></td>
+		<td><{$row['min_join_in']}></td>
+		<td><{$row['avg_online']}></td>
+		<td><{$row['max_wave_num']}></td>
+		<td><{$row['min_wave_num']}></td>
+		<td><{$row['avg_wave_num']}></td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='330100'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>参与人数<{/t}></th>
+		<th><{t}>人均参与<{/t}></th>
+		<th><{t}>满足人数<{/t}></th>
+		<th><{t}>参与度<{/t}></th>
+		<th><{t}>购买竞技点人数<{/t}></th>
+		<th><{t}>消费总元宝<{/t}></th>
+		<th><{t}>人均消费<{/t}></th>
+		<th><{t}><=5场平均战斗力<{/t}></th>
+		<th><{t}>5-15场平均战斗力<{/t}></th>
+		<th><{t}>>=15场平均战斗力<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td><{$row['join_in']}></td>
+		<td><{$row['avg_join_in']|default:0}>%</td>
+		<td><{$row['allow_join']}></td>
+		<td><{$row['join_in_ratio']|default:0}>%</td>
+		<td><{$row['athletics_player']|default:0}></td>
+		<td><{$row['athletics_money']|default:0}></td>
+		<td><{$row['avg_money']|default:0}></td>
+		<td><{$row['avg_fight1']|default:0}></td>
+		<td><{$row['avg_fight2']|default:0}></td>
+		<td><{$row['avg_fight3']|default:0}></td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='900300'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>日期<{/t}></th>
+		<th rowspan="2"><{t}>开启等级<{/t}></th>
+		<th rowspan="2"><{t}>进入人数<{/t}></th>
+		<th rowspan="2"><{t}>满足人数<{/t}></th>
+		<th rowspan="2"><{t}>参与度<{/t}></th>
+		<th rowspan="2"><{t}>登录玩家<{/t}></th>
+		<th rowspan="2"><{t}>进入帮派<{/t}></th>
+		<th colspan="3"><{t}>第一名帮派<{/t}></th>
+		<th rowspan="2"><{t}>铜钱振奋、鼓舞人数<{/t}></th>
+		<th rowspan="2"><{t}>元宝振奋、鼓舞人数<{/t}></th>
+		<th rowspan="2"><{t}>铜钱振奋、鼓舞次数<{/t}></th>
+		<th rowspan="2"><{t}>元宝振奋、鼓舞次数<{/t}></th>
+	</tr>
+	<tr>
+		<th><{t}>帮派名称<{/t}></th>
+		<th><{t}>参与人数<{/t}></th>
+		<th><{t}>所得功勋<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td><{$row['level']}></td>
+		<td><{$row['player']}></td>
+		<td><{$row['allow_player']}></td>
+		<td><{$row['avg_count']}>%</td>
+		<td><{$row['player_all']|default:0}></td>
+		<td><{$row['faction_count']|default:0}></td>
+		<td>
+			<a href="#rank_<{$row['date']}>" class="colorbox"><{$row['belong_faction']|default:''}></a>
+			<{if !empty($row['rank'])}>
+			<div class="hide">
+				<table class="table" id="rank_<{$row['date']}>">
+					<thead>
+						<tr>
+							<th><{t}>名次<{/t}></th>
+							<th><{t}>帮派<{/t}></th>
+							<th><{t}>参与人数<{/t}></th>
+							<th><{t}>所得功勋<{/t}></th>
+						</tr>
+					</thead>
+					<tbody>
+					<{foreach $row['rank'] as $key=>$item}>
+						<tr>
+							<th><{$key+1}></th>
+							<th><{$item['faction_name']}></th>
+							<th><{$item['faction_player']}></th>
+							<th><{$item['faction_exploit']}></th>
+						</tr>
+					<{/foreach}>
+					</tbody>
+				</table>
+			</div>
+			<{/if}>	
+		</td>
+		<td><{$row['belong_faction_player']|default:0}></td>
+		<td><{$row['belong_faction_exploit']|default:0}></td>
+		<td><{$row['player_t']|default:0}></td>
+		<td><{$row['player_y']|default:0}></td>
+		<td><{$row['count_t']|default:0}></td>
+		<td><{$row['count_y']|default:0}></td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='500100'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>日期<{/t}></th>
+		<th rowspan="2"><{t}>开启等级<{/t}></th>
+		<th rowspan="2"><{t}>进入人数<{/t}></th>
+		<th rowspan="2"><{t}>满足人数<{/t}></th>
+		<th rowspan="2"><{t}>参与度<{/t}></th>
+		<th rowspan="2"><{t}>开启次数<{/t}></th>
+		<th rowspan="2"><{t}>平均进入<{/t}></th>
+		<th colspan="6"><{t}>N阶boss击杀比例<{/t}></th>
+	</tr>
+	<tr>
+        <{for $foo=1 to 6}>
+	 		<th><{t}><{$foo}>阶<{/t}></th>
+		<{/for}>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td><{$row['level']}></td>
+		<td><{$row['player']}></td>
+		<td><{$row['allow_player']}></td>
+		<td><{$row['avg_count']}>%</td>
+		<td><{$row['count']}></td>
+		<td><{$row['avg_player']}></td>
+		<{for $foo=0 to 5}>
+			<td ><{if $row['count']==0}>0%<{else}><{round($row[$foo+1|cat:'_boss']|default:0/$row['count'],4)*100}>%<{/if}></td>
+	    <{/for}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='560100'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>日期<{/t}></th>
+		<th rowspan="2"><{t}>开启等级<{/t}></th>
+		<th rowspan="2"><{t}>进入人数<{/t}></th>
+		<th rowspan="2"><{t}>满足人数<{/t}></th>
+		<th rowspan="2"><{t}>参与度<{/t}></th>
+		<th rowspan="2"><{t}>开启次数<{/t}></th>
+		<th rowspan="2"><{t}>平均进入<{/t}></th>
+		<th colspan="3"><{t}>N阶boss击杀比例<{/t}></th>
+	</tr>
+	<tr>
+        <{for $foo=1 to 3}>
+	 		<th><{t}><{$foo}>阶<{/t}></th>
+		<{/for}>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $key=>$items}>
+	<tr>
+		<td  rowspan="<{$items|count}>"><{$key}></td>
+	  <{foreach $items as $k=>$row}>
+	  <{if $k!=0}><tr><{/if}>
+        <td><{if $row['type']==0  || $row['type']==10}><{t}>总体<{/t}><{else}><{t}><{$row['level_start']}><{/t}>-<{t}><{$row['level_end']}><{/t}><{/if}></td>
+		<td><{$row['player']}></td>
+		<td><{$row['allow_player']}></td>
+		<td><{$row['avg_count']}>%</td>
+		<td><{$row['count']}></td>
+		<td><{$row['avg_player']}></td>
+		<{for $foo=0 to 2}>
+			<td ><{if $row['count']==0}>0%<{else}><{round($row[$foo+1|cat:'_boss']|default:0/$row['count'],4)*100}>%<{/if}></td>
+	    <{/for}>
+	    <{if $k+1!=count($items)}></tr><{/if}>
+		<{/foreach}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='630100'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>名称<{/t}></th>
+		<th><{t}>开启时间<{/t}></th>
+		<th><{t}>开启等级<{/t}></th>
+		<th><{t}>进入人数<{/t}></th>
+		<th><{t}>开启时满足人数<{/t}></th>
+		<th><{t}>未完成任务<{/t}></th>
+		<th><{t}>完成1个任务<{/t}></th>
+		<th><{t}>完成2个任务<{/t}></th>
+		<th><{t}>完成3个任务<{/t}></th>
+		<th><{t}>完成4个任务<{/t}></th>
+		<th><{t}>参与度<{/t}></th>
+		<th><{t}>登录玩家<{/t}></th>
+		<th><{t}>当日最高在线<{/t}></th>
+		<th><{t}>当日平均在线<{/t}></th>
+		<th><{t}>开启时在线<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td><{$row['name']}></td>
+		<td><{t}>15:00-15:30<{/t}></td>
+		<td><{t}><{$row['level']}><{/t}></td>
+		<td><{$row['player']}></td>
+		<td><{$row['allow_player']}></td>
+		<td><{$row['count0']}></td>
+		<td><{$row['count1']}></td>
+		<td><{$row['count2']}></td>
+		<td><{$row['count3']}></td>
+		<td><{$row['count4']}></td>
+		<td><{$row['avg_count']}>%</td>
+		<td><{$row['player_all']|default:0}></td>
+		<td><{$row['max_online']|default:0}></td>
+		<td><{$row['avg_online']|default:0}></td>
+		<td><{$row['online']|default:0}></td>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+
+
+<{else if $conditions['action']=='205500'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>日期<{/t}></th>
+		<th rowspan="2"><{t}>开启等级<{/t}></th>
+		<th rowspan="2"><{t}>进入人数<{/t}></th>
+		<th rowspan="2"><{t}>满足人数<{/t}></th>
+		<th rowspan="2"><{t}>参与度<{/t}></th>
+		<th colspan="7"><{t}>N擒孟获<{/t}></th>
+	</tr>
+	<tr>
+		<{for $foo=1 to 7}>
+		<th><{$foo}><{t}>擒<{/t}></th>
+		<{/for}>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td ><{$row['level']|default:40}></td>
+		<td ><{$row['player']|default:0}></td>
+		<td ><{$row['allow_player']|default:0}></td>
+		<td ><{$row['avg_count']|default:0}>%</td>
+		<{for $foo=0 to 6}>
+		<td ><{$row['row_boss_level_all'][$foo]|default:0}></td>
+	    <{/for}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<{else if $conditions['action']=='510100'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th rowspan="2"><{t}>日期<{/t}></th>
+		<th rowspan="2"><{t}>开启等级<{/t}></th>
+		<th rowspan="2"><{t}>进入人数<{/t}></th>
+		<th rowspan="2"><{t}>满足人数<{/t}></th>
+		<th rowspan="2"><{t}>参与度<{/t}></th>
+		<th rowspan="2"><{t}>开启次数<{/t}></th>
+		<th colspan="5"><{t}>boss击杀比例<{/t}></th>
+	</tr>
+	<tr>
+		<{for $foo=1 to 5}>
+		<th><{t}>boss<{/t}><{$foo}></th>
+		<{/for}>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td ><{$row['level']|default:40}></td>
+		<td ><{$row['player']|default:0}></td>
+		<td ><{$row['allow_player']|default:0}></td>
+		<td ><{$row['avg_count']|default:0}>%</td>
+		<td ><{$row['count']|default:0}></td>
+		<{for $foo=1 to 5}>
+		<td ><{if isset($row['count'])&&isset($row[$foo|cat:'_boss'])}><{round($row[$foo|cat:'_boss']/$row['count'],4)*100}><{else}>0<{/if}>%</td>
+	    <{/for}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="100"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<{/if}>
+
+<{if $conditions['action']=='600100' || $conditions['action']=='700100' || $conditions['action']=='560100'}>
+</div>
+</div>
+<{/if}>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

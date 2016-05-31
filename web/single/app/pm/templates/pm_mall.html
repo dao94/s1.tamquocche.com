@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>珍宝阁活动<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/base64.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+</head>
+<body>
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $key==$conditions['action']}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+
+<{if $conditions['action']=='list'}>
+<form id="form_add" action="" class="well well-small form-search" style="margin-bottom:10px;">
+	<div class="control-group">
+		<label for="start"><{t}>上架时间<{/t}>：</label>
+		<div class="input-append">
+			<input type="text" id="start" name="start" class="input-medium" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="<{$info['start']|default:''}>" placeholder="<{t}>上架时间<{/t}>"/>
+		<span class="add-on"><i class="icon-time"></i></span>
+		</div>
+		<label for="over" style="margin-left:10px;"><{t}>下架时间<{/t}>：</label>
+		<div class="input-append">
+			<input type="text" id="over" name="over" class="input-medium" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="<{$info['over']|default:''}>" placeholder="<{t}>下架时间<{/t}>"/>
+		<span class="add-on"><i class="icon-time"></i></span>
+		</div>
+	</div>
+	<div class="control-group">
+		<label for="item"><{t}>商品道具<{/t}>：</label>
+		<div class="input-append">
+			<input type="text" id="item" name="item" class="input-xlarge" value="<{if !empty($info['item_id'])}><{$info['item_id']}>|<{t}><{$info['item_id']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>"/>
+			<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+		</div>
+		<input type="checkbox" value="1" name="bind" id="bind" <{if isset($info['bind'])&&$info['bind']==1}>checked<{/if}> style="margin-left:10px;">
+		<label for="bind"><{t}>非绑定<{/t}></label>
+		<input type="checkbox" value="1" name="recommend" id="recommend" <{if isset($info['recommend'])&&$info['recommend']==1}>checked<{/if}> style="margin-left:10px;">
+		<label for="recommend"><{t}>推荐<{/t}></label>
+	</div>
+	<div class="control-group">
+		<label><{t}>货币类型<{/t}>：</label>
+		<select name="currency" class="input-small">
+		<{foreach $currency_conf as $key=>$value}>
+			<option value="<{$key}>" <{if isset($info['currency'])&&$info['currency']==$key}>selected<{/if}>><{$value}></option>
+		<{/foreach}>
+		</select>
+		<label for="old" style="margin-left:5px;"><{t}>原价<{/t}>：</label>
+		<input type="text"  name="old" id="old" class="input-mini" maxlength="8" value="<{$info['old']|default:''}>" placeholder="<{t}>正整数<{/t}>">
+		<label for="new" style="margin-left:5px;"><{t}>现价<{/t}>：</label>
+		<input type="text"  name="new" id="new" class="input-mini" maxlength="8" value="<{$info['new']|default:''}>" placeholder="<{t}>正整数<{/t}>">
+		<label for="total" style="margin-left:5px;"><{t}>全服限购个数<{/t}>：</label>
+		<input type="text"  name="total" id="total" class="input-mini" maxlength="8" value="<{$info['total']|default:''}>" placeholder="<{t}>默认10W<{/t}>">
+		<label for="limit" style="margin-left:5px;"><{t}>个人限购个数<{/t}>：</label>
+		<input type="text"  name="limit" id="limit" class="input-mini" maxlength="8" value="<{$info['limit']|default:''}>" placeholder="<{t}>默认10W<{/t}>">
+		<label for="limit_type" style="margin-left:5px;"><{t}>个人限购类型<{/t}>：</label>
+		<select name="limit_type" class="input-small">
+		<{foreach $limit_type_conf as $key=>$value}>
+			<option value="<{$key}>" <{if isset($info['limit_type'])&&$info['limit_type']==$key}>selected<{/if}>><{$value}></option>
+		<{/foreach}>
+		</select>
+	</div>
+	<div class="control-group">
+		<button type="button" class="btn btn-primary" id="btn_submit"><i class="icon-ok-circle icon-white"></i><{t}>提交<{/t}></button>
+		<span id="error_info" class="label label-warning"></span>
+	</div>
+<input type="hidden" name="id" id="id" value="<{$info['item_id']|default:''}>">
+<input type="hidden" name="index" id="index" value="<{$info['index']|default:''}>">
+</form>
+<button type="button" class="btn btn-primary" id="btn_update" style="margin-left:10px;"><i class="icon-envelope icon-white"></i><{t}>服务端更新<{/t}></button><{t}> (注)：使用“上移”和“下移”调整顺序后使用<{/t}>
+<h5><{t}>珍宝阁物品列表<{/t}></h5>
+<table class="table table-hover table-condensed" style="border:1px solid #ddd">
+<thead>
+	<th><input type="checkbox" id="check_all"></th>
+	<th><{t}>序号<{/t}></th>
+	<th><{t}>道具名称<{/t}></th>
+	<th><{t}>道具ID<{/t}></th>
+	<th><{t}>非绑定<{/t}></th>
+	<th><{t}>推荐<{/t}></th>
+	<th><{t}>上架时间<{/t}></th>
+	<th><{t}>下架时间<{/t}></th>
+	<th><{t}>货币类型<{/t}></th>
+	<th><{t}>原价<{/t}></th>
+	<th><{t}>现价<{/t}></th>
+	<th><{t}>全服限购个数<{/t}></th>
+	<th><{t}>个人限购个数<{/t}></th>
+	<th><{t}>个人限购类型<{/t}></th>
+	<th><{t}>操作<{/t}></th>
+</thead>
+<tbody>
+<{foreach $data as $key=>$row}>
+	<tr id="tr_<{$row['item_id']}>">
+		<td><input type="checkbox" class="cb" value="<{$row['item_id']}>"></td>
+		<td><span id="key_<{$row['item_id']}>"><{$key+1}></span></td>
+		<td><{t}><{$row['item_id']}><{/t}></td>
+		<td><{$row['item_id']}></td>
+		<td><{if $row['bind']==1}><i class="icon-check"></i><{/if}></td>
+		<td><{if $row['recommend']==1}><i class="icon-check"></i><{/if}></td>
+		<td><{$row['start']}></td>
+		<td <{if $row['now']>$row['over']}>style="text-decoration:line-through;"<{/if}>><{$row['over']}></td>
+		<td><{$currency_conf[$row['currency']]|default:$row['currency']}></td>
+		<td><{$row['old']}></td>
+		<td><{$row['new']}></td>
+		<td><{if $row['total']}><{$row['total']}><{else}><{t}>无限次<{/t}><{/if}></td>
+		<td><{if $row['limit']}><{$row['limit']}><{else}><{t}>无限次<{/t}><{/if}></td>
+		<td><{$limit_type_conf[$row['limit_type']]|default:$row['limit_type']}></td>
+		<td>
+			<button class="btn_move" value="<{$row['item_id']}>" name="1"><{t}>上移<{/t}></button>
+			<button class="btn_move" value="<{$row['item_id']}>" name="2"><{t}>下移<{/t}></button>
+			<button onClick="javascript:window.location='?action=<{$conditions['action']}>&id=<{$row['item_id']}>'"><{t}>Sửa<{/t}></button>
+		</td>
+	</tr>
+<{/foreach}>
+</tbody>
+<tfoot>
+	<tr>
+		<td colspan="100" style="text-align:right"><button class="btn btn-inverse" id="btn_delete"><i class="icon-remove icon-white"></i><{t}>Xóa记录<{/t}></button></td>
+	</tr>
+</tfoot>
+</table>
+<script language="javascript">
+$(function($){
+	$('input[name="item"]').keydown(function(){
+		var separator='<i class="icon-star"></i>';
+		$(this).typeahead({
+			items:100,
+			minLength:2,
+			source:function(value,process){
+				var client = new PHPRPC_Client('http://<{$smarty.const.CENTER_DOMAIN}>/center/app/interface/item_info.php', ['search']);
+				client.search(value,'<{$smarty.session.__single_LANG}>', function (result,args,output,warning) {
+					var data=new Array();
+					result=jQuery.parseJSON(result);
+					$(result).each(function(i,obj){
+						data.push(obj[1]+separator+obj[0]);
+					});
+					process(data);
+				});
+			},
+			updater:function(data){
+				var arr=data.split(separator);
+				return arr[1]+'|'+arr[0];
+			},
+		});
+	});
+
+	$('.search_item').click(function(){
+		var obj=$(this).prevAll(':input');
+		var arr=obj.val().split('|');
+		if(typeof(arr[1])!='undefined' && arr[1]!=''){
+			obj.val(arr[1]);
+		}
+		$(this).prevAll(':input').keyup();
+	});
+
+	$('#btn_submit').click(function(){
+		$.ajax({
+			url:'?action=save',
+			type:'POST',
+			dataType:'json',
+			data:$('#form_add').serialize(),
+			beforeSend: function(){
+				$('#error_info').html('');
+				$('#btn_submit').attr('disabled',true);
+			},
+			success: function(msg){
+				if(msg.status==1){
+					var is_refresh=true;
+					if(!$('#id').val()){
+						is_refresh=!confirm(msg.info+' 是否要继续添加？');
+					}
+					is_refresh ? window.location='?action=<{$conditions['action']}>' : '';//刷新页面
+				}else{
+					$('#error_info').html(msg.info);
+				}
+			},
+			complete: function(){
+				$('#btn_submit').attr('disabled',false);
+			}
+		});
+	});
+
+	$('.btn_move').live('click',function(){
+			var id=$(this).val(),type=$(this).attr('name');
+			$.ajax({
+				url:'?action=move',
+				type:'post',
+				data:{id:id,type:type},
+				dataType:'json',
+				beforeSend: function(){
+					$('.btn_move').attr('disabled',true);
+				},
+				success: function(msg){
+					if(msg.status==1){
+						//页面数据Sửa
+						if(msg.data.old_id!=id){
+							var key=$('#key_'+id).html(),old_key=$('#key_'+msg.data.old_id).html();
+							$('#key_'+id).html(old_key);
+							$('#key_'+msg.data.old_id).html(key);
+							var obj=$('#tr_'+id).clone();
+							$('#tr_'+id).remove();
+							if(type==1){
+								$('#tr_'+msg.data.old_id).before(obj);
+							}else{
+								$('#tr_'+msg.data.old_id).after(obj);
+							}
+						}
+					}else{
+						alert(msg.info);
+					}
+				},
+				complete: function(){
+					$('.btn_move').attr('disabled',false);
+				}
+			});
+	});
+
+	$('#check_all').click(function(){
+		$('.cb').attr('checked',this.checked);
+	});
+
+	$('#btn_delete').click(function(){
+		var count=$('.cb:checked').length,id=new Array();
+		if(count==0){
+			alert('<{t}>请选择Xóa选项<{/t}>');
+			return false;
+		}else if(!confirm('<{t}>确定要Xóa选中项？<{/t}>')){
+			return false;
+		}
+		$('.cb:checked').each(function(i,obj){
+			id.push(obj.value);
+		});
+		$.post('?action=delete',{id:id},function(msg){
+			if(msg.status==1){
+				return window.location.href = window.location.href;
+			}else{
+				alert(msg.info);
+			}
+		},'json');
+	});
+
+	$('#btn_update').click(function(){
+		$.post('?action=gm_update',{},function(msg){
+			if(msg.status==1){
+				alert(msg.info);
+			}
+			else{
+				alert('<{t}>未知错误<{/t}>')
+			}
+		},'json');
+	});
+
+});
+</script>
+
+<{/if}>
+
+</body>
+</html>

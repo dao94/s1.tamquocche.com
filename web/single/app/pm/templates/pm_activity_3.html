@@ -1,0 +1,446 @@
+<!--砸蛋活动-->
+<{if $tpl=='set'}>
+<script language="javascript">
+$(function($){
+	$('select[name="reward_type"]').live('change',function(){
+		$(this).find('option[value="'+this.value+'"]').attr('selected',true);
+		$(this).find('option[value!="'+this.value+'"]').attr('selected',false);
+		$(this).parents('table').find('.items').hide();
+		var reward_item=this.value>0 ? 1 : 0;
+		$(this).parents('table').find('.items_'+reward_item).fadeIn();
+	});
+});
+
+function strtotime(date){
+	if(date==''||typeof(date)=='undefined'){
+		return false;
+	}
+	var arr=date.replace(/:/g,'-').replace(/ /g,'-').split('-');
+	var time=(new Date(Date.UTC(arr[0],arr[1]-1,arr[2],arr[3]-8,arr[4],arr[5])).getTime())/1000;
+	return isNaN(time) ? false : time;
+}
+
+function getParam(){
+	var egg_pack=[],egg_type_arr=[],check_result=true
+	var egg_start_date=$.trim($('[name="egg_start_date"]').val()),egg_end_date=$.trim($('[name="egg_end_date"]').val());
+	var exchange_start_date=$.trim($('[name="exchange_start_date"]').val()),exchange_end_date=$.trim($('[name="exchange_end_date"]').val());
+
+	//日期转时间戳
+	var egg_start_time=strtotime(egg_start_date),
+		egg_end_time=strtotime(egg_end_date);
+	if(!egg_start_time|| !egg_end_time){
+		$('[name="egg_start_date"]').focus();
+		alert('<{t}>请正确设置砸蛋时间<{/t}>');
+		return false;
+	}
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		$(control_group).each(function(b,control){
+			var egg_type=parseInt($.trim($(control).find('[name="egg_type"]').val()));
+			var lost=parseInt($.trim($(control).find('[name="lost"]').val()));
+			var count=parseInt($.trim($(control).find('[name="count"]').val()));
+			var point=parseInt($.trim($(control).find('[name="point"]').val()));
+			if(isNaN(lost)||lost<1){
+				$(control).find('[name="lost"]').focus();
+				alert("<{t}>掉落个数必填，且大于0的整数<{/t}>");
+				check_result=false;
+				return false;
+			}else if(isNaN(count)){
+				$(control).find('[name="count"]').focus();
+				alert("<{t}>个人上限必填，-1表示无限次<{/t}>");
+				check_result=false;
+				return false;
+			}else if(isNaN(point)||point<1){
+				$(control).find('[name="point"]').focus();
+				alert("<{t}>获得积分必填，且大于0的整数<{/t}>");
+				check_result=false;
+				return false;
+			}
+
+			var reward=[];
+			$($(control).find('.controls')).each(function(c,controls){
+				var reward_type=parseInt($(controls).find('[name="reward_type"]').val());
+				switch(reward_type){
+					case 0:
+						//道具奖励
+						$($(controls).find('.sub_item')).each(function(d,sub_item){
+							var per=parseFloat($.trim($(sub_item).find('[name="per"]').val()));
+							var item_val=$.trim($(sub_item).find('[name="item"]').val()).split('|');
+							var num=parseInt($.trim($(sub_item).find('[name="num"]').val()));
+							var bind=$(sub_item).find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+							var bdc=$(sub_item).find('[name="bdc"]').attr('checked')=='checked' ? 1 : 0;
+							var bdc_str=$(sub_item).find('[name="bdc_str"]').val();
+							var item_id=$.trim(item_val[0]);
+							if(isNaN(per)||per<=0||per>=1){
+								$(sub_item).find('[name="per"]').focus();
+								alert('<{t}>掉落为必填，且在0-1之间的小数<{/t}>');
+								check_result=false;
+								return false;
+							}else if(item_id==''){
+								$(sub_item).find('[name="item"]').focus();
+								alert('<{t}>道具为必填项<{/t}>');
+								check_result=false;
+								return false;
+							}else if(isNaN(num)||num<1){
+								$(sub_item).find('[name="num"]').focus();
+								alert('<{t}>数量为必填,且是大于0的整字<{/t}>');
+								check_result=false;
+								return false;
+							}
+							reward.push({per:per,bdc:bdc,bdcStr:bdc_str,item:{itemId:item_id,number:num,bind:bind}});
+						});
+						break;
+
+					case 1:
+					case 2:
+						//金钱奖励
+						var per=parseFloat($.trim($(controls).find('.items_1').find('[name="per"]').val()));
+						var num=parseInt($.trim($(controls).find('.items_1').find('[name="num"]').val()));
+						if(isNaN(per)||per<=0||per>=1){
+								$(controls).find('.items_1').find('[name="per"]').focus();
+								alert('<{t}>掉落为必填，且在0-1之间的小数<{/t}>');
+								check_result=false;
+								return false;
+							}else if(isNaN(num)||num<1){
+								$(controls).find('.items_1').find('[name="num"]').focus();
+								alert('<{t}>数量为必填,且是大于1的数字<{/t}>');
+								check_result=false;
+								return false;
+							}
+						reward.push({per:per,money:{money:num,type:reward_type}});
+						break;
+
+					default:
+						alert('<{t}>选择错误<{/t}>');
+						check_result=false;
+						return false;
+						break;
+				}
+			});
+			if($.inArray(egg_type,egg_type_arr)!=-1){
+				alert(egg_type+'<{t}>砸蛋类型不能重复<{/t}>');
+				check_result=false;
+				return false;
+			}
+			egg_pack.push({eggType:egg_type,lost:lost,count:count,point:point,reward:reward});
+			egg_type_arr.push(egg_type);
+		});
+	});
+
+	var exchange_pack=[];
+	//日期转时间戳
+	var exchange_start_time=strtotime(exchange_start_date),
+		exchange_end_time=strtotime(exchange_end_date);
+	if((!exchange_start_time||!exchange_end_time)&&check_result){
+		$('[name="exchange_start_date"]').focus();
+		alert('<{t}>请正确设置兑换时间<{/t}>');
+		return false;
+	}else if(!check_result){
+		return false;
+	}
+	$($('.exchange')).each(function(id,exchange){
+		var point=parseInt($.trim($(exchange).find('[name="point"]').val())),
+			per=parseFloat($.trim($(exchange).find('[name="per"]').val())),
+			total=parseInt($.trim($(exchange).find('[name="total"]').val())),
+			money_type=parseInt($.trim($(exchange).find('[name="money_type"]').val()))
+			money_num=parseInt($.trim($(exchange).find('[name="money_num"]').val())),
+			item_val=$.trim($(exchange).find('[name="item"]').val()).split('|'),
+			num=$.trim($(exchange).find('[name="num"]').val()),
+			bind=$(exchange).find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+		var item_id=$.trim(item_val[0]);
+		money_num=isNaN(money_num) ? 0 : money_num;
+		if(item_id==''){
+			$(exchange).find('[name="item"]').focus();
+			alert('<{t}>道具为必填项<{/t}>');
+			check_result=false;
+			return false;
+		}else if(isNaN(num)||num<1){
+			$(exchange).find('[name="num"]').focus();
+			alert('<{t}>道具数量为必填，且大于0的整数<{/t}>');
+			check_result=false;
+			return false;
+		}else if(isNaN(point)||point<1){
+			$(exchange).find('[name="point"]').focus();
+			alert("<{t}>兑换积分为必填，且大于0的整数<{/t}>");
+			check_result=false;
+			return false;
+		}else if(isNaN(total)){
+			$(exchange).find('[name="total"]').focus();
+			alert("<{t}>全服上限为必填，-1表示无限次<{/t}>");
+			check_result=false;
+			return false;
+		}else if(isNaN(per)){
+			$(exchange).find('[name="per"]').focus();
+			alert("<{t}>个人上限为必填，-1表示无限次<{/t}>");
+			check_result=false;
+			return false;
+		}
+		exchange_pack.push({id:id+1,point:point,per:per,total:total,outMoney:{money:money_num,type:money_type},inItem:{itemId:item_id,number:num,bind:bind}});
+	});
+
+	var param={
+			egg:{start:egg_start_time,over:egg_end_time,pack:egg_pack},
+			exchange:{start:exchange_start_time,over:exchange_end_time,pack:exchange_pack}
+		};
+	return check_result ? param : check_result;
+}
+</script>
+<div class="control-group">
+	<label class="control-label" for="egg_start_date"><{t}>砸蛋时间<{/t}></label>
+	<div class="controls">
+		<input type="text" id="egg_start_date" name="egg_start_date" class="input-medium" value="<{$data['param']['egg']['start']|date_format:'%Y-%m-%d %H:%M:%S'|default:''}>" placeholder="<{t}>砸蛋开始时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d 00:00:00'})">
+		<i class="icon-minus"></i>
+		<input type="text"  name="egg_end_date" class="input-medium" value="<{$data['param']['egg']['over']|date_format:'%Y-%m-%d %H:%M:%S'|default:''}>" placeholder="<{t}>砸蛋结束时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d 00:00:00'})">
+	</div>
+</div>
+
+<{* 将蛋蛋赋予一数组packs "设置"功能默认一个元素，"更新"根据数据展现 *}>
+<{if isset($data['param']['egg']['pack'])}>
+	<{$packs=$data['param']['egg']['pack']}>
+<{else}>
+	<{$packs=array(1)}>
+<{/if}>
+<{foreach $packs as $pack}>
+<div class="control-group">
+	<div class="control-label">
+		<div>
+			<button type="button" class="btn btn-mini btn-inverse btn_add_config"><i class="icon-plus icon-white"></i></button>
+			<button type="button" class="btn btn-mini btn-inverse btn_del_config"><i class="icon-minus icon-white"></i></button>
+			<{t}>砸蛋奖励<{/t}>
+		</div>
+		<div style="margin-top:5px;">
+			<{t}>类型<{/t}>：
+			<select name="egg_type" class="input-small">
+			<{foreach $activity_config['egg_type'] as $key=>$item}>
+				<option value="<{$key}>" <{if isset($pack['eggType'])&&$pack['eggType']==$key}>selected="selected"<{/if}>><{$item}></option>
+			<{/foreach}>
+			</select>
+		</div>
+		<div style="margin-top:5px;">
+			<{t}>掉落个数<{/t}>：<input type="text"  name="lost" class="input-mini" maxlength="8" value="<{$pack['lost']|default:1}>" placeholder="<{t}>掉落个数<{/t}>" />
+		</div>
+		<div style="margin-top:5px;">
+			<{t}>个人上限<{/t}>：<input type="text"  name="count" class="input-mini" maxlength="8" value="<{$pack['count']|default:''}>" placeholder="<{t}>-1=无限次<{/t}>"/>
+		</div>
+		<div style="margin-top:5px;">
+			<{t}>获得积分<{/t}>：<input type="text"  name="point" class="input-mini" maxlength="8"  value="<{$pack['point']|default:''}>" placeholder="<{t}>获得积分<{/t}>"/>
+		</div>
+	</div>
+
+	<{if isset($pack['reward'])}>
+		<{$rewards=$pack['reward']}>
+	<{else}>
+		<{$rewards=array(1)}>
+	<{/if}>
+	<{foreach $rewards as $reward}>
+	<div class="controls form-search" style="margin-bottom:5px;">
+		<table>
+			<tr>
+				<td valign="top">
+					<select name="reward_type" class="input-small" >
+					<{foreach $activity_config['money_type'] as $key=>$item}>
+					<{if $key==0 || $key==1 || $key==2}>
+						<option value="<{$key}>" <{if isset($reward['money'])&&$reward['money']['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+					<{/if}>
+					<{/foreach}>
+					</select>
+				</td>
+				<td class="items items_0 <{if empty($reward['item'])&&$reward['per']}>hide<{/if}>">
+				<ul class="unstyled" style="margin:0;">
+					<li class="sub_item">
+						<{t}>掉率<{/t}>：<input type="text" class="input-mini-mini" name="per" maxlength="6" value="<{$reward['per']|default:''}>">
+						<{t}>道具<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($reward['item']['itemId'])}><{$reward['item']['itemId']}>|<{t}><{$reward['item']['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$reward['item']['number']|default:1}>" maxlength="6">
+						<label><input type="checkbox" name="bind" <{if isset($reward['item']['bind'])&&$reward['item']['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+						<label><input type="checkbox" name="bdc" <{if isset($reward['bdc'])&&$reward['bdc']==1}>checked="checked"<{/if}>><{t}>广播<{/t}></label>
+						<input type="text" name="bdc_str" maxlength="150" value='<{$reward['bdcStr']|default:''}>' placeholder="<{t}>广播内容<{/t}>"/>
+					</li>
+				</ul>
+				</td>
+				<td class="items items_1 <{if empty($reward['money'])}>hide<{/if}>">
+					<{t}>掉率<{/t}>：<input type="text" class="input-mini-mini" name="per" maxlength="6" value="<{$reward['per']|default:''}>">
+					</select>
+					<{t}>数量<{/t}>：<input type="text" class="input-small" name="num" maxlength="8" value="<{$reward['money']['money']|default:''}>">
+				</td>
+				<td valign="top">
+					<button type="button" class="btn btn-small btn-primary btn_add_items"><i class="icon-plus icon-white"></i></button>
+					<button type="button" class="btn btn-small btn-primary btn_del_items"><i class="icon-minus icon-white"></i></button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<{/foreach}>
+
+</div>
+<{/foreach}>
+
+</div>
+<hr />
+<div class="form-horizontal">
+<!--兑换列表-->
+<div class="control-group">
+	<label class="control-label" for="exchange_start_date"><{t}>兑换时间<{/t}></label>
+	<div class="controls">
+		<input type="text" id="exchange_start_date" name="exchange_start_date" class="input-medium" value="<{$data['param']['exchange']['start']|date_format:'%Y-%m-%d %H:%M:%S'|default:''}>" placeholder="<{t}>兑换开始时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d HH'})">
+		<i class="icon-minus"></i>
+		<input type="text"  name="exchange_end_date" class="input-medium" value="<{$data['param']['exchange']['over']|date_format:'%Y-%m-%d %H:%M:%S'|default:''}>" placeholder="<{t}>兑换结束时间<{/t}>" onfocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d HH'})">
+	</div>
+</div>
+
+<{if isset($data['param']['exchange']['pack'])}>
+	<{$packs=$data['param']['exchange']['pack']}>
+<{else}>
+	<{$packs=array(1)}>
+<{/if}>
+<{foreach $packs as $pack}>
+<div class="control-group">
+	<div class="control-label"><{t}>兑换规则<{/t}></div>
+	<div class="controls form-search" style="margin-bottom:5px;">
+		<table>
+			<tr>
+				<td>
+				<ul class="unstyled" style="margin:0;">
+					<li class="exchange" style="margin-bottom:5px;">
+						<div>
+							<{t}>支出金钱<{/t}>：
+							<select name="money_type" class="input-small" >
+							<{foreach $activity_config['money_type'] as $key=>$item}>
+							<{if $key>0}>
+								<option value="<{$key}>" <{if isset($pack['outMoney'])&&$pack['outMoney']['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+							<{/if}>
+							<{/foreach}>
+							</select>
+							<input type="text"  name="money_num" class="input-mini" maxlength="8" value="<{$pack['outMoney']['money']|default:''}>" placeholder="<{t}>支出金钱<{/t}>" />
+							<{t}>获得道具<{/t}>：
+							<div class="input-append">
+								<input type="text" class="input-large" name="item" value="<{if isset($pack['inItem'])}><{$pack['inItem']['itemId']}>|<{t}><{$pack['inItem']['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+								<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+							</div>
+							<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$pack['inItem']['number']|default:1}>" maxlength="6">
+							<label><input type="checkbox" name="bind" <{if isset($pack['inItem'])&&$pack['inItem']['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+						</div>
+						<div style="margin-top:5px;">
+							<{t}>兑换积分<{/t}>：<input type="text"  name="point" class="input-mini" maxlength="8" value="<{$pack['point']|default:''}>" placeholder="<{t}>兑换积分<{/t}>" />
+						<{t}>全服上限<{/t}>：<input type="text"  name="total" class="input-mini" maxlength="8" value="<{$pack['total']|default:''}>" placeholder="<{t}>全服上限<{/t}>" />
+						<{t}>个人上限<{/t}>：<input type="text"  name="per" class="input-mini" maxlength="8" value="<{$pack['per']|default:''}>" placeholder="<{t}>个人上限<{/t}>" />
+						</div>
+					</li>
+					<li><hr /></li>
+				</ul>
+				</td>
+				<td valign="top">
+					<button type="button" class="btn btn-small btn-primary btn_add_items"><i class="icon-plus icon-white"></i></button>
+					<button type="button" class="btn btn-small btn-primary btn_del_items"><i class="icon-minus icon-white"></i></button>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+<{/foreach}>
+
+<{else if $tpl=='show'}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><b><{$row['start']}></b> <{t}>至<{/t}> <b><{$row['over']}></b></dd>
+	<{if isset($row['param']['egg'])}>
+	<dt style="width:80px;"><{t}>砸蛋时间<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<b><{$row['param']['egg']['start']|date_format:'%Y-%m-%d %T'|default:''}></b>
+		<{t}>至<{/t}>
+		<b><{$row['param']['egg']['over']|date_format:'%Y-%m-%d %T'|default:''}></b></dd>
+	<dt style="width:80px;"><{t}>砸蛋奖励<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<{foreach $row['param']['egg']['pack'] as $pack}>
+		<table class="table table-bordered table-condensed table-hover">
+			<thead>
+				<tr>
+					<td colspan="6" style="background-color:#FCF8E3">
+						<b><{$activity_config['egg_type'][$pack['eggType']]|default:$pack['eggType']}></b>
+						<{t}>掉落个数<{/t}>：<{$pack['lost']}>
+						<{t}>个人上限<{/t}>：<{$pack['lost']}>
+						<{t}>获得积分<{/t}>：<{$pack['lost']}>
+					</td>
+				</tr>
+				<tr>
+					<th><{t}>道具/金钱<{/t}></th>
+					<th><{t}>非绑定<{/t}></th>
+					<th><{t}>数量<{/t}></th>
+					<th><{t}>掉率<{/t}></th>
+					<th><{t}>广播<{/t}></th>
+					<th><{t}>广播内容<{/t}></th>
+				</tr>
+			</thead>
+			<tbody>
+			<{foreach $pack['reward'] as $reward}>
+				<tr>
+					<td>
+						<{if isset($reward['item'])}>
+							<{t}><{$reward['item']['itemId']}><{/t}>
+						<{elseif isset($reward['money'])}>
+							<{$activity_config['money_type'][$reward['money']['type']]}>
+						<{/if}>
+					</td>
+					<td>
+						<{if isset($reward['item'])&&$reward['item']['bind']==1}>
+							<i class="icon-ok"></i>
+						<{/if}>
+					</td>
+					<td>
+						<{if isset($reward['item'])}>
+							<{$reward['item']['number']}>
+						<{elseif isset($reward['money'])}>
+							<{$reward['money']['money']}>
+						<{/if}>
+					</td>
+					<td><{$reward['per']}></td>
+					<td>
+						<{if isset($reward['bdc'])&&$reward['bdc']==1}>
+							<i class="icon-ok"></i>
+						<{/if}>
+					</td>
+					<td style="text-align:left">
+						<{if isset($reward['bdcStr'])}>
+							<{$reward['bdcStr']}>
+						<{/if}>
+					</td>
+				</tr>
+			<{/foreach}>
+			</tbody>
+			</table>
+		<{/foreach}>
+	</dd>
+	<{/if}>
+
+	<{if isset($row['param']['exchange'])}>
+	<dt style="width:80px;"><{t}>兑换时间<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<b><{$row['param']['exchange']['start']|date_format:'%Y-%m-%d %T'|default:''}></b>
+		<{t}>至<{/t}>
+		<b><{$row['param']['exchange']['over']|date_format:'%Y-%m-%d %T'|default:''}></b>
+	</dd>
+	<dt style="width:80px;"><{t}>兑换规则<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<ul class="unstyled">
+		<{foreach $row['param']['exchange']['pack'] as $pack}>
+			<li>
+				<{t}>支出<{$activity_config['money_type'][$pack['outMoney']['type']]|default:$pack['outMoney']['type']}><{/t}>：<{$pack['outMoney']['type']|default:0}>
+				<{t}>兑换积分<{/t}>：<{$pack['point']|default:0}>
+				<{t}>全服上限<{/t}>：<{$pack['total']|default:0}>
+				<{t}>个人上限<{/t}>：<{$pack['per']|default:0}>
+			</li>
+			<li>
+				<{t}>获得道具<{/t}>：<{t}><{$pack['inItem']['itemId']}><{/t}>(<{if $pack['inItem']['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>)
+				<{t}>数量<{/t}>：<{$pack['inItem']['number']}>
+				<hr />
+			</li>
+		<{/foreach}>
+		</ul>
+	</dd>
+	<{/if}>
+</dl>
+
+<{/if}>

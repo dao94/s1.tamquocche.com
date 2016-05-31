@@ -1,0 +1,18 @@
+stat_day_ended.php --task=money
+stat_day_ended.php --task=level
+stat_day_ended.php --task=fight
+stat_rank.php --task=personal
+stat_rank.php --task=money
+stat_rank.php --task=faction
+stat_rank.php --task=pet
+stat_rank.php --task=equip
+stat_day_ended.php --task=strong
+stat_day_ended.php --task=pet
+stat_day_ended.php --task=check_point_zzsf
+stat_day_ended.php --task=wuhun
+stat_day_ended.php --task=home
+stat_day_ended.php --task=gem
+stat_day_ended.php --task=god
+stat_day_ended.php --task=offline_arena_rank
+stat_info.php --task=register
+log_del.php --task=log_del --del_days=90

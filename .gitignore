@@ -1,0 +1,4 @@
+/web/single/runtime/cache/*
+/web/single/runtime/templetes_c/*
+/single/logs
+/.idea

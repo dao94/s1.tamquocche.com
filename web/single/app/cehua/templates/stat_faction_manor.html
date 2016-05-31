@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>领地战分析<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well form-search" style="margin:10px 0;">
+	<label><{t}>日期<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',dateFmt:'yyyy-MM-dd'})" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',dateFmt:'yyyy-MM-dd'})" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"  style="margin-left:5px;"><i class="icon-search icon-white"></i><{t}>搜索<{/t}></button>
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button onClick="javascript:window.location='?action=<{$conditions['action']}>&start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<table class="table table-bordered table-condensed table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>领地名称<{/t}></th>
+		<th><{t}>满足人数<{/t}></th>
+		<th><{t}>参与人数<{/t}></th>
+		<th><{t}>参与度<{/t}></th>
+		<th><{t}>占领花费时间<{/t}></th>
+		<th><{t}>被占领次数<{/t}></th>
+		<th><{t}>最终占领帮派<{/t}></th>
+	</tr>
+</thead>
+<tbody>
+<{foreach $data as $date=>$items}>
+	<{$num=0}>
+	<{foreach $items as $row}>
+	<tr>
+		<{if $num==0}>
+		<td rowspan="<{$items|count}>"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<{/if}>
+		<td><{$row['map_name']}>(<{$row['min_level']}><{t}>级<{/t}>)</td>
+		<td><{$row['allow_join']}></td>
+		<td><{$row['player']}></td>
+		<td><{$row['join_ratio']}>%</td>
+		<td><{$row['cost_time']}></td>
+		<td><{$row['occupy_count']}></td>
+		<td><{$row['win_faction_name']}></td>
+	</tr>
+	<{$num=$num+1}>
+	<{/foreach}>
+<{/foreach}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page|default:''}></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>羽翼分析<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function(){
+	$('.time_type').click(function(){
+		$('#start_date').val($(this).attr('start-date'));
+		$('#end_date').val($(this).attr('end-date'));
+		$('#type').val($(this).attr('name'));
+		$('#btn_search').click();
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $conditions['action']==$key}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<form class="well well-small form-search">
+	<div class="btn-group">
+<{foreach $time_type as $type=>$item}>
+	<button class="btn time_type <{if $type==$conditions['type']}>btn-inverse<{/if}>" type="button"
+name="<{$type}>" start-date="<{$item[1]}>" end-date="<{$item[2]}>"><{$item[0]}></button>
+<{/foreach}>
+	</div>
+	<label style="margin-left:20px;"><{t}>时间<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+	<i class="icon-minus"></i>
+	<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+    <input type="hidden" id="type" name="type">
+    <input type="hidden" id="action" name="action" value="<{$conditions['action']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"><{t}>搜 索<{/t}></button>
+</form>
+
+<{if $conditions['action']=='up'}>
+
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th></th>
+		<{for $foo=1 to 10}>
+		<td class="strong1"><{t}>升阶<{/t}><{$foo}></td>
+	    <{/for}>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $row}>
+		<tr>
+			<td><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+			<td><{t}>数量<{/t}></td>
+			<{for $level=1 to 10}>  <!-- 等级 -->
+				<td class="strong1 "><{$row['up_remark'][$level]|default:0}></td>
+	   		 <{/for}>
+	   	</tr>
+
+	<{/foreach}>
+</tbody>
+</table>
+
+<{else if $conditions['action']=='skill'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th></th>
+		<{for $foo=1 to 10}>
+		<td class="strong1"><{t}>等级<{/t}><{$foo}></td>
+	    <{/for}>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $row}>
+		<{for $skill=1 to 7}>
+		<tr>
+			<{if $skill==1}>
+			<td rowspan="7"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+			<{/if}>
+			<td><{t}>技能<{/t}><{$skill}><{t}>(数量)<{/t}></td>
+			<{for $level=1 to 10}>  <!-- 等级 -->
+				<td class="strong1 "><{$row['skill_remark'][$skill][$level]|default:0}></td>
+	   		 <{/for}>
+	   	</tr>
+		<{/for}>
+	<{/foreach}>
+</tbody>
+</table>
+<{/if}>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

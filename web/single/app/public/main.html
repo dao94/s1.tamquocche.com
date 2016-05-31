@@ -1,0 +1,369 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>主页面</title>
+<link href="../../public/css/main.css" rel="stylesheet" type="text/css" />
+<script language="javascript" src="../../public/js/jquery-1.4.4.min.js"></script>
+<script language="javascript">
+	$(document).ready(function(){
+		//火狐浏览器和opera浏览器的自动强制换行解决
+		var userAgent = navigator.userAgent.toLowerCase();
+		var browser = {
+			version: (userAgent.match(/.+(?:rv|it|ra|ie)[/: ]([d.]+)/) || [])[1],
+			safari: /webkit/.test(userAgent),
+			opera: /opera/.test(userAgent),
+			msie: /msie/.test(userAgent) && !/opera/.test(userAgent),
+			mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
+		};
+		if (browser.mozilla || browser.opera) {
+			var break_len	=	45;
+			$('.word-break').each(function(){
+				var tmpStr	=	$(this).html();
+				if(tmpStr.length>break_len){
+					var strTemp	=	'';
+					while(tmpStr.length > break_len){
+						strTemp += tmpStr.substr(0,break_len)+" ";
+						tmpStr   = tmpStr.substr(break_len, tmpStr.length);
+					}
+					$(this).html(strTemp+tmpStr);
+				}
+			})
+		}
+		//表格鼠标移动变色
+		$('tr').mouseover(function(){
+			$(this).addClass('hover');
+		})
+		$('tr').mouseout(function(){
+			$(this).removeClass('hover');
+		})
+	})
+</script>
+
+
+</head>
+<body>
+<div id="wrapper">
+<div id="header">
+<h4>当前位置：公共模块》主页面</h4>
+<a href="#">跳转页面1</a><a href="#">跳转页面1</a><a href="#">跳转页面1</a><a
+	href="#">跳转页面1</a></div>
+
+<div id="content">
+<div id="tips">
+<ol>
+	<li>咖啡3243222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222</li>
+	<li>茶</li>
+	<li>牛奶</li>
+	<li>咖啡3243222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222</li>
+	<li>茶</li>
+	<li>牛奶</li>
+	<li>咖啡3243222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222</li>
+	<li>茶</li>
+	<li>牛奶</li>
+</ol>
+</div>
+<div id="agent-list">
+<ul>
+	<li class="agent-title">请选择代理：</li>
+	<li>
+	<ul class="agent">
+		<li><input type="radio" />37wanwan</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+		<li><input type="radio" />广州菲音信息</li>
+		<li><input type="checkbox" />广州菲音信息</li>
+	</ul>
+	</li>
+	<li class="agent-title">请选择服务器：</li>
+	<li class="agent-title"><input type="checkbox" />全选/全不选</li>
+	<li class="agent-server"><input type="checkbox" />TQC
+	<ul class="server">
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+	</ul>
+	</li>
+	<li class="agent-server"><input type="checkbox" />TQC
+	<ul class="server">
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+	</ul>
+	</li>
+	<li class="agent-server"><input type="checkbox" />TQC
+	<ul class="server">
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+	</ul>
+	</li>
+	<li class="agent-server"><input type="checkbox" />TQC
+	<ul class="server">
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+		<li><input type="checkbox" />S1</li>
+		<li><input type="checkbox" />S999</li>
+	</ul>
+	</li>
+</ul>
+
+</div>
+<div class="clear"></div>
+<div class="content-header">
+<div class="pages">4213 条记录 1/211 页 &nbsp;<span class='current'>1</span>&nbsp;<a
+	href='/jtxm/App/Pay/pay_all_log.php?&p=2'>2</a>&nbsp;<a
+	href='/jtxm/App/Pay/pay_all_log.php?&p=3'>3</a>&nbsp;<a
+	href='/jtxm/App/Pay/pay_all_log.php?&p=4'>4</a>&nbsp;<a
+	href='/jtxm/App/Pay/pay_all_log.php?&p=5'>5</a> <a class='next'
+	href='/jtxm/App/Pay/pay_all_log.php?&p=2'>下一页</a> <a class='next'
+	href='/jtxm/App/Pay/pay_all_log.php?&p=211'>最后一页</a> <input type="text"
+	id="goto" name="p" size="4" maxlength="4" style="height: 20px"
+	value="1" /> <input type="button" value="Go"
+	onclick="javascript:window.location='/jtxm/App/Pay/pay_all_log.php?&p='+document.getElementById('goto').value" />
+</div>
+<div class="submit"><input type="button" value="Xóa多余管理日志"
+	onClick="location.href='?c=log&a=log_admin_delete&delete=yes'" /><input
+	type="button" value="Xóa多余管理日志"
+	onClick="location.href='?c=log&a=log_admin_delete&delete=yes'" /><input
+	type="button" value="Xóa多余管理日志"
+	onClick="location.href='?c=log&a=log_admin_delete&delete=yes'" />
+&nbsp;&nbsp;&nbsp;[&nbsp;系统将保留最后100条数据&nbsp;]</div>
+</div>
+<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<th width="100px">管理员</th>
+		<th>操作日志</th>
+		<th width="150px">最后登录时间</th>
+		<th>最后登录ip</th>
+		<th>其他</th>
+	</tr>
+	<tr>
+		<td class="word-break">``````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````</td>
+		<td>2</td>
+		<td>3</td>
+		<td>1</td>
+		<td>2</td>
+	</tr>
+	<tr>
+		<td class="word-break">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</td>
+		<td>2</td>
+		<td class="word-break">```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````</td>
+		<td>1</td>
+		<td>2</td>
+	</tr>
+	<tr>
+		<td>1</td>
+		<td>2</td>
+		<td>3</td>
+		<td>1</td>
+		<td>2</td>
+	</tr>
+</table>
+<div class="content-footer">
+<div class="pages">4213 条记录 1/211 页 &nbsp;<span class='current'>1</span>&nbsp;<a
+	href='/jtxm/App/Pay/pay_all_log.php?&p=2'>2</a>&nbsp;<a
+	href='/jtxm/App/Pay/pay_all_log.php?&p=3'>3</a>&nbsp;<a
+	href='/jtxm/App/Pay/pay_all_log.php?&p=4'>4</a>&nbsp;<a
+	href='/jtxm/App/Pay/pay_all_log.php?&p=5'>5</a> <a class='next'
+	href='/jtxm/App/Pay/pay_all_log.php?&p=2'>下一页</a> <a class='next'
+	href='/jtxm/App/Pay/pay_all_log.php?&p=211'>最后一页</a> <input type="text"
+	id="goto" name="p" size="4" maxlength="4" style="height: 20px"
+	value="1" /> <input type="button" value="Go"
+	onclick="javascript:window.location='/jtxm/App/Pay/pay_all_log.php?&p='+document.getElementById('goto').value" />
+</div>
+<div class="submit"><input type="button" value="Xóa多余管理日志"
+	onClick="location.href='?c=log&a=log_admin_delete&delete=yes'" />
+&nbsp;&nbsp;&nbsp;[&nbsp;系统将保留最后100条数据&nbsp;]</div>
+</div>
+</div>
+<div id="footer"></div>
+</div>
+</body>
+</html>

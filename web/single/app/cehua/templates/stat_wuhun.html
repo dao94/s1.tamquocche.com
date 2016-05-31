@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>武魂统计<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/colorbox.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript" src="../../public/js/jquery.colorbox-min.js"></script>
+<script language="javascript">
+$(function($){
+	$('.colorbox').colorbox({inline:true,fixed:true,width:'750px', height:'250px',opacity:0.1});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<form class="well form-search" style="margin:10px 0;">
+	<label><{t}>日期<{/t}>：</label>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+	<button class="btn btn-primary" type="submit" id="btn_search"  style="margin-left:5px;"><i class="icon-search icon-white"></i><{t}>搜索<{/t}></button>
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button onClick="javascript:window.location='?start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<table class="table table-bordered table-condensed table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>祭炼人数<{/t}></th>
+		<th><{t}>武魂道具<{/t}></th>
+		<th></th>
+		<{foreach $level_conf as $key=>$value}>
+		<th><{$value}><{t}>级<{/t}></th>
+		<{/foreach}>
+	</tr>
+</thead>
+<tbody>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td rowspan="<{$row['level_list']|count*2+2}>"><{$row['date']}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td rowspan="<{$row['level_list']|count*2+2}>">
+			<{$offering_total_count=array_sum($row['offering_level_list'])}>
+			<{$offering_total_count}><br/>
+			<{if $offering_total_count}>
+			<a href="#colorbox_<{$row['date']}>" class="colorbox"><i class="icon-search"></i><{t}>武魂祭炼<{/t}></a>
+			<{/if}>
+			
+			<!--武魂各阶数统计-->
+			<div class="hide">
+				<table class="table table-bordered table-condensed table-hover" id="colorbox_<{$row['date']}>">
+			<thead>
+				<tr>
+					<th colspan="100"><{t}>截止<{/t}><{$row['date']}> <{t}>武魂祭炼成各阶数情况<{/t}></th>
+				</tr>
+				<tr>
+					<th></th>
+				<{foreach $row['offering_level_list'] as $level=>$count}>
+					<th><{$level}><{t}>阶<{/t}></th>
+				<{/foreach}>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><{t}>数量<{/t}></td>
+					<{foreach $row['offering_level_list'] as $level=>$count}>
+						<td><{$count}></td>
+					<{/foreach}>
+				</tr>
+				<tr>
+					<td><{t}>比例<{/t}></td>
+					<{foreach $row['offering_level_list'] as $level=>$count}>
+						<td><{if $offering_total_count}><{round($count/$offering_total_count,4)*100}>%<{else}>--<{/if}></td>
+					<{/foreach}>
+				</tr>
+			</tbody>
+			</table>
+			</div>
+				
+		</td>
+		<td rowspan="2"><b><{t}>武魂汇总<{/t}></b></td>
+		<td><{t}>数量<{/t}></td>
+		<{foreach $level_conf as $key=>$value}>
+		<td><{$row['total_list'][$value]|default:'--'}></td>
+		<{/foreach}>
+	</tr>
+	<tr>
+		<{$total_sum_count=array_sum($row['total_list'])}>
+		<td><{t}>比例<{/t}></td>
+		<{foreach $level_conf as $key=>$value}>
+		<td><{if $total_sum_count&&isset($row['total_list'][$value])}><{round($row['total_list'][$value]/$total_sum_count,4)*100}>%<{else}>--<{/if}></td>
+		<{/foreach}>
+	</tr>
+	<{foreach $row['level_list'] as $item_id=>$level_list}>
+	<tr>
+		<td rowspan="2"><{t}><{$item_id}><{/t}></td>
+		<td><{t}>数量<{/t}></td>
+		<{foreach $level_conf as $level}>
+		<td><{$level_list[$level]|default:'--'}></td>
+		<{/foreach}>
+	</tr>
+	<tr>
+		<{$sum_count=array_sum($level_list)}>
+		<td><{t}>比例<{/t}></td>
+		<{foreach $level_conf as $level}>
+		<td><{if $sum_count&&isset($level_list[$level])}><{round($level_list[$level]/$sum_count,4)*100}>%<{else}>--<{/if}></td>
+		<{/foreach}>
+	</tr>
+	<{/foreach}>
+	<{/foreach}>
+</tbody>
+</table>
+
+<div class="pagination pagination-centered"><{$page}></div>
+
+</div>
+</body>
+</html>

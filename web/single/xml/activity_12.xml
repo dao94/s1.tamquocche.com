@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+  <activity type="12" name="Điêu Khắc">
+    <show_time>2016-04-08 10:00:00</show_time>
+    <hide_time>2016-04-11 23:59:59</hide_time>
+    <start_time>2016-04-08 10:00:00</start_time>
+    <end_time>2016-04-11 23:59:59</end_time>
+    <info><![CDATA[Điêu khắc bảo thạch đạt tới mốc sẽ nhận được quà]]></info>
+    <reward id="1" type="1" param="2,2">
+      <item itemId="30103030012" number="50" bind="0"/>
+    </reward>
+    <reward id="2" type="1" param="3,3">
+      <item itemId="30103030023" number="50" bind="0"/>
+    </reward>
+    <reward id="3" type="1" param="4,3">
+      <item itemId="30103030034" number="50" bind="0"/>
+    </reward>
+    <reward id="4" type="1" param="5,4">
+      <item itemId="30103030034" number="50" bind="0"/>
+    </reward>
+    <reward id="5" type="1" param="6,5">
+      <item itemId="30103030044" number="50" bind="0"/>
+      <item itemId="21200000264" number="1" bind="0"/>
+    </reward>
+  </activity>
+</config>

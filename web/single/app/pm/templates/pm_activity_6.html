@@ -1,0 +1,235 @@
+<!--有福同享-->
+<{if $tpl=='set'}>
+<script language="javascript">
+$(function($){
+	$('select[name="reward_type"]').live('change',function(){
+		$(this).find('option[value="'+this.value+'"]').attr('selected',true);
+		$(this).find('option[value!="'+this.value+'"]').attr('selected',false);
+		$(this).parents('table').find('.items').hide();
+		var reward_item=this.value>0 ? 1 : 0;
+		$(this).parents('table').find('.items_'+reward_item).fadeIn();
+	});
+});
+
+function getParam(){
+	var reward_list=[],index_list=[],check_result=true,
+		min_count=parseInt($.trim($('[name="min_count"]').val())),min_charge=parseInt($.trim($('[name="min_charge"]').val()));
+
+	if(isNaN(min_count)||min_count<=0){
+		$('[name="min_count"]').focus();
+		alert('<{t}>最小充值人数为正整数<{/t}>');
+		check_result=false;
+		return false;
+	}else if(isNaN(min_charge)||min_charge<=0){
+		$('[name="min_charge"]').focus();
+		alert('<{t}>最小充值元宝为正整数<{/t}>');
+		check_result=false;
+		return false;
+	}
+
+	$('.btn_add_config').each(function(a,config){
+		var control_group=$(config).parents('.control-group');
+		$(control_group).each(function(b,control){
+			var item_list=[],money_list=[],min=parseInt($(control).find('[name="min"]').val()),max=parseInt($(control).find('[name="max"]').val()),index=parseInt($(control).find('[name="index"]').val());
+			if(isNaN(min)||min<1){
+				$(control).find('[name="min"]').focus();
+				alert('<{t}>最小人数为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if(isNaN(max)||max<1){
+				$(control).find('[name="max"]').focus();
+				alert('<{t}>最大人数为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if(isNaN(index)||index<1){
+				$(control).find('[name="index"]').focus();
+				alert('<{t}>序号为正整数<{/t}>');
+				check_result=false;
+				return false;
+			}else if(jQuery.inArray(index,index_list)>=0){
+				$(control).find('[name="index"]').focus();
+				alert('<{t}>序号不能相同<{/t}>');
+				check_result=false;
+				return false;
+			}
+			index_list.push(index);
+
+			$($(control).find('.controls')).each(function(c,controls){
+				var reward_type=parseInt($(controls).find('[name="reward_type"]').val());
+				switch(reward_type){
+					case 0:
+						//道具奖励
+						$($(controls).find('.sub_item')).each(function(d,sub_item){
+							var item_val=$.trim($(sub_item).find('[name="item"]').val()).split('|');
+							var num=parseInt($.trim($(sub_item).find('[name="num"]').val()));
+							var bind=$(sub_item).find('[name="bind"]').attr('checked')=='checked' ? 1 : 0;
+							var item_id=$.trim(item_val[0]);
+							if(item_id==''){
+								$(sub_item).find('[name="item"]').focus();
+								alert('<{t}>道具为必填项<{/t}>');
+								check_result=false;
+								return false;
+							}else if(isNaN(num)||num<1){
+								$(sub_item).find('[name="num"]').focus();
+								alert('<{t}>数量为必填,且是大于0的整字<{/t}>');
+								check_result=false;
+								return false;
+							}
+							item_list.push({itemId:item_id,number:num,bind:bind});
+						});
+						break;
+
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+						//金钱奖励
+						var num=parseInt($.trim($(controls).find('.items_1').find('[name="num"]').val()));
+						if(isNaN(num)||num<1){
+							$(controls).find('.items_1').find('[name="num"]').focus();
+							alert('<{t}>数量为必填,且是大于1的数字<{/t}>');
+							check_result=false;
+							return false;
+						}
+						money_list.push({money:num,type:reward_type});
+						break;
+
+					default:
+						alert('<{t}>选择错误<{/t}>');
+						check_result=false;
+						return false;
+						break;
+				}
+			});
+			reward_list.push({min:min,max:max,index:index,itemList:item_list,moneyList:money_list});
+		});
+	});
+
+	var param={minCount:min_count,minCharge:min_charge,rewardList:reward_list};
+	return check_result ? param : check_result;
+}
+</script>
+<div class="control-group">
+	<label class="control-label" for="min_count"><{t}>最小充值人数<{/t}></label>
+	<div class="controls">
+		<input type="text" class="input-small" id="min_count" name="min_count" maxlength="8" placeholder="<{t}>必填，正整数<{/t}>" value="<{$data['param']['minCount']|default:''}>">
+		<{t}>最小充值元宝<{/t}>
+		<input type="text" class="input-small" name="min_charge" maxlength="8" placeholder="<{t}>必填，正整数<{/t}>" value="<{$data['param']['minCharge']|default:''}>">
+	</div>
+</div>
+
+<{* "设置"功能默认一个元素，"更新"根据数据展现 *}>
+<{if isset($data['param']['rewardList'])}>
+	<{$reward_list=$data['param']['rewardList']}>
+<{else}>
+	<{$reward_list=array(1)}>
+<{/if}>
+<{foreach $reward_list as $rewards}>
+<div class="control-group">
+	<div class="control-label">
+		<div>
+			<button type="button" class="btn btn-mini btn-inverse btn_add_config"><i class="icon-plus icon-white"></i></button>
+			<button type="button" class="btn btn-mini btn-inverse btn_del_config"><i class="icon-minus icon-white"></i></button>
+			<{t}>奖励列表<{/t}>
+		</div>
+	</div>
+
+	<div style="margin-left: 180px;">
+		<{t}>序号<{/t}>：<input type="text" name="index" value="<{$rewards['index']|default:''}>" class="input-mini" maxlength="6" placeholder="<{t}>正整数<{/t}>"/>
+		<{t}>最小人数<{/t}>：<input type="text" name="min" class="input-mini" maxlength="8" value="<{$rewards['min']|default:''}>" placeholder="<{t}>正整数<{/t}>"/>
+		<{t}>最大人数<{/t}>：<input type="text" name="max" value="<{$rewards['max']|default:''}>" class="input-mini" maxlength="8" placeholder="<{t}>正整数<{/t}>"/>
+	</div>
+
+	<{$item_list=array()}>
+	<{$money_list=array()}>
+	<{if isset($rewards['itemList'])}>
+		<{$item_list=$rewards['itemList']}>
+	<{/if}>
+	<{if isset($rewards['moneyList'])}>
+		<{$money_list=$rewards['moneyList']}>
+	<{/if}>
+	<{$item_list=array_merge($item_list,$money_list)}>
+	<{if !$item_list}>
+		<{$item_list=array(1)}>
+	<{/if}>
+
+	<{foreach $item_list as $items}>
+	<div class="controls form-search" style="margin-bottom:5px; margin-top:5px;">
+		<table>
+			<tr>
+				<td valign="top">
+					<select name="reward_type" class="input-small" >
+					<{foreach $activity_config['money_type'] as $key=>$item}>
+						<option value="<{$key}>" <{if isset($items['type'])&&$items['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+					<{/foreach}>
+					</select>
+				</td>
+				<td class="items items_0 <{if empty($items['itemId'])&&$items!=1}>hide<{/if}>">
+				<ul class="unstyled" style="margin:0;">
+					<li class="sub_item">
+						<{t}>道具<{/t}>：
+						<div class="input-append">
+							<input type="text" class="input-large" name="item" value="<{if isset($items['itemId'])}><{$items['itemId']}>|<{t}><{$items['itemId']}><{/t}><{/if}>" placeholder="<{t}>输入道具ID或名称,即可搜索<{/t}>">
+							<span class="add-on accordion-toggle search_item"><i class="icon-search"></i></span>
+						</div>
+						<{t}>数量<{/t}>：<input type="text" class="input-mini-mini" name="num" value="<{$items['number']|default:1}>" maxlength="6"  placeholder="<{t}>正整数<{/t}>">
+						<label><input type="checkbox" name="bind" <{if isset($items['bind'])&&$items['bind']==1}>checked="checked"<{/if}>><{t}>非绑定<{/t}></label>
+					</li>
+				</ul>
+				</td>
+				<td class="items items_1 <{if empty($items['money'])}>hide<{/if}>">
+					</select>
+					<{t}>数量<{/t}>：<input type="text" class="input-small" name="num" maxlength="8" value="<{$items['money']|default:''}>" placeholder="<{t}>正整数<{/t}>">
+				</td>
+				<td valign="top">
+					<button type="button" class="btn btn-small btn-primary btn_add_items"><i class="icon-plus icon-white"></i></button>
+					<button type="button" class="btn btn-small btn-primary btn_del_items"><i class="icon-minus icon-white"></i></button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<{/foreach}>
+
+</div>
+<{/foreach}>
+
+<{else if $tpl=='show'}>
+<dl class="dl-horizontal">
+	<dt style="width:80px;"><{t}>Thời gian<{/t}></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;"><span class="label label-important"><b><{$row['start']}></b></span> <i class="icon-minus"></i> <span class="label label-important"><b><{$row['over']}></b></span></dd>
+	<dt style="width:80px;"></dt>
+	<dd style="margin-left:100px; margin-bottom:10px;">
+		<span><{t}>最小充值人数<{/t}>：<{$row['param']['minCount']}></span>
+		<span style="margin-left:10px;"><{t}>最小充值元宝<{/t}>：<{$row['param']['minCharge']}></span>
+	</dd>
+	<dt style="width:80px;"><{t}>活动配置<{/t}></dt>
+	<dd style="margin-left:100px">
+	<{foreach $row['param']['rewardList'] as $reward_list}>
+		<div>
+			<{t}>序号<{/t}>：<{$reward_list['index']}>
+			<{t}>最小人数<{/t}>：<{$reward_list['min']}>
+			<{t}>最大人数<{/t}>：<{$reward_list['max']}>
+		</div>
+		<ul class="unstyled">
+		<{if !empty($reward_list['itemList'])}>
+			<{foreach $reward_list['itemList'] as $item}>
+				<li>
+					<{t}>道具<{/t}>：<{t}><{$item['itemId']}><{/t}>(<{if $item['bind']==1}><{t}>非<{/t}><{/if}><{t}>绑定<{/t}>) &nbsp;&nbsp;
+					<{t}>数量<{/t}>：<{$item['number']}>
+				</li>
+			<{/foreach}>
+		<{/if}>
+		<{if !empty($reward_list['moneyList'])}>
+			<{foreach $reward_list['moneyList'] as $item}>
+				<li>
+					<{t}><{$activity_config['money_type'][$item['type']]}><{/t}>：<{t}><{$item['money']}><{/t}>
+				</li>
+			<{/foreach}>
+		<{/if}>
+		</ul>
+		<hr style="margin:2px 0 5px 0"/>
+	<{/foreach}>
+	</dd>
+</dl>
+
+<{/if}>

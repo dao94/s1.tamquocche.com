@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<copy_conf>
+	<!--层级副本示例-->
+	<copy name="魏武宝藏" entryid="710100">
+		<!--副本-->
+		<layer name="35级">
+			<!--本层的怪物和boss-->
+			<monster occ="4231">召唤出的小怪</monster>
+			<boss occ="4304">第1个刷出怪</boss>
+			<boss occ="4305">第2个刷出怪</boss>
+			<boss occ="4306">第3个刷出怪</boss>
+			<boss occ="4307">第4个刷出怪</boss>
+			<boss occ="4308">第5个刷出怪</boss>
+			<boss occ="4309">第6个刷出怪</boss>
+			<boss occ="4310">第7个刷出怪</boss>
+			<boss occ="4311">第8个刷出怪</boss>
+			<boss occ="4312">第9个刷出怪</boss>
+			<boss occ="4313">第10个刷出怪</boss>
+			<boss occ="4417">第11个刷出怪</boss>
+			<boss occ="4418">第12个刷出怪</boss>
+			<boss occ="4419">第13个刷出怪</boss>
+			<boss occ="4420">第14个刷出怪</boss>
+			<boss occ="4421">第15个刷出怪</boss>
+			<boss occ="4422">第16个刷出怪</boss>
+			<boss occ="4423">第17个刷出怪</boss>
+			<boss occ="4424">第18个刷出怪</boss>
+			<boss occ="4425">第19个刷出怪</boss>
+			<boss occ="4426">第20个刷出怪</boss>
+		</layer>
+		<layer name="50级">
+			<!--本层的怪物和boss-->
+			<monster occ="6610">试炼女妖(16)</monster>
+			<monster occ="6611">试炼天鬼(21)</monster>
+			<monster occ="6613">试炼蝰蛇(19)</monster>
+			<monster occ="6614">试炼娜迦(14)</monster>
+			<monster occ="6616">试炼机关兽(13)</monster>
+			<monster occ="6617">试炼机关龙(15)</monster>
+			<boss occ="6612">试炼官·祝融夫人</boss>
+			<boss occ="6615">试炼官·黄盖</boss>
+			<boss occ="6618">试炼官·许褚</boss>
+		</layer>
+		<layer name="60级">
+			<!--本层的怪物和boss-->
+			<monster occ="6619">试炼女妖(16)</monster>
+			<monster occ="6620">试炼天鬼(21)</monster>
+			<monster occ="6622">试炼蝰蛇(19)</monster>
+			<monster occ="6623">试炼娜迦(14)</monster>
+			<monster occ="6625">试炼机关兽(13)</monster>
+			<monster occ="6626">试炼机关龙(15)</monster>
+			<boss occ="6621">试炼官·祝融夫人</boss>
+			<boss occ="6624">试炼官·黄盖</boss>
+			<boss occ="6627">试炼官·许褚</boss>
+		</layer>
+	</copy>
+</copy_conf>

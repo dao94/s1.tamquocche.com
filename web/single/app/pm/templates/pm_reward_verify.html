@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />   
+<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/phprpc_js/phprpc_client.min.js"></script>
+<script lang="javascript">
+$(document).ready(function(){
+	$('.main-select').change(function(){
+		$(this).attr('checked')==='checked'?$('.sub-select').attr('checked','checked'):$('.sub-select').removeAttr('checked');
+	})
+	$('.mutil-action').click(function(){
+		var status = $(this).attr('data'),ids = [],gmer = $('[name="gmer"]').val();
+		$('.sub-select:checked').each(function(i){
+			ids[i] = $(this).val();  
+		});
+		if(ids.length===0){
+			alert('<{t}>请选择申请列表<{/t}>');
+			return;
+		}
+		var client = new PHPRPC_Client('../interface/pm_api.php', ['pm_reward_verify']);
+		client.pm_reward_verify({id:ids,status:status,gmer:gmer}, function (result, args, output, warning){  
+			if(result.status==='ok'){
+				var span = '';
+				if(status ==1){
+					span = '<span class="badge badge-warning"><{t}>通过<{/t}></span>';
+				}else{
+					span = '<span class="badge badge-info"><{t}>拒绝<{/t}></span>';
+				}
+				for(i in ids){
+					$('#applyid_'+ids[i]).detach();
+					$('#tr_'+ids[i]+' .status').html(span);
+				}
+			}
+			$('#verify_ajax').html(result.info);
+		}, true);
+	});
+});
+</script>   
+</head>
+<body>
+<div class="tabbable">
+	<ul class="nav nav-tabs">
+			<li class="active"><a href="#log"><{t}>申请日志<{/t}></a></li>
+	</ul>
+<div class="tab-content">
+	<div class="tab-pane active" id="log">
+		<table class="table table-striped table-bordered table-condensed form-inline">
+		<thead>
+			<tr>
+				<th></th>
+				<th><{t}>账号<{/t}></th>
+				<th><{t}>角色<{/t}></th>
+				<th><{t}>原因<{/t}></th>
+				<th><{t}>邮件<{/t}></th>
+				<th><{t}>物品列表<{/t}></th>
+				<th><{t}>申请人<{/t}></th>
+				<th><{t}>申请时间<{/t}></th>
+				<th><{t}>审核人<{/t}></th>
+				<th><{t}>状态<{/t}></th>
+				<th><{t}>审核时间<{/t}></th>
+			</tr>
+		</thead>
+		<tbody>
+		<{while $apply_list = $apply_list_query->fetch_assoc()}>
+		<tr id="tr_<{$apply_list['id']}>">
+			<td class="id"><{if $apply_list['status'] eq 0}><input type="checkbox" class="sub-select" name="applyid" value="<{$apply_list['id']}>" id="applyid_<{$apply_list['id']}>"><{/if}></td>
+			<td><label for="applyid_<{$apply_list['id']}>"><{$apply_list['account']}></label></td>
+			<td><a href="../gm/player.php?id=<{$apply_list['char_id']}>"><{$apply_list['char_name']}></a>
+					<{if $apply_list['internal'] eq 1}><span class="label label-important"><{t}>内部号<{/t}>[<{$inter_gold_info[$apply_list['char_id']]}>]</span><{/if}>
+			</td>
+			<td><{$apply_list['reason']}></td>
+			<td>
+					<a class="accordion-toggle" data-toggle="collapse" href="#email_<{$apply_list['id']}>"><{$apply_list['email_title']}></a>
+					<div id="email_<{$apply_list['id']}>" class="accordion-body collapse">
+							<{$apply_list['email_content']}>
+					</div>
+			</td>
+			<td>
+					<a class="accordion-toggle btn btn-small" data-toggle="collapse" href="#reward_<{$apply_list['id']}>"><i class="icon-search"></i></a>
+					<div id="reward_<{$apply_list['id']}>" class="accordion-body collapse" style="text-align:left">
+							<{foreach json_decode($apply_list['reward_list'],true) as $key=>$val}>
+							<{if $key eq 'itemList'}>
+							<{foreach $val as $item}>
+							<{t}><{$item['itemId']}><{/t}>[<{$item['number']}>]<{if $item['bind']}><{t}>非绑定<{/t}><{else}><{t}>绑定<{/t}><{/if}><br/>
+							<{/foreach}>
+							<{elseif $key eq 'moneyList'}>
+							<{foreach $val as $moneyType=>$moneyNum}>
+							<{if $moneyType eq 'gold'}>
+							<{t}>铜币<{/t}>
+							<{elseif $moneyType eq 'giftGold'}>
+							<{t}>铜券<{/t}>
+							<{elseif $moneyType eq 'jade'}>
+							<{t}>元宝<{/t}>
+							<{elseif $moneyType eq 'giftJade'}>
+							<{t}>礼券<{/t}>
+							<{/if}>[<{$moneyNum}>]<br/>
+							<{/foreach}>
+							<{/if}>
+							<{/foreach}>
+					</div>
+			</td>
+			<td><{$apply_list['applyer']}></td>
+			<td><{$apply_list['apply_ts']|date_format:'%Y-%m-%d %T'}></td>
+			<td><{$apply_list['verifyer']}></td>
+			<td class="status"><{if $apply_list['status'] eq 1}><span class="badge badge-warning"><{t}>通过<{/t}></span><{elseif $apply_list['status'] eq 2}><span class="badge badge-info"><{t}>拒绝<{/t}></span><{else}><span class="badge"><{t}>未处理<{/t}></span><{/if}></td>
+			<td><{$apply_list['verify_ts']|date_format:'%Y-%m-%d %T'}></td>
+		</tr>
+		<{/while}>
+		<tr>
+			<td colspan="11" style="text-align:left">
+				<input type="hidden" name="gmer" value="<{$gmer}>">
+				<input type="checkbox" class="main-select" id="selectall">
+				<label for="selectall"><{t}>全选/全不选<{/t}></label>
+				<button type="button" class="btn btn-primary mutil-action add-internal" data="1"><i class="icon-ok icon-white"></i><{t}>批量通过<{/t}></button>
+				<button type="button" class="btn btn-primary mutil-action" data="2"><i class="icon-remove icon-white"></i><{t}>批量拒绝<{/t}></button>
+				<span id="verify_ajax" class="badge badge-warning"></span>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+	<div class="pagination pagination-centered">
+			<{$page}>
+	</div>
+		</div>
+</div>
+</div>
+</body>
+</html> 

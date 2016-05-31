@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>战斗力分布<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css"/>
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript" src="../../public/js/My97DatePicker/WdatePicker.js"></script>
+<script language="javascript">
+$(function($){
+	$('.show_detail').toggle(function(){
+		$('.detail_'+this.name).fadeIn();
+		$('.collect_'+this.name).attr({style:"font-weight:bold;font-size:14px;background-color:#F5F5F5"});
+	},function(){
+		$('.detail_'+this.name).hide();;
+	});
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px;">
+<div id="nav">
+	<ul class="nav nav-tabs">
+		<{foreach $action_conf as $key=>$item}>
+    <li <{if $conditions['action']==$key}>class="active"<{/if}>><a href="?action=<{$key}>"><{$item}></a></li>
+		<{/foreach}>
+	</ul>
+</div>
+<form class="well form-search" style="margin:10px 0; background-color:">
+	<label><{t}>日期<{/t}>：</label>
+<{if $conditions['action']=='list'}>
+	<input class="input-small" placeholder="<{t}>输入开始日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="start_date" name="start_date" value="<{$conditions['start_date']}>">
+		<i class="icon-minus"></i>
+		<input class="input-small" placeholder="<{t}>输入结束日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" id="end_date" name="end_date" value="<{$conditions['end_date']}>">
+		
+<{elseif $conditions['action']=='pie_chart'}>
+	<input class="input-small" placeholder="<{t}>输入日期<{/t}>" type="text" onfocus="WdatePicker({maxDate:'%y-%M-%d',minDate:'<{$conditions['open_date']}>',dateFmt:'yyyy-MM-dd'})" name="date" value="<{$conditions['date']}>">
+	<label style="margin-left:5px"><{t}>等级<{/t}>：</label>
+	<input class="input-mini-mini" placeholder="<{t}>最小等级<{/t}>" type="text" name="min_level" value="<{$conditions['min_level']}>" maxlength="3">
+		<i class="icon-minus"></i>
+		<input class="input-mini-mini" placeholder="<{t}>最大等级<{/t}>" type="text" name="max_level"  value="<{$conditions['max_level']}>" maxlength="3">
+<{/if}>
+
+	<label style="margin-left:5px;"><{t}>类型：<{/t}></label>
+	<label>
+		<select name="type" class="input-medium">
+			<option value=""><{t}>全部....<{/t}></option>
+		<{foreach $type_conf as $key=>$item}>
+			<option value="<{$key}>" <{if $conditions['type']==$key}>selected="selected"<{/if}>><{$item}></option>
+		<{/foreach}>
+		</select>
+	</label>
+	<label style="margin-left:5px;"><{t}>排除N天以上未登录：<{/t}></label>
+	<label>
+		<select name="day" class="input-small">
+		<{foreach $day_conf as $key=>$item}>
+			<option value="<{$item}>" <{if $conditions['day']==$item}>selected="selected"<{/if}>><{$item}><{t}>天<{/t}></option>
+		<{/foreach}>
+		</select>
+	</label>
+	<button class="btn btn-primary" type="submit" id="btn_search"  style="margin-left:5px;"><{t}>搜 索<{/t}></button>
+	<input type="hidden" name="action" value="<{$conditions['action']}>">
+</form>
+
+<div class="btn-group">
+<{foreach $time_conf as $key=>$item}>
+<{if $key<=$conditions['today']}>
+	<button onClick="javascript:window.location='?action=<{$conditions['action']}>&start_date=<{$key}>&end_date=<{$key}>';" class="btn <{if $conditions['start_date']==$key && $conditions['end_date']==$key}>btn-inverse<{/if}>"><{$item}></button>
+<{/if}>
+<{/foreach}>
+</div>
+
+<{if $conditions['action']=='list'}>
+<table class="table table-bordered table-hover" style="margin-top:10px;">
+<thead>
+	<tr>
+		<th><{t}>日期<{/t}></th>
+		<th><{t}>开/合服天数<{/t}></th>
+		<th><{t}>战斗力<{/t}></th>
+	<{foreach $level_conf as $key=>$item}>
+		<{foreach $item['list'] as $k=>$v}>
+		<th class="hide detail_<{$key}>"><{$v}></th>
+		<{/foreach}>
+		<th class="collect_<{$key}>"><a href="javascript:;" class="show_detail" name="<{$key}>"><{$item['title'][0]}>-<{$item['title'][1]}></a></th>
+	<{/foreach}>
+	</tr>
+</thead>
+<tbody>
+	<{if $data}>
+	<{foreach $data as $date=>$row}>
+	<tr>
+		<td rowspan="2"><{$date}>(<{t}>周<{/t}><{$row['week']}>)</td>
+		<td rowspan="2"><{$row['open_day']}></td>
+		<td><{t}>平均<{/t}></td>
+	<{foreach $level_conf as $key=>$item}>
+		<{foreach $item['list'] as $v}>
+		<td class="hide detail_<{$key}>"><{if empty($row['list'][$key][$v]['count'])}>0<{else}><{intval($row['list'][$key][$v]['fight_sum']/$row['list'][$key][$v]['count'])}><{/if}></td>
+		<{/foreach}>
+		<td class="collect_<{$key}>"><{$row['item'][$key]['fight_avg']|default:0}></td>
+	<{/foreach}>
+	</tr>
+	<tr>
+		<td><{t}>最高<{/t}></td>
+	<{foreach $level_conf as $key=>$item}>
+		<{foreach $item['list'] as $v}>
+		<td class="hide detail_<{$key}>"><{$row['list'][$key][$v]['fight_max']}></td>
+		<{/foreach}>
+		<td class="collect_<{$key}>"><{$row['item'][$key]['fight_max']|default:0}></td>
+	<{/foreach}>
+	</tr>
+	<{/foreach}>
+	<{else}>
+	<tr><td colspan="200"><font color="red"><{t}>暂时搜索不到数据！<{/t}></font></td></tr>
+	<{/if}>
+</tbody>
+</table>
+<div class="pagination pagination-centered"><{$page}></div>
+
+<{else if $conditions['action']=='pie_chart' && $data}>
+<script language="javascript" src="../../public/js/highcharts/highcharts.js"></script>
+<script language="javascript">
+$(function () {
+	var chart;
+	//Radialize the colors
+	Highcharts.getOptions().colors = $.map(Highcharts.getOptions().colors, function(color) {
+		return {
+			radialGradient: { cx: 0.5, cy: 0.3, r: 0.7 },
+			stops: [
+				[0, color],
+				[1, Highcharts.Color(color).brighten(-0.3).get('rgb')] // darken
+			]
+		};
+	});
+	
+	// Build the chart
+	chart = new Highcharts.Chart({
+		chart: {
+			renderTo: 'container',
+			plotBackgroundColor: null,
+			plotBorderWidth: null,
+			plotShadow: false
+		},
+		title: {
+			text: '<{t}>战斗力分布饼状图<{/t}>'
+		},
+		tooltip: {
+			pointFormat: '{series.name}: <b>{point.y}%</b>',
+			percentageDecimals: 1
+		},
+		plotOptions: {
+			pie: {
+				allowPointSelect: true,
+				cursor: 'pointer',
+				dataLabels: {
+						enabled: true,
+						color: '#000000',
+						connectorColor: '#000000',
+						formatter: function() {
+							return '<b>'+ this.point.name +'</b>: '+ this.y +' %';
+						}
+				},
+				showInLegend:false,
+			}
+		},
+		credits:{
+			enabled:false,
+		},
+		series: [{
+				type: 'pie',
+				name: '<{t}>所占比例<{/t}>',
+				data: [
+				<{$num=0}>
+				<{foreach $data as $key=>$count}>
+					<{if $num==0}>
+					{name:'<{$key}>',y:<{round($count/$total_count,4)*100}>,sliced:true,selected:true},
+				<{else}>
+					['<{$key}>',<{round($count/$total_count,4)*100}>],
+				<{/if}>
+					<{$num=$num+1}>
+				<{/foreach}>
+					]
+			}]
+	});
+});
+</script>
+
+<table style="margin-top:10px;">
+	<tr>
+		<td valign="top"><div id="container" style="width:500px;height:320px;"></div></td>
+		<td valign="top">
+			<table class="table table-bordered table-hover" style="margin-left:20px;">
+				<thead>
+					<tr>
+						<td colspan="3"><{t}>统计人数<{/t}>：<b><{$total_count}></b></td>
+					</tr>
+					<tr>
+						<th><{t}>战力分布<{/t}></th>
+						<th><{t}>人数<{/t}></th>
+						<th><{t}>比例<{/t}></th>
+					</tr>
+				</thead>
+				<{foreach $data as $key=>$count}>
+				<tr>
+					<td><{$key}></td>
+					<td><{$count}></td>
+					<td><{if $total_count}><{round($count/$total_count,4)*100}><{else}>0<{/if}>%</td>
+				</tr>
+				<{/foreach}>
+			</table>
+		</td>
+	</tr>
+</table>
+<{/if}>
+
+</div>
+</body>
+</html>

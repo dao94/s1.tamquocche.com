@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><{t}>策划数据<{/t}></title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../public/css/bootstrap-responsive.min.css" />
+<script language="javascript" src="../../public/js/jquery.js"></script>
+<script language="javascript" src="../../public/js/bootstrap.min.js"></script>
+<script language="javascript">
+$(function($){
+	$('.nav').click(function(){
+		$('.nav').find('.btn').removeClass('btn-success');
+		$(this).find('.btn').addClass('btn-success');
+		$('#iframe').attr('src',this.href).fadeIn();
+		return false;
+	});
+	
+	//iframe自适高度
+	$('#iframe').load(function(){
+		var height=$(this).contents().find('body').height();
+		height=height>700 ? height : 700;
+		$(this).height(height+30);
+	});
+	
+	$('.nav').first().click();
+});
+</script>
+</head>
+
+<body>
+<div style="margin-top:5px; line-height:28px;">
+<{foreach $data as $key=>$item}>
+	<a href="<{$key}>" class="nav"><button type="button" class="btn btn-small"><{$item}></button></a>
+<{/foreach}>
+</div>
+<iframe id="iframe" src="" class="hide" style="width:100%; height:300px; border:1xp solid red;" frameborder="0" scrolling="auto" marginheight="0" marginwidth="0"></iframe>
+</body>
+</html>
