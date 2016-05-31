@@ -9,6 +9,6 @@ define('__ROOT__', str_replace(array('//', '\\','api'), array('/', '/','single')
 include __ROOT__.'/config/config.php';
 include __API__.'lib/Login.class.php';
 include __FUNCTIONS__.'function.php';;
-ogin = Login::factory();
+$login = Login::factory();
 $login->run();
 ?>
